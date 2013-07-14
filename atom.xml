@@ -4,7 +4,7 @@
   <title><![CDATA[Fotis Koutoulakis]]></title>
   <link href="http://NlightNFotis.github.io/atom.xml" rel="self"/>
   <link href="http://NlightNFotis.github.io/"/>
-  <updated>2013-07-13T22:01:16+03:00</updated>
+  <updated>2013-07-14T12:50:18+03:00</updated>
   <id>http://NlightNFotis.github.io/</id>
   <author>
     <name><![CDATA[Fotis Koutoulakis]]></name>
@@ -12,5 +12,36 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Hello World]]></title>
+    <link href="http://NlightNFotis.github.io/blog/2013/07/14/hello-world/"/>
+    <updated>2013-07-14T12:24:00+03:00</updated>
+    <id>http://NlightNFotis.github.io/blog/2013/07/14/hello-world</id>
+    <content type="html"><![CDATA[<h1>A new beginning</h1>
+
+<p>Oh boy! A new start. Isn&rsquo;t that exciting? You bet it is. It&rsquo;s not however
+my first introduction to blogging. I used to have a <a href="http://lambdareflection.wordpress.com">blog</a>
+on Wordpress.com, but after a while I was turned off by the fact that it felt too limited.
+So I decided I wanted a new place for me to host my online presence, that wasn&rsquo;t so much limited as Wordpress was.
+Initially I was thinking about renting a VPS and self hosting wordpress there. But after doing a little research,
+I came across <a href="http://pages.github.com">Github Pages</a>. I started investigating
+Github pages some more, and found <a href="http://jekyllrb.com">jekyll</a> to be very <strong>very</strong> interesting.
+After a while, I also came across <a href="http://octopress.org">Octopress</a>. That was it. I was sold :)</p>
+
+<p>Free hosting of a blog, no need to maintain a server, and a platform written in <a href="http://www.ruby-lang.org">ruby</a>?</p>
+
+<p>Without hesitation, I immediately started working on it. I went through octopress documentation, (which needless to say, but it was fantastic)
+found a wonderful theme online at <a href="http://opthemes.com">opthemes</a>, (kudos to <a href="http://alexgaribay.com">Alex Garibay</a> for that)
+and got started.</p>
+
+<p>And here we are. On a platform that you can hack and customize to your liking &ndash; at least more so than the locked down version of wordpress.
+On a platform that is written on a language that I don&rsquo;t hate with passion (like cough, <strong>php</strong>, cough),
+and may actually learn in the future, just for the sake of being able to customize every bit of it (gotta love the hacker&rsquo;s way)
+&ndash; even though I am not really interested in web development per se.</p>
+
+<p>Hope it starts out nice. I guess that is left to be seen.</p>
+]]></content>
+  </entry>
   
 </feed>
