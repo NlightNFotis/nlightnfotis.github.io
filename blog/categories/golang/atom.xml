@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Golang | Fotis Koutoulakis]]></title>
   <link href="http://NlightNFotis.github.io/blog/categories/golang/atom.xml" rel="self"/>
   <link href="http://NlightNFotis.github.io/"/>
-  <updated>2013-07-15T13:12:08+03:00</updated>
+  <updated>2013-07-15T17:53:36+03:00</updated>
   <id>http://NlightNFotis.github.io/</id>
   <author>
     <name><![CDATA[Fotis Koutoulakis]]></name>
@@ -25,7 +25,7 @@ gccgo under the Hurd.</strong>
 Not only did it compile successfuly, it also run its tests, with the
 results <a href="http://lists.gnu.org/archive/html/bug-hurd/2013-06/msg00117.html">matching the ones provided by my mentor Thomas Schwinge</a>.
 This was a checkpoint in my summer of code project. Successful building of
-of the compiler meant that I am (happily) in the position to pass on to the
+of the compiler meant that I am (happily) in the position to carry on with the
 next part (and the main one) of my project, that is, to make sure that
 the <strong>go library (libgo) also passes all its tests
 and works without any major issues.</strong></p>
