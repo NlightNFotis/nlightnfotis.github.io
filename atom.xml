@@ -4,7 +4,7 @@
   <title><![CDATA[Fotis Koutoulakis]]></title>
   <link href="http://NlightNFotis.github.io/atom.xml" rel="self"/>
   <link href="http://NlightNFotis.github.io/"/>
-  <updated>2013-07-15T17:53:36+03:00</updated>
+  <updated>2013-07-15T23:42:54+03:00</updated>
   <id>http://NlightNFotis.github.io/</id>
   <author>
     <name><![CDATA[Fotis Koutoulakis]]></name>
@@ -22,10 +22,10 @@
 
 <p><strong>The highlight of this week&rsquo;s progress was managing to successfully build
 gccgo under the Hurd.</strong>
-Not only did it compile successfuly, it also run its tests, with the
+Not only did it compile successfully, it also run its tests, with the
 results <a href="http://lists.gnu.org/archive/html/bug-hurd/2013-06/msg00117.html">matching the ones provided by my mentor Thomas Schwinge</a>.
 This was a checkpoint in my summer of code project. Successful building of
-of the compiler meant that I am (happily) in the position to carry on with the
+the compiler meant that I am (happily) in the position to carry on with the
 next part (and the main one) of my project, that is, to make sure that
 the <strong>go library (libgo) also passes all its tests
 and works without any major issues.</strong></p>
@@ -36,9 +36,9 @@ and works without any major issues.</strong></p>
 
 <p>Compiling gccgo on the Hurd was big. But we also had to see how it
 compared to the build that was successful on Linux. The most effective
-way to compare the two builds, are to check the test results of the two.</p>
+way to compare the two builds, is to check the test results of the two.</p>
 
-<p>Taking a look at the gccgo results on the Hurd I was delighted to find
+<p>Taking a look at the gccgo results on the Hurd, I was delighted to find
 that it passed most of its tests. There were few that were failing, but
 for the most part, it did well. Below are the test results of gccgo on the Hurd:</p>
 
