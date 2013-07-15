@@ -4,7 +4,7 @@
   <title><![CDATA[Category: GCC | Fotis Koutoulakis]]></title>
   <link href="http://NlightNFotis.github.io/blog/categories/gcc/atom.xml" rel="self"/>
   <link href="http://NlightNFotis.github.io/"/>
-  <updated>2013-07-15T12:56:43+03:00</updated>
+  <updated>2013-07-15T13:05:52+03:00</updated>
   <id>http://NlightNFotis.github.io/</id>
   <author>
     <name><![CDATA[Fotis Koutoulakis]]></name>
@@ -109,7 +109,7 @@ Native configuration is i686-unknown-gnu0.3</p>
 <p>/root/gcc_new/gccbuild/gcc/testsuite/go/../../gccgo  version 4.9.0 20130606 (experimental) (GCC)
 ```</p>
 
-<p>Hmm. Show these are the failing tests. Before we go through them, it might be a good idea
+<p>Hmm. So these are the failing tests. Before we go through them, it might be a good idea
 to check the status of the gccgo tests on the Linux build too. Let&rsquo;s see.</p>
 
 <p>```
