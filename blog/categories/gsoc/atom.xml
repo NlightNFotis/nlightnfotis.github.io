@@ -4,7 +4,7 @@
   <title><![CDATA[Category: GSOC | Fotis Koutoulakis]]></title>
   <link href="http://NlightNFotis.github.io/blog/categories/gsoc/atom.xml" rel="self"/>
   <link href="http://NlightNFotis.github.io/"/>
-  <updated>2013-07-15T13:05:52+03:00</updated>
+  <updated>2013-07-15T13:12:08+03:00</updated>
   <id>http://NlightNFotis.github.io/</id>
   <author>
     <name><![CDATA[Fotis Koutoulakis]]></name>
@@ -395,13 +395,14 @@ work</p></blockquote>
 
 <p><strong>So now it comes down to work on implementing correctly the context switching functions.</strong>
 Apart from that, going through the test results that fail from gccgo is also something that
-is to be done, however I am not sure that it should be a first priority.</p>
+is to be done, however I am not sure that it should be a first priority. I also have to go
+through go.log to see if there any clues as to why the gccgo tests fail.</p>
 
-<p><em>Having finally built gccgo on the Hurd, and <strong>more importantly still being on schedule</strong>,
+<p>Having finally built gccgo on the Hurd, and <strong>more importantly still being on schedule,
 (the original one, from my proposal) means that I can now concentrate on the core part of my
-project proposal (and the most exciting one too)**, that is proper implementation
-of what is </em>blocking effective context switching, which
-in its part is blocking goroutines, without which, the go library will not work properly.*</p>
+project proposal (and the most exciting one too)</strong>, that is proper implementation
+of what is <em>blocking effective context switching, which
+in its part is blocking goroutines, without which, the go library will not work properly.</em></p>
 ]]></content>
   </entry>
   
