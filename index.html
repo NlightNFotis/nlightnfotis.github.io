@@ -9,7 +9,7 @@
   <meta name="author" content="Fotis Koutoulakis">
 
   
-  <meta name="description" content="Hi. I&#8217;m Fotis Koutoulakis. I spend my time pretending I know about computers. Jul 24th, 2013 GCC GSOC Golang GSOC: Week 5 report A clue! So &hellip;">
+  <meta name="description" content="Hi. I&#8217;m Fotis Koutoulakis. I spend my time pretending I know about computers. Jul 31st, 2013 gcc golang gsoc GSOC: Week 6 report First of all &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -119,6 +119,327 @@
   
 
 
+<i class="icon-calendar-empty"></i> <time datetime="2013-07-31T12:36:00+03:00" pubdate data-updated="true">Jul 31<span>st</span>, 2013</time></h5>
+          <div class="row-fluid">
+          
+          </div>
+          
+          <div class="row-fluid">
+          
+          <a href="/blog/categories/gcc/"><span class="badge">gcc</span></a>
+          
+          <a href="/blog/categories/golang/"><span class="badge">golang</span></a>
+          
+          <a href="/blog/categories/gsoc/"><span class="badge">gsoc</span></a>
+          
+          </div>
+          
+    </div>
+    <div class="span10">
+      <h1 class="link"><a href="/blog/2013/07/31/gsoc-week-6-report/">GSOC: Week 6 report</a></h1>
+      <p>First of all, I would like to apologize for this report being late. But unfortunately this happened:
+<img src="http://i1.kym-cdn.com/photos/images/original/000/000/376/Accidentally93mb20110724-22047-ix1t06.png" alt="I Accidentally 93 MB" /></p>
+
+<p>Only that, in my case, it was not exactly 93 MB, rather it was about 1.5GB. Yeah, <em>I accidentally obliterated my <strong>GCC</strong> repository on the Hurd</em>, so I had to reclone and rebuild everything, something that took considerable amounts of time.
+How this happened is a long story that involved me wanting to rebuild my gcc, and <code>cd</code>-ing 2 directories above the build folder, and ending up <code>rm -rf *</code> from my <code>gcc</code> folder (that included the source, and the build folder) rather than my <code>gcc_build</code> folder.
+Thank god, that was only a minor setback, and the (small scale) crisis was soon averted.</p>
+
+<h1>Further research</h1>
+
+<p>This week was mostly spent reading source code, primarily looking for clues for the previous situation, and secondarily to get a better undestanding of the systems I am working on. This proved to be fertile, as I got a firmer grip of libpthread, and the GNU Mach system. However, while this week was mostly spent reading documentation, that doesn&rsquo;t mean that I didn&rsquo;t do anything practical. I also used my time to do some further research into what was it specifically that triggered the assertion failure. That required us to play a little bit with our newly built compiler on the Hurd and see what we can do with go on the Hurd.</p>
+
+<h2>Testing gccgo under the Hurd</h2>
+
+<p>If you recall correctly, the last time I reported I had found out that an assertion on <code>libpthread</code>`s code was failing, and that was the root cause that failed both the <code>gccgo</code> tests
+and the <code>libgo</code> tests. That assertion was failing at two different places in the code, the first being <code>__pthread_create_internal</code> which is a <code>libpthread</code> function
+located in <code>libpthread/pthread/pt-create.c</code> and is invoked when an application wants to create a new POSIX thread. That function of course is not getting called directly, rather
+it is invoked by <code>pthread_create</code> which is the function that user space application use to create the new thread. (For reference reasons you can find the code <a href="https://github.com/NlightNFotis/libpthread/blob/master/pthread/pt-create.c#L67">here</a>)</p>
+
+<p>The second place where that assertion was failing was at <code>__sem_timedwait_internal</code> at the file <a href="https://github.com/NlightNFotis/libpthread/blob/master/sysdeps/generic/sem-timedwait.c">libpthread/sysdeps/generic/sem-timedwait.c</a>, where it gets inlined in the place of <code>self = _pthread_self ();</code>. (For more information, checkout last week&rsquo;s report).</p>
+
+<p>So I was curious to test out the execution of some sample programs under the compiler we built on the Hurd. Beginning with some very simple hello world like programs, we could see that
+they were compiling successfully, and also ran successfully without any issues at all. Seeing as the assertion failure is generated when we attempt to create a new thread, I figured I might want to start playing with go routines under the Hurd.</p>
+
+<p>So we started playing with a simple hello world like goroutine example (the one available under the <a href="http://tour.golang.org/#62">tour of go on the golang.org website.</a>)</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='go'><span class='line'><span class="kn">package</span> <span class="nx">main</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="p">(</span>
+</span><span class='line'>    <span class="s">&quot;fmt&quot;</span>
+</span><span class='line'>    <span class="s">&quot;time&quot;</span>
+</span><span class='line'><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">func</span> <span class="nx">say</span><span class="p">(</span><span class="nx">s</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">time</span><span class="p">.</span><span class="nx">Sleep</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Millisecond</span><span class="p">)</span>
+</span><span class='line'>        <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">go</span> <span class="nx">say</span><span class="p">(</span><span class="s">&quot;world&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="nx">say</span><span class="p">(</span><span class="s">&quot;hello&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This gets compiled without any issues at all, but when we try to run it&hellip;</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='go'><span class='line'><span class="nx">a</span><span class="p">.</span><span class="nx">out</span><span class="p">:</span> <span class="p">.</span><span class="o">/</span><span class="nx">pthread</span><span class="o">/</span><span class="p">..</span><span class="o">/</span><span class="nx">sysdeps</span><span class="o">/</span><span class="nx">generic</span><span class="o">/</span><span class="nx">sem</span><span class="o">-</span><span class="nx">timedwait</span><span class="p">.</span><span class="nx">c</span><span class="p">:</span><span class="mi">50</span><span class="p">:</span> <span class="nx">__sem_timedwait_internal</span><span class="p">:</span> <span class="nx">Assertion</span> <span class="err">`</span><span class="p">({</span> <span class="nx">mach_port_t</span> <span class="nx">ktid</span> <span class="p">=</span> <span class="nx">__mach_thread_self</span> <span class="p">();</span> <span class="kt">int</span> <span class="nx">ok</span> <span class="p">=</span> <span class="nx">thread</span><span class="o">-</span><span class="p">&gt;</span><span class="nx">kernel_thread</span> <span class="o">==</span> <span class="nx">ktid</span><span class="p">;</span> <span class="nx">__mach_port_deallocate</span> <span class="p">((</span><span class="nx">__mach_task_self_</span> <span class="o">+</span> <span class="mi">0</span><span class="p">),</span> <span class="nx">ktid</span><span class="p">);</span> <span class="nx">ok</span><span class="p">;</span> <span class="p">})</span><span class="err">&#39;</span> <span class="nx">failed</span><span class="p">.</span>
+</span><span class='line'><span class="nx">Aborted</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nx">goroutine</span> <span class="mi">1</span> <span class="p">[</span><span class="nx">sleep</span><span class="p">]:</span>
+</span><span class='line'><span class="nx">time</span><span class="p">.</span><span class="nx">Sleep</span>
+</span><span class='line'>  <span class="p">..</span><span class="o">/</span><span class="p">..</span><span class="o">/</span><span class="p">..</span><span class="o">/</span><span class="nx">gcc_source</span><span class="o">/</span><span class="nx">libgo</span><span class="o">/</span><span class="nx">runtime</span><span class="o">/</span><span class="nx">time</span><span class="p">.</span><span class="nx">goc</span><span class="p">:</span><span class="mi">26</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">goroutine</span> <span class="mi">3</span> <span class="p">[</span><span class="nx">sleep</span><span class="p">]:</span>
+</span><span class='line'><span class="nx">time</span><span class="p">.</span><span class="nx">Sleep</span>
+</span><span class='line'>  <span class="p">..</span><span class="o">/</span><span class="p">..</span><span class="o">/</span><span class="p">..</span><span class="o">/</span><span class="nx">gcc_source</span><span class="o">/</span><span class="nx">libgo</span><span class="o">/</span><span class="nx">runtime</span><span class="o">/</span><span class="nx">time</span><span class="p">.</span><span class="nx">goc</span><span class="p">:</span><span class="mi">26</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Bam! It exploded right infront of our face. Let&rsquo;s see if this might become friendlier if we alter it a little bit. To do this we removed the <code>go</code> from <code>say</code> to avoid running it as a goroutine, and we also removed <code>time.Sleep</code> (along with the <code>time</code> import), <a href="https://github.com/NlightNFotis/gcc/blob/master/libgo/go/time/sleep.go#L8">whose job is to pause a go routine</a>.</p>
+
+<p>When you do this, the code seems to be a hello world like for loop sample, that prints:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='go'><span class='line'><span class="nx">root</span><span class="err">@</span><span class="nx">debian</span><span class="p">:</span><span class="err">~</span><span class="o">/</span><span class="nx">Software</span><span class="o">/</span><span class="nx">Experiments</span><span class="o">/</span><span class="k">go</span><span class="err">#</span> <span class="p">.</span><span class="o">/</span><span class="nx">a</span><span class="p">.</span><span class="nx">out</span>
+</span><span class='line'><span class="nx">world</span>
+</span><span class='line'><span class="nx">world</span>
+</span><span class='line'><span class="nx">world</span>
+</span><span class='line'><span class="nx">world</span>
+</span><span class='line'><span class="nx">world</span>
+</span><span class='line'><span class="nx">hello</span>
+</span><span class='line'><span class="nx">hello</span>
+</span><span class='line'><span class="nx">hello</span>
+</span><span class='line'><span class="nx">hello</span>
+</span><span class='line'><span class="nx">hello</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Hmm. Let&rsquo;s play with it some more. Changing our code a little bit to make <code>say("world")</code> run as a goroutine gives us the following code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='go'><span class='line'><span class="kn">package</span> <span class="nx">main</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="s">&quot;fmt&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">func</span> <span class="nx">say</span><span class="p">(</span><span class="nx">s</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">go</span> <span class="nx">say</span><span class="p">(</span><span class="s">&quot;world&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="nx">say</span><span class="p">(</span><span class="s">&quot;hello&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Which, when executed results in this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='go'><span class='line'><span class="nx">root</span><span class="err">@</span><span class="nx">debian</span><span class="p">:</span><span class="err">~</span><span class="o">/</span><span class="nx">Software</span><span class="o">/</span><span class="nx">Experiments</span><span class="o">/</span><span class="k">go</span><span class="err">#</span> <span class="p">.</span><span class="o">/</span><span class="nx">a</span><span class="p">.</span><span class="nx">out</span>
+</span><span class='line'><span class="nx">a</span><span class="p">.</span><span class="nx">out</span><span class="p">:</span> <span class="p">.</span><span class="o">/</span><span class="nx">pthread</span><span class="o">/</span><span class="nx">pt</span><span class="o">-</span><span class="nx">create</span><span class="p">.</span><span class="nx">c</span><span class="p">:</span><span class="mi">167</span><span class="p">:</span> <span class="nx">__pthread_create_internal</span><span class="p">:</span> <span class="nx">Assertion</span> <span class="err">`</span><span class="p">({</span> <span class="nx">mach_port_t</span> <span class="nx">ktid</span> <span class="p">=</span> <span class="nx">__mach_thread_self</span> <span class="p">();</span> <span class="kt">int</span> <span class="nx">ok</span> <span class="p">=</span> <span class="nx">thread</span><span class="o">-</span><span class="p">&gt;</span><span class="nx">kernel_thread</span> <span class="o">==</span> <span class="nx">ktid</span><span class="p">;</span>
+</span><span class='line'><span class="nx">__mach_port_deallocate</span> <span class="p">((</span><span class="nx">__mach_task_self</span> <span class="o">+</span> <span class="mi">0</span><span class="p">),</span> <span class="nx">ktid</span><span class="p">);</span> <span class="nx">ok</span><span class="p">;</span> <span class="p">})</span><span class="err">&#39;</span> <span class="nx">failed</span><span class="p">.</span>
+</span><span class='line'><span class="nx">Aborted</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So we can see that the simplest go programs that run with goroutines do not run. Let&rsquo;s still try some programs that invoke goroutines to see if our assumptions are correct.
+Below is the code of a very simple web server in go (<a href="http://tour.golang.org/#56">found in the golang website</a>).</p>
+
+<figure class='code'><figcaption><span>webserver.go</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='go'><span class='line'><span class="kn">package</span> <span class="nx">main</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="p">(</span>
+</span><span class='line'>    <span class="s">&quot;fmt&quot;</span>
+</span><span class='line'>    <span class="s">&quot;net/http&quot;</span>
+</span><span class='line'><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">type</span> <span class="nx">Hello</span> <span class="kd">struct</span><span class="p">{}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">func</span> <span class="p">(</span><span class="nx">h</span> <span class="nx">Hello</span><span class="p">)</span> <span class="nx">ServeHTTP</span><span class="p">(</span>
+</span><span class='line'>    <span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Fprint</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="s">&quot;Hello!&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">h</span> <span class="nx">Hello</span>
+</span><span class='line'>    <span class="nx">http</span><span class="p">.</span><span class="nx">ListenAndServe</span><span class="p">(</span><span class="s">&quot;localhost:4000&quot;</span><span class="p">,</span> <span class="nx">h</span><span class="p">)</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The (non surprising) result is the following:</p>
+
+<figure class='code'><figcaption><span>webserver.go</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='go'><span class='line'><span class="nx">a</span><span class="p">.</span><span class="nx">out</span><span class="p">:</span> <span class="p">.</span><span class="o">/</span><span class="nx">pthread</span><span class="o">/</span><span class="p">..</span><span class="o">/</span><span class="nx">sysdeps</span><span class="o">/</span><span class="nx">generic</span><span class="o">/</span><span class="nx">sem</span><span class="o">-</span><span class="nx">timedwait</span><span class="p">.</span><span class="nx">c</span><span class="p">:</span><span class="mi">50</span><span class="p">:</span> <span class="nx">__sem_timedwait_internal</span><span class="p">:</span> <span class="nx">Assertion</span> <span class="err">`</span><span class="p">({</span> <span class="nx">mach_port_t</span> <span class="nx">ktid</span> <span class="p">=</span> <span class="nx">__mach_thread_self</span> <span class="p">();</span> <span class="kt">int</span> <span class="nx">ok</span> <span class="p">=</span> <span class="nx">thread</span><span class="o">-</span><span class="p">&gt;</span><span class="nx">kernel_thread</span> <span class="o">==</span> <span class="nx">ktid</span><span class="p">;</span> <span class="nx">__mach_port_deallocate</span> <span class="p">((</span><span class="nx">__mach_task_self_</span> <span class="o">+</span> <span class="mi">0</span><span class="p">),</span> <span class="nx">ktid</span><span class="p">);</span> <span class="nx">ok</span><span class="p">;</span> <span class="p">})</span><span class="err">&#39;</span> <span class="nx">failed</span><span class="p">.</span>
+</span><span class='line'><span class="nx">Aborted</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">goroutine</span> <span class="mi">1</span> <span class="p">[</span><span class="nx">syscall</span><span class="p">]:</span>
+</span><span class='line'><span class="nx">no</span> <span class="nx">stack</span> <span class="nx">trace</span> <span class="nx">available</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Hmm. This failure was last caused by <code>time.Sleep</code>. So let&rsquo;s take a closer look into the code of the <code>ListenAndServe</code> function. The code for this function in the go runtime is this:</p>
+
+<figure class='code'><figcaption><span>gcc/libgo/go/net/http/server.go</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='go'><span class='line'><span class="c1">// ListenAndServe listens on the TCP network address srv.Addr and then</span>
+</span><span class='line'><span class="c1">// calls Serve to handle requests on incoming connections.  If</span>
+</span><span class='line'><span class="c1">// srv.Addr is blank, &quot;:http&quot; is used.</span>
+</span><span class='line'><span class="kd">func</span> <span class="p">(</span><span class="nx">srv</span> <span class="o">*</span><span class="nx">Server</span><span class="p">)</span> <span class="nx">ListenAndServe</span><span class="p">()</span> <span class="kt">error</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">addr</span> <span class="o">:=</span> <span class="nx">srv</span><span class="p">.</span><span class="nx">Addr</span>
+</span><span class='line'>  <span class="k">if</span> <span class="nx">addr</span> <span class="o">==</span> <span class="s">&quot;&quot;</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">addr</span> <span class="p">=</span> <span class="s">&quot;:http&quot;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="nx">l</span><span class="p">,</span> <span class="nx">e</span> <span class="o">:=</span> <span class="nx">net</span><span class="p">.</span><span class="nx">Listen</span><span class="p">(</span><span class="s">&quot;tcp&quot;</span><span class="p">,</span> <span class="nx">addr</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">if</span> <span class="nx">e</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="nx">e</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">srv</span><span class="p">.</span><span class="nx">Serve</span><span class="p">(</span><span class="nx">l</span><span class="p">)</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This calls the function <a href="https://github.com/NlightNFotis/gcc/blob/master/libgo/go/net/http/server.go#L1255"><code>Serve</code></a>. The interesting part in this one is line 1271:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='go'><span class='line'> <span class="nx">time</span><span class="p">.</span><span class="nx">Sleep</span><span class="p">(</span><span class="nx">tempDelay</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It calls <code>time.Sleep</code> on accept failure. Which is known to pause go routines, and as a result be the ultimate cause for the result we are seeing.</p>
+
+<h1>Final thoughts &ndash; Work for next week</h1>
+
+<p>So pretty much everything that has anything to do with a goroutine is failing. Richard Braun on the #hurd suggested that since <strong>creation and destruction</strong> of threads is buggy in libpthread, maybe we should try a work around until a proper fix is in place.
+Apart from that my mentor Thomas Schwinge suggested to make thread destruction in go&rsquo;s runtime a no-op to see if that makes any difference.
+If it does that should mean that there is nothing wrong in the go runtime itself, rather, the offending code is in libpthread. This is also my very next course of action, which I shall report on very soon.</p>
+
+      
+      
+    </div>
+  </div>
+
+
+
+    </article>
+    
+    <hr>
+    
+  
+  
+    <article>
+      
+
+  <div class="row-fluid">
+    <div class="span2">
+		<h1 class="date-time">
+
+
+
+
+
+
+
+
+  
+
+
 <i class="icon-calendar-empty"></i> <time datetime="2013-07-24T12:36:00+03:00" pubdate data-updated="true">Jul 24<span>th</span>, 2013</time></h5>
           <div class="row-fluid">
           
@@ -126,11 +447,11 @@
           
           <div class="row-fluid">
           
-          <a href="/blog/categories/GCC/"><span class="badge">GCC</span></a>
+          <a href="/blog/categories/gcc/"><span class="badge">gcc</span></a>
           
-          <a href="/blog/categories/GSOC/"><span class="badge">GSOC</span></a>
+          <a href="/blog/categories/golang/"><span class="badge">golang</span></a>
           
-          <a href="/blog/categories/Golang/"><span class="badge">Golang</span></a>
+          <a href="/blog/categories/gsoc/"><span class="badge">gsoc</span></a>
           
           </div>
           
@@ -648,11 +969,11 @@
           
           <div class="row-fluid">
           
-          <a href="/blog/categories/GCC/"><span class="badge">GCC</span></a>
+          <a href="/blog/categories/gcc/"><span class="badge">gcc</span></a>
           
-          <a href="/blog/categories/GSOC/"><span class="badge">GSOC</span></a>
+          <a href="/blog/categories/golang/"><span class="badge">golang</span></a>
           
-          <a href="/blog/categories/Golang/"><span class="badge">Golang</span></a>
+          <a href="/blog/categories/gsoc/"><span class="badge">gsoc</span></a>
           
           </div>
           

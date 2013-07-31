@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Golang | Fotis Koutoulakis]]></title>
+  <title><![CDATA[Category: golang | Fotis Koutoulakis]]></title>
   <link href="http://NlightNFotis.github.io/blog/categories/golang/atom.xml" rel="self"/>
   <link href="http://NlightNFotis.github.io/"/>
-  <updated>2013-07-24T13:22:21+03:00</updated>
+  <updated>2013-07-31T13:44:38+03:00</updated>
   <id>http://NlightNFotis.github.io/</id>
   <author>
     <name><![CDATA[Fotis Koutoulakis]]></name>
@@ -12,6 +12,226 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[GSOC: Week 6 report]]></title>
+    <link href="http://NlightNFotis.github.io/blog/2013/07/31/gsoc-week-6-report/"/>
+    <updated>2013-07-31T12:36:00+03:00</updated>
+    <id>http://NlightNFotis.github.io/blog/2013/07/31/gsoc-week-6-report</id>
+    <content type="html"><![CDATA[<p>First of all, I would like to apologize for this report being late. But unfortunately this happened:
+<img src="http://i1.kym-cdn.com/photos/images/original/000/000/376/Accidentally93mb20110724-22047-ix1t06.png" alt="I Accidentally 93 MB" /></p>
+
+<p>Only that, in my case, it was not exactly 93 MB, rather it was about 1.5GB. Yeah, <em>I accidentally obliterated my <strong>GCC</strong> repository on the Hurd</em>, so I had to reclone and rebuild everything, something that took considerable amounts of time.
+How this happened is a long story that involved me wanting to rebuild my gcc, and <code>cd</code>-ing 2 directories above the build folder, and ending up <code>rm -rf *</code> from my <code>gcc</code> folder (that included the source, and the build folder) rather than my <code>gcc_build</code> folder.
+Thank god, that was only a minor setback, and the (small scale) crisis was soon averted.</p>
+
+<h1>Further research</h1>
+
+<p>This week was mostly spent reading source code, primarily looking for clues for the previous situation, and secondarily to get a better undestanding of the systems I am working on. This proved to be fertile, as I got a firmer grip of libpthread, and the GNU Mach system. However, while this week was mostly spent reading documentation, that doesn&rsquo;t mean that I didn&rsquo;t do anything practical. I also used my time to do some further research into what was it specifically that triggered the assertion failure. That required us to play a little bit with our newly built compiler on the Hurd and see what we can do with go on the Hurd.</p>
+
+<h2>Testing gccgo under the Hurd</h2>
+
+<p>If you recall correctly, the last time I reported I had found out that an assertion on <code>libpthread</code>`s code was failing, and that was the root cause that failed both the <code>gccgo</code> tests
+and the <code>libgo</code> tests. That assertion was failing at two different places in the code, the first being <code>__pthread_create_internal</code> which is a <code>libpthread</code> function
+located in <code>libpthread/pthread/pt-create.c</code> and is invoked when an application wants to create a new POSIX thread. That function of course is not getting called directly, rather
+it is invoked by <code>pthread_create</code> which is the function that user space application use to create the new thread. (For reference reasons you can find the code <a href="https://github.com/NlightNFotis/libpthread/blob/master/pthread/pt-create.c#L67">here</a>)</p>
+
+<p>The second place where that assertion was failing was at <code>__sem_timedwait_internal</code> at the file <a href="https://github.com/NlightNFotis/libpthread/blob/master/sysdeps/generic/sem-timedwait.c">libpthread/sysdeps/generic/sem-timedwait.c</a>, where it gets inlined in the place of <code>self = _pthread_self ();</code>. (For more information, checkout last week&rsquo;s report).</p>
+
+<p>So I was curious to test out the execution of some sample programs under the compiler we built on the Hurd. Beginning with some very simple hello world like programs, we could see that
+they were compiling successfully, and also ran successfully without any issues at all. Seeing as the assertion failure is generated when we attempt to create a new thread, I figured I might want to start playing with go routines under the Hurd.</p>
+
+<p>So we started playing with a simple hello world like goroutine example (the one available under the <a href="http://tour.golang.org/#62">tour of go on the golang.org website.</a>)</p>
+
+<p>```go</p>
+
+<p>package main</p>
+
+<p>import (</p>
+
+<pre><code>"fmt"
+"time"
+</code></pre>
+
+<p>)</p>
+
+<p>func say(s string) {</p>
+
+<pre><code>for i := 0; i &lt; 5; i++ {
+    time.Sleep(100 * time.Millisecond)
+    fmt.Println(s)
+}
+</code></pre>
+
+<p>}</p>
+
+<p>func main() {</p>
+
+<pre><code>go say("world")
+say("hello")
+</code></pre>
+
+<p>}
+```</p>
+
+<p>This gets compiled without any issues at all, but when we try to run it&hellip;</p>
+
+<p><code>``
+a.out: ./pthread/../sysdeps/generic/sem-timedwait.c:50: __sem_timedwait_internal: Assertion</code>({ mach_port_t ktid = <strong>mach_thread_self (); int ok = thread->kernel_thread == ktid; </strong>mach_port_deallocate ((<em>_mach_task_self</em> + 0), ktid); ok; })&lsquo; failed.
+Aborted</p>
+
+<p>goroutine 1 [sleep]:
+time.Sleep</p>
+
+<pre><code>../../../gcc_source/libgo/runtime/time.goc:26
+</code></pre>
+
+<p>goroutine 3 [sleep]:
+time.Sleep</p>
+
+<pre><code>../../../gcc_source/libgo/runtime/time.goc:26
+</code></pre>
+
+<p>```</p>
+
+<p>Bam! It exploded right infront of our face. Let&rsquo;s see if this might become friendlier if we alter it a little bit. To do this we removed the <code>go</code> from <code>say</code> to avoid running it as a goroutine, and we also removed <code>time.Sleep</code> (along with the <code>time</code> import), <a href="https://github.com/NlightNFotis/gcc/blob/master/libgo/go/time/sleep.go#L8">whose job is to pause a go routine</a>.</p>
+
+<p>When you do this, the code seems to be a hello world like for loop sample, that prints:</p>
+
+<p><code>
+root@debian:~/Software/Experiments/go# ./a.out
+world
+world
+world
+world
+world
+hello
+hello
+hello
+hello
+hello
+</code></p>
+
+<p>Hmm. Let&rsquo;s play with it some more. Changing our code a little bit to make <code>say("world")</code> run as a goroutine gives us the following code:</p>
+
+<p>```go
+package main</p>
+
+<p>import &ldquo;fmt&rdquo;</p>
+
+<p>func say(s string) {</p>
+
+<pre><code>for i := 0; i &lt; 5; i++ {
+    fmt.Println(s)
+}
+</code></pre>
+
+<p>}</p>
+
+<p>func main() {</p>
+
+<pre><code>go say("world")
+say("hello")
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Which, when executed results in this:</p>
+
+<p><code>``
+root@debian:~/Software/Experiments/go# ./a.out
+a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion</code>({ mach_port_t ktid = <strong>mach_thread_self (); int ok = thread->kernel_thread == ktid;
+</strong>mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })&lsquo; failed.
+Aborted</p>
+
+<p>```</p>
+
+<p>So we can see that the simplest go programs that run with goroutines do not run. Let&rsquo;s still try some programs that invoke goroutines to see if our assumptions are correct.
+Below is the code of a very simple web server in go (<a href="http://tour.golang.org/#56">found in the golang website</a>).</p>
+
+<p>```go webserver.go</p>
+
+<p>package main</p>
+
+<p>import (</p>
+
+<pre><code>"fmt"
+"net/http"
+</code></pre>
+
+<p>)</p>
+
+<p>type Hello struct{}</p>
+
+<p>func (h Hello) ServeHTTP(</p>
+
+<pre><code>w http.ResponseWriter,
+r *http.Request) {
+fmt.Fprint(w, "Hello!")
+</code></pre>
+
+<p>}</p>
+
+<p>func main() {</p>
+
+<pre><code>var h Hello
+http.ListenAndServe("localhost:4000", h)
+</code></pre>
+
+<p>}
+```</p>
+
+<p>The (non surprising) result is the following:</p>
+
+<p><code>``
+a.out: ./pthread/../sysdeps/generic/sem-timedwait.c:50: __sem_timedwait_internal: Assertion</code>({ mach_port_t ktid = <strong>mach_thread_self (); int ok = thread->kernel_thread == ktid; </strong>mach_port_deallocate ((<em>_mach_task_self</em> + 0), ktid); ok; })&lsquo; failed.
+Aborted</p>
+
+<p>goroutine 1 [syscall]:
+no stack trace available
+```</p>
+
+<p>Hmm. This failure was last caused by <code>time.Sleep</code>. So let&rsquo;s take a closer look into the code of the <code>ListenAndServe</code> function. The code for this function in the go runtime is this:</p>
+
+<p>```go gcc/libgo/go/net/http/server.go</p>
+
+<p>// ListenAndServe listens on the TCP network address srv.Addr and then
+// calls Serve to handle requests on incoming connections.  If
+// srv.Addr is blank, &ldquo;:http&rdquo; is used.
+func (srv *Server) ListenAndServe() error {</p>
+
+<pre><code>addr := srv.Addr
+if addr == "" {
+    addr = ":http"
+}
+l, e := net.Listen("tcp", addr)
+if e != nil {
+    return e
+}
+return srv.Serve(l)
+</code></pre>
+
+<p>}
+```</p>
+
+<p>This calls the function <a href="https://github.com/NlightNFotis/gcc/blob/master/libgo/go/net/http/server.go#L1255"><code>Serve</code></a>. The interesting part in this one is line 1271:</p>
+
+<p>```go</p>
+
+<p> time.Sleep(tempDelay)</p>
+
+<p>```</p>
+
+<p>It calls <code>time.Sleep</code> on accept failure. Which is known to pause go routines, and as a result be the ultimate cause for the result we are seeing.</p>
+
+<h1>Final thoughts &ndash; Work for next week</h1>
+
+<p>So pretty much everything that has anything to do with a goroutine is failing. Richard Braun on the #hurd suggested that since <strong>creation and destruction</strong> of threads is buggy in libpthread, maybe we should try a work around until a proper fix is in place.
+Apart from that my mentor Thomas Schwinge suggested to make thread destruction in go&rsquo;s runtime a no-op to see if that makes any difference.
+If it does that should mean that there is nothing wrong in the go runtime itself, rather, the offending code is in libpthread. This is also my very next course of action, which I shall report on very soon.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[GSOC: Week 5 report]]></title>
