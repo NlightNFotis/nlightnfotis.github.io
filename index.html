@@ -157,8 +157,8 @@ it is invoked by <code>pthread_create</code> which is the function that user spa
 
 <p>The second place where that assertion was failing was at <code>__sem_timedwait_internal</code> at the file <a href="https://github.com/NlightNFotis/libpthread/blob/master/sysdeps/generic/sem-timedwait.c">libpthread/sysdeps/generic/sem-timedwait.c</a>, where it gets inlined in the place of <code>self = _pthread_self ();</code>. (For more information, checkout last week&rsquo;s report).</p>
 
-<p>So I was curious to test out the execution of some sample programs under the compiler we built on the Hurd. Beginning with some very simple hello world like programs, we could see that
-they were compiling successfully, and also ran successfully without any issues at all. Seeing as the assertion failure is generated when we attempt to create a new thread, I figured I might want to start playing with go routines under the Hurd.</p>
+<p>So I was curious to test out the execution of some sample programs under the compiler we built on the Hurd. <strong>Beginning with some very simple hello world like programs, we could see that
+they were compiling successfully, and also ran successfully without any issues at all.</strong> Seeing as the assertion failure is generated when we attempt to create a new thread, I figured I might want to start playing with go routines under the Hurd.</p>
 
 <p>So we started playing with a simple hello world like goroutine example (the one available under the <a href="http://tour.golang.org/#62">tour of go on the golang.org website.</a>)</p>
 
