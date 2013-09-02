@@ -215,7 +215,7 @@ goroutine pool &ndash; that is run an existing one, and not create a new one. No
 is given parameters that don&rsquo;t initialise a new goroutine properly, but still, new memory
 is allocated for a new goroutine, and is returned to <code>mp-&gt;g0</code> from runtime_malg.</p>
 
-<p>Assuming I have not misunderstood something, and I am not mistaken (which is unlikely),
+<p>Assuming I have not misunderstood something, and I am not mistaken (which is kind of likely),
 this is behavior that could lead to a number of questions and/or problems. For instance,
 what happens to the goroutine created by <code>runtime_malg</code>? Is it killed after the m is assigned
 a new goroutine to execute? Is it parked on the goroutine global list? Is it just ignored?

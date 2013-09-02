@@ -4,7 +4,7 @@
   <title><![CDATA[Category: gsoc | Fotis Koutoulakis]]></title>
   <link href="http://NlightNFotis.github.io/blog/categories/gsoc/atom.xml" rel="self"/>
   <link href="http://NlightNFotis.github.io/"/>
-  <updated>2013-09-02T10:55:33+03:00</updated>
+  <updated>2013-09-02T10:58:50+03:00</updated>
   <id>http://NlightNFotis.github.io/</id>
   <author>
     <name><![CDATA[Fotis Koutoulakis]]></name>
@@ -80,7 +80,7 @@ goroutine pool &ndash; that is run an existing one, and not create a new one. No
 is given parameters that don&rsquo;t initialise a new goroutine properly, but still, new memory
 is allocated for a new goroutine, and is returned to <code>mp-&gt;g0</code> from runtime_malg.</p>
 
-<p>Assuming I have not misunderstood something, and I am not mistaken (which is unlikely),
+<p>Assuming I have not misunderstood something, and I am not mistaken (which is kind of likely),
 this is behavior that could lead to a number of questions and/or problems. For instance,
 what happens to the goroutine created by <code>runtime_malg</code>? Is it killed after the m is assigned
 a new goroutine to execute? Is it parked on the goroutine global list? Is it just ignored?
