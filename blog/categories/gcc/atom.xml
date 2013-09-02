@@ -4,7 +4,7 @@
   <title><![CDATA[Category: gcc | Fotis Koutoulakis]]></title>
   <link href="http://NlightNFotis.github.io/blog/categories/gcc/atom.xml" rel="self"/>
   <link href="http://NlightNFotis.github.io/"/>
-  <updated>2013-08-26T10:10:47+03:00</updated>
+  <updated>2013-09-02T10:55:33+03:00</updated>
   <id>http://NlightNFotis.github.io/</id>
   <author>
     <name><![CDATA[Fotis Koutoulakis]]></name>
@@ -12,6 +12,270 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[GSOC Week 11 report]]></title>
+    <link href="http://NlightNFotis.github.io/blog/2013/09/02/gsoc-week-11-report/"/>
+    <updated>2013-09-02T09:25:00+03:00</updated>
+    <id>http://NlightNFotis.github.io/blog/2013/09/02/gsoc-week-11-report</id>
+    <content type="html"><![CDATA[<h1>Introduction</h1>
+
+<p>This week was spent investigating the runtime and debugging executables with gdb.
+It was interesting in the sense that it provided me with some interesting
+pieces of information. Without any further ado, let&rsquo;s present our findings:</p>
+
+<h2>My findings</h2>
+
+<p>Before starting out playing with libpthread, and glibc, I wanted to make sure
+that the goruntime behaved the way I believed it behaved, and make some further
+assurances about the goruntime. These assurances had to do with the total number
+of goroutines and the total number of machine threads at various checkpoints
+in the language runtime.</p>
+
+<ul>
+<li>The first thread in the program is initialised during <code>runtime_schedinit</code>.</li>
+<li>The number of m&rsquo;s (kernel threads) is dependent on the number of goroutines.
+The runtime basically attempts to create an equal amount of m&rsquo;s to run the goroutines.
+We can observe everytime a new goroutine is created, there is a number of calls
+to initiate a new kernel thread.</li>
+<li>There are at least two kernel threads. One that supports the runtime (mainly the
+garbage collector) and one that executes the code of the go program.</li>
+</ul>
+
+
+<p>There is only one small piece of code in the goruntime that creates some sort of
+confusion for me, and that is the code for a new m initialisation. Let me first
+present the code that confuses me:</p>
+
+<p>```c gcc/libgo/runtime/proc.c</p>
+
+<p>M*
+runtime_newm(void)
+{</p>
+
+<pre><code>...
+mp = runtime_mal(sizeof *mp);
+
+...
+mcommoninit(mp);
+mp-&gt;g0 = runtime_malg(-1, nil, nil);
+
+...
+if(pthread_attr_init(&amp;attr) != 0)
+    runtime_throw("pthread_attr_init");
+if(pthread_attr_setdetachstate(&amp;attr, PTHREAD_CREATE_DETACHED) != 0)
+    runtime_throw("pthread_attr_setdetachstate");
+
+...
+</code></pre>
+
+<p>}
+```</p>
+
+<p>I purposely compacted the function for brevity, as it only serves as a demonstration for a point.
+Now, my confusion lies in the line <code>mp-&gt;g0 = runtime_malg(-1, nil, nil)</code>. It is a piece of code
+that allocates memory for a new goroutine. Now I am ok with that, <strong>but</strong> what I do not understand
+is that new kernel threads (m&rsquo;s) are supposed to be pick and run a goroutine from the global
+goroutine pool &ndash; that is run an existing one, and not create a new one. Now, the <code>runtime_malg</code>
+is given parameters that don&rsquo;t initialise a new goroutine properly, but still, new memory
+is allocated for a new goroutine, and is returned to <code>mp-&gt;g0</code> from runtime_malg.</p>
+
+<p>Assuming I have not misunderstood something, and I am not mistaken (which is unlikely),
+this is behavior that could lead to a number of questions and/or problems. For instance,
+what happens to the goroutine created by <code>runtime_malg</code>? Is it killed after the m is assigned
+a new goroutine to execute? Is it parked on the goroutine global list? Is it just ignored?
+Does it affect the runtime scheduler&rsquo;s goroutine count? This is the last thing I feel I wanna
+clear out regarding gccgo&rsquo;s runtime.</p>
+
+<h2>gdb</h2>
+
+<p>For this week, I also run the executables created by gccgo through gdb. It was a fertile attempt
+that, most of the time, confirmed my findings in the goruntime. It also provided us with some
+other nice pieces of information regarding the crashing of goroutines, but also left me with a
+question.</p>
+
+<p>The code in question that I run through gdb is this:</p>
+
+<p>```go goroutine.go
+package main</p>
+
+<p>import &ldquo;fmt&rdquo;</p>
+
+<p>func say(s string) {</p>
+
+<pre><code>for i := 0; i &lt; 5; i++ {
+    fmt.Println(s)
+}
+</code></pre>
+
+<p>}</p>
+
+<p>func main() {</p>
+
+<pre><code>fmt.Println("[!!] right before a go statement")
+go say("world")
+say ("hello")
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Your very typical hello world like goroutine program. Now, setting a break point in main
+(not the program&rsquo;s main, that&rsquo;s <code>main.main</code>. <code>main</code> as far as the runtime is concerned is
+ the runtime entry point, in <code>go-main.c</code>) and running it through gdb yields the following
+results:</p>
+
+<p><code>
+Breakpoint 1, main () at ../../../gcc_source/libgo/runtime/go-main.c:52
+52 runtime_check ();
+2:  __pthread_total = 1
+1: runtime_sched.mcount = 0
+(gdb) next
+53 runtime_args (argc, (byte **) argv);
+2: __pthread_total = 1
+1: runtime_sched.mcount = 0
+54 runtime_osinit ();
+2: __pthread_total = 1
+1: runtime_sched.mcount = 0
+63: runtime_schedinit ();
+2: __pthread_total = 1
+1: runtime_sched.mcount = 1
+</code></p>
+
+<p>Up until now, nothing unexpected. The kernel thread is registered with the runtime scheduler
+during its initialisation process in <code>runtime_schedinit</code> and that' why the <code>runtime_sched.mcount</code>
+is reported to be zero many times before schedinit is run.</p>
+
+<p><code>
+68 __go_go (mainstart, NULL);
+2: __pthread_total = 1
+1: runtime_sched.mcount = 1
+(gdb) display runtime_sched.gcount
+3: runtime_sched.gcount = 0
+</code>
+That too is ok, because a new goroutine is registered with the scheduler during the call to
+<code>__go_go</code>. Now I am gonna fast forward a bit, to a more interesting point.</p>
+
+<p>```
+&hellip;
+[DEBUG] (in runtime_gogo) new goroutine&rsquo;s status is 2
+[DEBUG] (in runtime_gogo) number of goroutines now is 2
+[New Thread 629.30]</p>
+
+<p>Program received SIGTRAP, Trace/breakpoint trap.
+0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3
+3: runtime_sched.gcount = 2
+2: __pthread_total = 2
+1: runtime_sched.mcount = 2
+(gdb) info threads
+ Id   Target  Id       Frame
+ 6    Thread  629.30   0x08048eb7 in main.main () at goroutine.go:12
+ 5    Thread  629.29   0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3
+*4    Thread  629.28   0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3
+```
+This is getting weird. I mean, libpthread is reporting that 2 threads are active,
+but gdb reports that 3 are active. Anyway, let&rsquo;s continue:</p>
+
+<p>```
+[DEBUG] (in runtime_stoptheworld) stopped the garbage collector
+[DEBUG] (in runtime_starttheworld) starting the garbage collector
+[DEBUG] (in runtime_starttheworld) number of m&rsquo;s now is: 2
+[DEBUG] (in runtime_starttheworld) [note] there is already one gc thread
+[!!] right before a go statement</p>
+
+<p>Program received signal SIGTRAP, Trace/breakpoint trap.
+0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3
+3: runtime_sched.gcount = 2
+2: __pthread_total = 2
+1: runtime_sched.mcount = 2
+(gdb) continue
+&hellip; (output omitted by me for brevity)</p>
+
+<p>[DEBUG] (in runtime_newm) Right before the call to pthread_create.
+a.out: ./pthread/pt-create.c:167: <strong>pthread_create_internal: Assertion `({ mach_port_t ktid = </strong>mach_thread_self (); int ok = thread->kernel_thread == ktid;
+<strong>mach_port_deallocate ((</strong>mach_task_self + 0), ktid); ok; })&lsquo; failed.
+[New Thread 629.31]</p>
+
+<p>Program received signal SIGABRT, Aborted.
+0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3
+3: runtime_sched.gcount = 3
+2: __pthread_total = 2
+1: runtime_sched.mcount = 3
+```</p>
+
+<p>Oh my goodness. From a first glance, this seems to be a very serious inconsistency between libpthread and the goruntime.
+At this point, the go scheduler reports 3 threads (3 registered threads, that means
+that flow of execution has passed <code>mcommoninit</code>, the kernel thread initialisation function
+which also registers the kernel thread with the runtime_scheduler) whereas libpthread reports 2 threads.</p>
+
+<p><strong>But WAIT! Where are you going? Things are about to get even more interesting!</strong></p>
+
+<p><code>
+(gdb) info threads
+ Id   Target  Id       Frame
+ 7    Thread  629.31   0x01f4da00 in entry_point () from /lib/i386-gnu/libpthread.so.0.3
+ 6    Thread  629.30   0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3
+ 5    Thread  629.29   0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3
+*4    Thread  629.28   0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3
+</code></p>
+
+<p>GDB reports 4 threads. Yes, 4 threads ladies and gentlemen. Now take a look closely.
+3 threads are in the same frame, with the one with id 4 being the one currently executed.
+And there is also a pattern. <code>0x01da48ec</code> is the value of the <code>eip</code> register for all 3 of them.</p>
+
+<p>That&rsquo;s one thing that is for certain. Now I already have an idea. Why not change
+the current thread to the one with id 7? I&rsquo;m sold to the idea, let&rsquo;s do this:</p>
+
+<p>```
+(gdb) thread 7
+[Switching to thread 7 (Thread 629.31)]</p>
+
+<h1>0  0x01f4da00 in entry_point () from /lib/i386-gnu/libpthread.so.0.3</h1>
+
+<p>(gdb) continue
+Continuing.</p>
+
+<p>Program received signal SIGABRT, Aborted.
+[Switching to Thread 629.28]
+0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3
+3: runtime_sched.gcount = 3
+2: __pthread_total = 2
+1: runtime_sched.mcount = 3
+(gdb) info threads
+ Id   Target  Id       Frame
+ 7    Thread  629.31   0x01dc08b0 in ?? () from /lib/i386-gnu/libc.so.0.3
+ 6    Thread  629.30   0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3
+ 5    Thread  629.29   0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3
+*4    Thread  629.28   0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3
+```</p>
+
+<p>Damn. But I am curious. What&rsquo;s the next value to be executed?</p>
+
+<p><code>
+(gdb) x/i $eip
+=&gt; 0x1da48ec: ret
+</code></p>
+
+<p>And what is the next value to be executed for the thread with id 7?</p>
+
+<p><code>
+(gdb) x/i $eip
+=&gt; 0x1dc08b0: call *%edx
+</code></p>
+
+<h1>Conclusion</h1>
+
+<p>Apparently, there is still much debugging left to checkout what is really happening.
+But we have got some leads in the right direction, that hopefully will lead us to
+finally finding out where the problem lies, and correct it.</p>
+
+<p>Most importantly, in my immediate plans, before iI start playing around with libpthread
+is to attempt the same debugging run on the same code, under linux (x86). Seeing as
+go is clean on linux, it would provide some clues as to what the expected results
+should be, and where the execution differentiates substantially, a clue
+that might be vital to finding the problem.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[GSOC week 10 report]]></title>
@@ -689,226 +953,6 @@ matter of fact I could not find any code that destroyed M&rsquo;s (I am still re
 <p><strong>Since none of the two actually get destroyed, and seeing as thread creation alone should not be buggy, how come we are facing the specific bugs we are facing?</strong>
 I will try to provide with an interpretation: Either I am fairly wrong and M&rsquo;s (or G&rsquo;s or both) actually do get destroyed somewhere (possible and very much probable)
 or I looking for clues regarding the issue in the wrong place (might be possible but I don&rsquo;t see it being very probable).</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[GSOC: Week 6 report]]></title>
-    <link href="http://NlightNFotis.github.io/blog/2013/07/31/gsoc-week-6-report/"/>
-    <updated>2013-07-31T12:36:00+03:00</updated>
-    <id>http://NlightNFotis.github.io/blog/2013/07/31/gsoc-week-6-report</id>
-    <content type="html"><![CDATA[<p>First of all, I would like to apologize for this report being late. But unfortunately this happened:
-<img src="http://i1.kym-cdn.com/photos/images/original/000/000/376/Accidentally93mb20110724-22047-ix1t06.png" alt="I Accidentally 93 MB" /></p>
-
-<p>Only that, in my case, it was not exactly 93 MB, rather it was about 1.5GB. Yeah, <em>I accidentally obliterated my <strong>GCC</strong> repository on the Hurd</em>, so I had to reclone and rebuild everything, something that took considerable amounts of time.
-How this happened is a long story that involved me wanting to rebuild my gcc, and <code>cd</code>-ing 2 directories above the build folder, and ending up <code>rm -rf *</code> from my <code>gcc</code> folder (that included the source, and the build folder) rather than my <code>gcc_build</code> folder.
-Thank god, that was only a minor setback, and the (small scale) crisis was soon averted.</p>
-
-<h1>Further research</h1>
-
-<p>This week was mostly spent reading source code, primarily looking for clues for the previous situation, and secondarily to get a better undestanding of the systems I am working on. This proved to be fertile, as I got a firmer grip of libpthread, and the GNU Mach system. However, while this week was mostly spent reading documentation, that doesn&rsquo;t mean that I didn&rsquo;t do anything practical. I also used my time to do some further research into what was it specifically that triggered the assertion failure. That required us to play a little bit with our newly built compiler on the Hurd and see what we can do with go on the Hurd.</p>
-
-<h2>Testing gccgo under the Hurd</h2>
-
-<p>If you recall correctly, the last time I reported I had found out that an assertion on <code>libpthread</code>`s code was failing, and that was the root cause that failed both the <code>gccgo</code> tests
-and the <code>libgo</code> tests. That assertion was failing at two different places in the code, the first being <code>__pthread_create_internal</code> which is a <code>libpthread</code> function
-located in <code>libpthread/pthread/pt-create.c</code> and is invoked when an application wants to create a new POSIX thread. That function of course is not getting called directly, rather
-it is invoked by <code>pthread_create</code> which is the function that user space application use to create the new thread. (For reference reasons you can find the code <a href="https://github.com/NlightNFotis/libpthread/blob/master/pthread/pt-create.c#L67">here</a>)</p>
-
-<p>The second place where that assertion was failing was at <code>__sem_timedwait_internal</code> at the file <a href="https://github.com/NlightNFotis/libpthread/blob/master/sysdeps/generic/sem-timedwait.c">libpthread/sysdeps/generic/sem-timedwait.c</a>, where it gets inlined in the place of <code>self = _pthread_self ();</code>. (For more information, checkout last week&rsquo;s report).</p>
-
-<p>So I was curious to test out the execution of some sample programs under the compiler we built on the Hurd. <strong>Beginning with some very simple hello world like programs, we could see that
-they were compiling successfully, and also ran successfully without any issues at all.</strong> Seeing as the assertion failure is generated when we attempt to create a new thread, I figured I might want to start playing with go routines under the Hurd.</p>
-
-<p>So we started playing with a simple hello world like goroutine example (the one available under the <a href="http://tour.golang.org/#62">tour of go on the golang.org website.</a>)</p>
-
-<p>```go</p>
-
-<p>package main</p>
-
-<p>import (</p>
-
-<pre><code>"fmt"
-"time"
-</code></pre>
-
-<p>)</p>
-
-<p>func say(s string) {</p>
-
-<pre><code>for i := 0; i &lt; 5; i++ {
-    time.Sleep(100 * time.Millisecond)
-    fmt.Println(s)
-}
-</code></pre>
-
-<p>}</p>
-
-<p>func main() {</p>
-
-<pre><code>go say("world")
-say("hello")
-</code></pre>
-
-<p>}
-```</p>
-
-<p>This gets compiled without any issues at all, but when we try to run it&hellip;</p>
-
-<p><code>``
-a.out: ./pthread/../sysdeps/generic/sem-timedwait.c:50: __sem_timedwait_internal: Assertion</code>({ mach_port_t ktid = <strong>mach_thread_self (); int ok = thread->kernel_thread == ktid; </strong>mach_port_deallocate ((<em>_mach_task_self</em> + 0), ktid); ok; })&lsquo; failed.
-Aborted</p>
-
-<p>goroutine 1 [sleep]:
-time.Sleep</p>
-
-<pre><code>../../../gcc_source/libgo/runtime/time.goc:26
-</code></pre>
-
-<p>goroutine 3 [sleep]:
-time.Sleep</p>
-
-<pre><code>../../../gcc_source/libgo/runtime/time.goc:26
-</code></pre>
-
-<p>```</p>
-
-<p>Bam! It exploded right infront of our face. Let&rsquo;s see if this might become friendlier if we alter it a little bit. To do this we removed the <code>go</code> from <code>say</code> to avoid running it as a goroutine, and we also removed <code>time.Sleep</code> (along with the <code>time</code> import), <a href="https://github.com/NlightNFotis/gcc/blob/master/libgo/go/time/sleep.go#L8">whose job is to pause a go routine</a>.</p>
-
-<p>When you do this, the code seems to be a hello world like for loop sample, that prints:</p>
-
-<p><code>
-root@debian:~/Software/Experiments/go# ./a.out
-world
-world
-world
-world
-world
-hello
-hello
-hello
-hello
-hello
-</code></p>
-
-<p>Hmm. Let&rsquo;s play with it some more. Changing our code a little bit to make <code>say("world")</code> run as a goroutine gives us the following code:</p>
-
-<p>```go
-package main</p>
-
-<p>import &ldquo;fmt&rdquo;</p>
-
-<p>func say(s string) {</p>
-
-<pre><code>for i := 0; i &lt; 5; i++ {
-    fmt.Println(s)
-}
-</code></pre>
-
-<p>}</p>
-
-<p>func main() {</p>
-
-<pre><code>go say("world")
-say("hello")
-</code></pre>
-
-<p>}
-```</p>
-
-<p>Which, when executed results in this:</p>
-
-<p><code>``
-root@debian:~/Software/Experiments/go# ./a.out
-a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion</code>({ mach_port_t ktid = <strong>mach_thread_self (); int ok = thread->kernel_thread == ktid;
-</strong>mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })&lsquo; failed.
-Aborted</p>
-
-<p>```</p>
-
-<p>So we can see that the simplest go programs that run with goroutines do not run. Let&rsquo;s still try some programs that invoke goroutines to see if our assumptions are correct.
-Below is the code of a very simple web server in go (<a href="http://tour.golang.org/#56">found in the golang website</a>).</p>
-
-<p>```go webserver.go</p>
-
-<p>package main</p>
-
-<p>import (</p>
-
-<pre><code>"fmt"
-"net/http"
-</code></pre>
-
-<p>)</p>
-
-<p>type Hello struct{}</p>
-
-<p>func (h Hello) ServeHTTP(</p>
-
-<pre><code>w http.ResponseWriter,
-r *http.Request) {
-fmt.Fprint(w, "Hello!")
-</code></pre>
-
-<p>}</p>
-
-<p>func main() {</p>
-
-<pre><code>var h Hello
-http.ListenAndServe("localhost:4000", h)
-</code></pre>
-
-<p>}
-```</p>
-
-<p>The (non surprising) result is the following:</p>
-
-<p><code>``
-a.out: ./pthread/../sysdeps/generic/sem-timedwait.c:50: __sem_timedwait_internal: Assertion</code>({ mach_port_t ktid = <strong>mach_thread_self (); int ok = thread->kernel_thread == ktid; </strong>mach_port_deallocate ((<em>_mach_task_self</em> + 0), ktid); ok; })&lsquo; failed.
-Aborted</p>
-
-<p>goroutine 1 [syscall]:
-no stack trace available
-```</p>
-
-<p>Hmm. This failure was last caused by <code>time.Sleep</code>. So let&rsquo;s take a closer look into the code of the <code>ListenAndServe</code> function. The code for this function in the go runtime is this:</p>
-
-<p>```go gcc/libgo/go/net/http/server.go</p>
-
-<p>// ListenAndServe listens on the TCP network address srv.Addr and then
-// calls Serve to handle requests on incoming connections.  If
-// srv.Addr is blank, &ldquo;:http&rdquo; is used.
-func (srv *Server) ListenAndServe() error {</p>
-
-<pre><code>addr := srv.Addr
-if addr == "" {
-    addr = ":http"
-}
-l, e := net.Listen("tcp", addr)
-if e != nil {
-    return e
-}
-return srv.Serve(l)
-</code></pre>
-
-<p>}
-```</p>
-
-<p>This calls the function <a href="https://github.com/NlightNFotis/gcc/blob/master/libgo/go/net/http/server.go#L1255"><code>Serve</code></a>. The interesting part in this one is line 1271:</p>
-
-<p>```go</p>
-
-<p> time.Sleep(tempDelay)</p>
-
-<p>```</p>
-
-<p>It calls <code>time.Sleep</code> on accept failure. Which is known to pause go routines, and as a result be the ultimate cause for the result we are seeing.</p>
-
-<h1>Final thoughts &ndash; Work for next week</h1>
-
-<p>So pretty much everything that has anything to do with a goroutine is failing. Richard Braun on the #hurd suggested that since <strong>creation and destruction</strong> of threads is buggy in libpthread, maybe we should try a work around until a proper fix is in place.
-Apart from that my mentor Thomas Schwinge suggested to make thread destruction in go&rsquo;s runtime a no-op to see if that makes any difference.
-If it does that should mean that there is nothing wrong in the go runtime itself, rather, the offending code is in libpthread. This is also my very next course of action, which I shall report on very soon.</p>
 ]]></content>
   </entry>
   
