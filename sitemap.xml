@@ -2,58 +2,62 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://NlightNFotis.github.io/blog/2013/07/14/hello-world/</loc>
-        <lastmod>2013-12-12T15:58:10+02:00</lastmod>
+        <lastmod>2013-12-12T17:26:48+02:00</lastmod>
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/blog/2013/07/15/gsoc-week-4-report/</loc>
-        <lastmod>2013-12-12T15:58:10+02:00</lastmod>
+        <lastmod>2013-12-12T17:26:48+02:00</lastmod>
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/blog/2013/07/24/gsoc-week-5-report/</loc>
-        <lastmod>2013-12-12T15:58:10+02:00</lastmod>
+        <lastmod>2013-12-12T17:26:48+02:00</lastmod>
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/blog/2013/07/31/gsoc-week-6-report/</loc>
-        <lastmod>2013-12-12T15:58:10+02:00</lastmod>
+        <lastmod>2013-12-12T17:26:48+02:00</lastmod>
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/blog/2013/08/05/gsoc-partial-week-7-report/</loc>
-        <lastmod>2013-12-12T15:58:10+02:00</lastmod>
+        <lastmod>2013-12-12T17:26:48+02:00</lastmod>
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/blog/2013/08/12/gsoc-week-8-partial-report/</loc>
-        <lastmod>2013-12-12T15:58:10+02:00</lastmod>
+        <lastmod>2013-12-12T17:26:48+02:00</lastmod>
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/blog/2013/08/19/gsoc-week-9-partial-report/</loc>
-        <lastmod>2013-12-12T15:58:10+02:00</lastmod>
+        <lastmod>2013-12-12T17:26:48+02:00</lastmod>
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/blog/2013/08/26/gsoc-week-10-report/</loc>
-        <lastmod>2013-12-12T15:58:10+02:00</lastmod>
+        <lastmod>2013-12-12T17:26:48+02:00</lastmod>
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/blog/2013/09/02/gsoc-week-11-report/</loc>
-        <lastmod>2013-12-12T15:58:10+02:00</lastmod>
+        <lastmod>2013-12-12T17:26:48+02:00</lastmod>
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/blog/2013/12/12/how-the-compiler/</loc>
-        <lastmod>2013-12-12T17:19:24+02:00</lastmod>
+        <lastmod>2013-12-12T17:26:48+02:00</lastmod>
+    </url>
+    <url>
+        <loc>http://NlightNFotis.github.io/blog/2014/02/23/my-linux-from-scratch-experience/</loc>
+        <lastmod>2014-02-23T22:39:43+02:00</lastmod>
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/blog/archives/</loc>
-        <lastmod>2013-12-12T17:19:24+02:00</lastmod>
+        <lastmod>2014-02-23T22:39:43+02:00</lastmod>
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/robots.txt</loc>
-        <lastmod>2013-12-12T15:58:10+02:00</lastmod>
+        <lastmod>2013-12-12T17:26:48+02:00</lastmod>
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/</loc>
-        <lastmod>2013-12-12T17:19:24+02:00</lastmod>
+        <lastmod>2014-02-23T22:39:43+02:00</lastmod>
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/about.html</loc>
-        <lastmod>2013-12-12T15:58:10+02:00</lastmod>
+        <lastmod>2014-02-23T21:08:37+02:00</lastmod>
     </url>
 </urlset>
