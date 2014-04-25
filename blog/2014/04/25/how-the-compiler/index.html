@@ -1,0 +1,390 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>How the compiler, the Library and the Kernel work - Part 2  - Fotis Koutoulakis</title>
+  <meta name="author" content="Fotis Koutoulakis">
+
+  
+  <meta name="description" content="How the Compiler, the Library and the Kernel Work - Part 2 Apr 25th, 2014 In the previous part of this little series, we talked about the compiler, &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://NlightNFotis.github.io/blog/2014/04/25/how-the-compiler">
+  <link href="/favicon.png" rel="icon">
+  <link href='http://fonts.googleapis.com/css?family=Quicksand:300,400' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Fotis Koutoulakis" type="application/atom+xml">
+  <script src="/js/jquery.js"></script>
+  <script src="/js/bootstrap-collapse.js"></script>
+  <script src="/js/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/js/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-42432516-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <div class="navbar navbar-inverse navbar-static-top">
+  	<div class="navbar-inner">
+  	  <div class="container">
+        <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+          <span class="fui-menu-24"></span>
+        </a>
+  	  	<div class="nav-collapse collapse navbar-responsive-collapse" style="height:0;">
+  	      <ul class="nav">
+    
+        <li ><a href="/index.html">Home</a></li>
+    
+        <li ><a href="/blog/archives/index.html">Archives</a></li>
+    
+        <li ><a href="/about.html">About</a></li>
+    
+</ul>
+
+<ul class="nav pull-right">
+    
+    <li><a href="http://github.com/NlightNFotis" title="Github Profile"><i class="icon-github-sign social-navbar"></i></a></li>
+    
+    
+    
+    <li><a href="http://twitter.com/NlightNFotis" title="Twitter Profile"><i class="icon-twitter-sign social-navbar"></i></a></li>
+    
+    
+    <li><a href="http://plus.google.com/+FotisKoutoulakis" title="Google+ Profile"><i class="icon-google-plus-sign social-navbar"></i></a></li>
+    
+    
+</ul>
+
+  	    </div>
+  	  </div>
+  	</div>
+  </div>
+  <div class="container" id="main">
+    <div class="span12">
+      <div class="row-fluid">
+        <div id="content">
+          <div>
+<article class="hentry" role="article">
+  
+
+  <header>
+  <div class="jumbotron">
+    How the Compiler, the Library and the Kernel Work - Part 2
+	<h5>
+
+
+
+
+
+
+
+
+  
+
+
+<i class="icon-calendar-empty"></i> <time datetime="2014-04-25T18:27:00+03:00" pubdate data-updated="true">Apr 25<span>th</span>, 2014</time></h5>
+  </div>
+</header>
+  <div class="row-fluid">
+    <div class="span12">
+      <p>In the previous part of this little series, we talked about the compiler, and what it does
+with the header files, in our attempt to demistify their usage. In this part, I want to show you
+what&rsquo;s the compiler&rsquo;s output, and how we create our file.</p>
+
+<h1>The compiler&rsquo;s composition</h1>
+
+<p>Generally speaking, a <em>compiler</em> belongs to a family of software called <strong>translators</strong>.
+A translator&rsquo;s job is to read some source code in a source language, and generate (translate it to)
+some source code in a target language.</p>
+
+<p>Now, you might think that most compilers you know don&rsquo;t do that. You input a (source code) file,
+and you get a binary file, ready to run when you want it to. Yes that&rsquo;s what it does, but it&rsquo;s not
+the compiler that does all this. If you remember from the last installment of this series,
+when you call the compiler like <code>gcc some_file.c</code> or <code>clang some_file.c</code>, in essence you are
+calling the compilation driver, with the file as a parameter. The compilation driver then calls
+1) the preprocessor, 2) the (actual) compiler, 3) the assembler and last but not least the linker.
+At least when it comes to gcc, these pieces of software are called <code>cpp</code>, <code>cc1</code>,
+<code>gas</code> (executable name is <code>as</code>)  and <code>collect2</code> (executable name is <code>ld</code>) respectively.</p>
+
+<p>From that little software collection up top, that we call the compiler, we can easily take notice
+of at least 3 (yeah, that&rsquo;s right) translators, that act as we mentioned earlier,
+that is take some input in a source language, and produce some output to a target language.</p>
+
+<p>The first is the preprocessor. The preprocessor accepts source code in C as a source language,
+and produces source code again in C (as a target language), but with the output having various
+elements of the source code resolved, such as header file inclusion, macro expansion, etc.</p>
+
+<p>The second is the compiler. The compiler accepts (in our case) C source code, as a source language,
+and translates it to some architecture&rsquo;s assembly language. In my case, when I talk about the
+compiler, I&rsquo;m gonna assume that it produces x86 assembly.</p>
+
+<p>The last one, is the assembler, which accepts as input some machine&rsquo;s architecture assembly
+language, and produces what&rsquo;s called binary, or object representation of it, that is it translates
+the assembly mnemonics directly to the bytes they correspond to, in the target architecture.</p>
+
+<p>At this point, one could also argue that the linker is also a translator, accepting binary, and
+translating it to an executable file, that is, resolving references, and fitting the binary code
+on the segments of the file that is to be produced. For example, on a typical GNU/Linux system,
+this phase produces the executable ELF file.</p>
+
+<h1>The (actual) compiler&rsquo;s output: x86 assembly.</h1>
+
+<p>Before we go any further, I would like to show you what the compiler really creates:</p>
+
+<p>For the typical hello world program we demonstrated in our first installment, the compiler
+will output the following assembly code:</p>
+
+<figure class='code'><figcaption><span>hello.S</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='gas'><span class='line'>  <span class="na">.file</span>   <span class="s">&quot;hello.c&quot;</span>
+</span><span class='line'>  <span class="na">.section</span>    <span class="no">.rodata</span>
+</span><span class='line'><span class="nl">.LC0:</span>
+</span><span class='line'>  <span class="na">.string</span> <span class="s">&quot;Hello world!&quot;</span>
+</span><span class='line'>  <span class="na">.text</span>
+</span><span class='line'>  <span class="na">.globl</span>  <span class="no">main</span>
+</span><span class='line'>  <span class="na">.type</span>   <span class="no">main</span><span class="p">,</span> <span class="na">@function</span>
+</span><span class='line'><span class="nl">main:</span>
+</span><span class='line'>  <span class="nf">pushq</span>   <span class="nv">%rbp</span>
+</span><span class='line'>  <span class="nf">movq</span>    <span class="nv">%rsp</span><span class="p">,</span> <span class="nv">%rbp</span>
+</span><span class='line'>  <span class="nf">subq</span>    <span class="no">$16</span><span class="p">,</span> <span class="nv">%rsp</span>
+</span><span class='line'>  <span class="nf">movl</span>    <span class="nv">%edi</span><span class="p">,</span> <span class="p">-</span><span class="mi">4</span><span class="p">(</span><span class="nv">%rbp</span><span class="p">)</span>
+</span><span class='line'>  <span class="nf">movq</span>    <span class="nv">%rsi</span><span class="p">,</span> <span class="p">-</span><span class="mi">16</span><span class="p">(</span><span class="nv">%rbp</span><span class="p">)</span>
+</span><span class='line'>  <span class="nf">movl</span>    <span class="no">$.LC0</span><span class="p">,</span> <span class="nv">%edi</span>
+</span><span class='line'>  <span class="nf">call</span>    <span class="no">puts</span>
+</span><span class='line'>  <span class="nf">movl</span>    <span class="no">$0</span><span class="p">,</span> <span class="nv">%eax</span>
+</span><span class='line'>  <span class="nf">leave</span>
+</span><span class='line'>  <span class="nf">ret</span>
+</span><span class='line'>  <span class="na">.size</span>   <span class="no">main</span><span class="p">,</span> <span class="no">.-main</span>
+</span><span class='line'>  <span class="na">.ident</span>  <span class="s">&quot;GCC: (GNU) 4.8.2 20131212 (Red Hat 4.8.2-7)&quot;</span>
+</span><span class='line'>  <span class="na">.section</span>    <span class="no">.note.GNU-stack</span><span class="p">,</span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="na">@progbits</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To produce the above file, we had to use the following gcc invocation command:
+<code>gcc -S -fno-asynchronous-unwind-tables -o hello.S hello.c</code>.
+We used <code>-fno-asynchronous-unwind-tables</code> to remove <code>.cfi</code> directives, which tell <code>gas</code>
+(the gnu assembler) to emit Dwarf Call Frame Information tags, which are used to reconstruct
+a stack backtrace when a frame pointer is missing.</p>
+
+<p>For more usefull compilation flags, to control the intermediary compilation flow, try these:</p>
+
+<ul>
+<li><code>-E</code>: stop after preprocessing, and produce a *.i file</li>
+<li><code>-S</code>: we used this, stop after the compiler, and produce a *.s file</li>
+<li><code>-c</code>: stop after the assembler, and produce a *.o file.</li>
+</ul>
+
+
+<p>The default behaviour is to use none, and stop after the linker has run. If you want to run a
+full compilation and keep all the intermediate files, use the <code>-save-temps</code> flag.</p>
+
+<h1>From source to binary: the assembler.</h1>
+
+<p>The next part of the compilation process, is the assembler. We have already discussed what
+the assembler does, so here we are going to see it in practice. If you have followed so far,
+you should have two files, a <code>hello.c</code>, which is the hello world&rsquo;s C source code file,
+and a <code>hello.S</code> which is what we created earlier, the compiler&rsquo;s (x86) assembly output.</p>
+
+<p>The assembler operates on that last file as you can imagine, and to see it running, and emit
+binary, we need to invoke it like this: <code>as -o hello.bin hello.S</code>, and produces this:</p>
+
+<figure class='code'><figcaption><span>hello.bin</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='objdump'><span class='line'><span class="x">ELF\00\00\00\00\00\00\00\00\00\00&gt;\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\F0\00\00\00\00\00\00\00\00\00\00\00@\00\00\00\00\00@\00\00\00UH\89\E5H\83\EC\89}\FCH\89u\F0\BF\00\00\00\00\E8\00\00\00\00\B8\00\00\00\00\C9\C3Hello world!\00\00GCC: (GNU) 4.8.2 20131212 (Red Hat 4.8.2-7)\00\00.symtab\00.strtab\00.shstrtab\00.rela.text\00.data\00.bss\00.rodata\00.comment\00.note.GNU-stack\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00 \00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00@\00\00\00\00\00\00\00 \00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\B8\00\00\00\00\00\000\00\00\00\00\00\00\00  \00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00&amp;\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00`\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00,\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00`\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\001\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00`\00\00\00\00\00\00\00</span>
+</span><span class='line'><span class="x">\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\009\00\00\00\00\00\000\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00m\00\00\00\00\00\00\00-\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00B\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\9A\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\9A\00\00\00\00\00\00\00R\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\B0\00\00\00\00\00\00\F0\00\00\00\00\00\00\00</span>
+</span><span class='line'><span class="x">\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00  \00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\A0\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\F1\FF\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00 \00\00\00\00\00\00\00\00\00\00\00\00\00 \00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00hello.c\00main\00puts\00\00\00\00\00\00\00\00\00\00\00\00\00</span>
+</span><span class='line'><span class="x">\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00  \00\00\00\FC\FF\FF\FF\FF\FF\FF\FF</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>Last but not least: the linker</h1>
+
+<p>We saw what the assembler emits, which is to say, binary code. However, that binary code
+still needs further processing. To explain that, we need to go back a little.</p>
+
+<p>In our first installment of the series, we said that when you call a function like <code>printf()</code>,
+the compiler only needs its prototype to do type checking and ensure that you use it legally.
+For that you include the header file <code>stdio.h</code>. But since that contains the function prototype only,
+where is the source code for that function? Surely, it must be somewhere, since it executes
+successfully to begin with, but we haven&rsquo;t met the source code for printf so far, so where is it?</p>
+
+<p>The function&rsquo;s source code is located in the <code>.so</code> (shared object) of the standard C library,
+which in my system (Fedora 19, x64) is <code>libc-2.17.so</code>. I don&rsquo;t want to expand on that further,
+as I plan to do so on the next series installment, however, what we have said so far is enough
+for you to understand the linker&rsquo;s usage:</p>
+
+<p>The linker resolves the undefined (thus far) reference to printf, by finding the reference to
+the printf symbol and (in layman&rsquo;s talk)
+making a pointer to point to it so that execution can jump to printf&rsquo;s code
+when we have to do that during our program&rsquo;s execution.</p>
+
+<p>To invoke the linker on our file, <a href="https://sourceware.org/binutils/docs-2.20/ld/Options.html#Options">at least according to it&rsquo;s documentation</a>,
+we should do the following: <code>ld -o hello.out /lib/crt0.o hello.bin -lc</code>. Then we should
+be able to run the file like this: <code>./hello.out</code>.</p>
+
+<h1>Epilogue</h1>
+
+<p>That&rsquo;s this end of this part 2 of my series that explains how your code turns into binary, and how
+your computer (at least when it comes to the software side) runs it. In part 3, I am going to discuss
+in greater length, the C library, and the kernel.</p>
+
+<h2>References</h2>
+
+<ul>
+<li><a href="http://stackoverflow.com/questions/3564752/what-is-cfi-and-lfe-in-assembly-code-produced-by-gcc-from-c-program">StackOverflow: What is .cfi and .LFE in assembly code produced by GCC from c++ program?</a></li>
+<li><a href="http://blog.lxgcc.net/?p=181">GCC front-end (1): driver vs. compiler</a></li>
+<li><a href="http://wiki.osdev.org/GAS">GAS</a></li>
+<li><a href="https://sourceware.org/binutils/docs-2.20/ld/"> ld: Binutils documentation</a></li>
+</ul>
+
+
+    </div>
+  </div>
+
+
+
+  <footer>
+    <hr>
+    
+    <div class="row-fluid">
+      
+      <div class="span6">
+        <p class="meta">
+        
+        
+
+
+
+  <a href="/blog/categories/compiler/"><span class="badge">compiler</span></a>
+
+  <a href="/blog/categories/kernel/"><span class="badge">kernel</span></a>
+
+  <a href="/blog/categories/libc/"><span class="badge">libc</span></a>
+
+
+
+
+        </p>
+      </div>
+      
+      <div class="span6 social-sharing">
+        <div class="sharing">
+  <div class="addthis_toolbox addthis_default_style ">
+  
+  
+  <a class="addthis_button_tweet"></a>
+  
+  
+  <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+      </div>
+      
+      
+    </div>
+    
+    <div class="row-fluid">
+      <div class="span12">
+        <p class="meta">
+          
+            <a class="basic-alignment left" href="/blog/2014/02/23/my-linux-from-scratch-experience/" title="Previous Post: My Linux from Scratch Experience">&laquo; My Linux from Scratch Experience</a>
+          
+          
+        </p>
+      </div>
+    </div>
+  </footer>
+</article>
+
+</div>
+
+
+
+        </div>
+      </div>
+      <div class="row-fluid">
+        <footer class="footer-page" role="contentinfo">
+          <p>
+  Copyright &copy; 2014 - Fotis Koutoulakis -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span> - Theme by <a href="http://alexgaribay.com">Alex Garibay</a>
+</p>
+
+
+        </footer>
+      </div>
+    </div>
+  </div>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
