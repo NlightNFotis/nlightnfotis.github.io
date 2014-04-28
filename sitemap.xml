@@ -49,8 +49,14 @@
         <lastmod>2014-04-25T19:41:20+03:00</lastmod>
     </url>
     <url>
+        <loc>
+            http://NlightNFotis.github.io/blog/2014/04/28/introduction-to-xv6-adding-a-new-system-call/
+        </loc>
+        <lastmod>2014-04-28T19:40:07+03:00</lastmod>
+    </url>
+    <url>
         <loc>http://NlightNFotis.github.io/blog/archives/</loc>
-        <lastmod>2014-04-25T19:41:20+03:00</lastmod>
+        <lastmod>2014-04-28T19:40:07+03:00</lastmod>
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/robots.txt</loc>
@@ -58,7 +64,7 @@
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/</loc>
-        <lastmod>2014-04-25T19:41:20+03:00</lastmod>
+        <lastmod>2014-04-28T19:40:07+03:00</lastmod>
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/about.html</loc>
