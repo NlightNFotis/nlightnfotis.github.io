@@ -4,7 +4,7 @@
   <title><![CDATA[Category: libc | Fotis Koutoulakis]]></title>
   <link href="http://NlightNFotis.github.io/blog/categories/libc/atom.xml" rel="self"/>
   <link href="http://NlightNFotis.github.io/"/>
-  <updated>2014-04-28T19:40:08+03:00</updated>
+  <updated>2014-06-20T21:32:38+03:00</updated>
   <id>http://NlightNFotis.github.io/</id>
   <author>
     <name><![CDATA[Fotis Koutoulakis]]></name>
@@ -12,6 +12,76 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[How the Compiler, the Library and the Kernel work - Part 3]]></title>
+    <link href="http://NlightNFotis.github.io/blog/2014/06/20/how-the-compiler/"/>
+    <updated>2014-06-20T20:49:00+03:00</updated>
+    <id>http://NlightNFotis.github.io/blog/2014/06/20/how-the-compiler</id>
+    <content type="html"><![CDATA[<p>In the last part of this series, we talked about the compiler&rsquo;s composition, including the assembler
+and the linker. We showed what happens when the compiler runs, and what&rsquo;s the output
+of translation software such as <code>cc1</code> or <code>as</code> etc. In this final part of the series, we are going
+to talk about the C library, how our programs interface with it, and how it interfaces with
+the kernel.</p>
+
+<h1>The C Standard Library</h1>
+
+<p>The C Standard Library is pretty much a part of every UNIX like operating system. It&rsquo;s basically
+a collection of code, including functions, macros, type definitions etc, in order to provide facilities
+such as string handling (<code>string.h</code>), mathematical computations (<code>math.h</code>), input and output
+(<code>stdio.h</code>), etc.</p>
+
+<p>GNU/Linux operating systems are generally using the <a href="http://www.gnu.org/software/libc/libc.html">GNU C Library implementation(GLIBC)</a>,
+but it&rsquo;s common to find other C libraries being used (especially in embedded systems) such as
+<a href="http://www.uclibc.org">uClibC</a>, <a href="http://sources.redhat.com/newlib">newlib</a>, or in the case
+of Android/Linux systems <a href="https://android.googlesource.com/platform/bionic.git">Bionic</a>.
+BSD style operating systems usually have their own implementation of a C library.</p>
+
+<h2>So, how does one &ldquo;use&rdquo; the C Standard Library?</h2>
+
+<p>So, now that we are acquainted with the C Library, how do you make use of it, you ask? The answer is:
+<strong>automagically</strong> :). Hold on right there; that&rsquo;s not exactly a hyperbole. You see, when you
+write a basic C program, you usually <code>#include &lt;some_header.h&gt;</code> and then continue with
+using the code declared in that header. We have explained in the previous part of this series
+that when we use a function, say <code>printf()</code>, in reality it&rsquo;s the linker that does the hard work
+and allows us to use this function, by linking our program against the <code>libc</code>&rsquo;s <code>so</code> (shared
+object). So in essence, when you need to use the C Standard Library, you just <code>#include</code>
+headers that belong to it, and the linker will resolve the references to the code included.</p>
+
+<p>Apart from the functions that are defined in the Standards however, a C Library might also
+implement further functionality. For example, the Standards don&rsquo;t say anything about networking.
+As a matter of fact, most libraries today may implement not only what&rsquo;s in the C Standards,
+but may also choose to comply with the requirements of the POSIX C library, which is a superset
+of the C Standard library.</p>
+
+<h2>Ok, and how does the C Library manage to provide these services?</h2>
+
+<p>The answer to this question is simple: Some of the services that the library provides, it does so
+without needing any sort of special privileges, being normal, userspace C code, while others
+need to ask the Operating&rsquo;s system Kernel to provide these facilities for the library.</p>
+
+<p>How does it do so? By calling some functions exported by the kernel to provide certain functionality
+ named <strong>system calls</strong>. System calls are the fundamental interface between a userspace
+application and the Operating System Kernel. For example consider this:</p>
+
+<p>You might have a program that has code like this at one point: <code>fd = open("log.txt", "w+");</code>. That
+<code>open</code> function is provided by the C Library, but the C Library itself can not execute all of the
+functionality that&rsquo;s required to open a file, so it may call a <code>sys_open()</code> system call that will
+ask the kernel to do what&rsquo;s required to load the file. In this case we say that the library&rsquo;s <code>open</code>
+call acts as a wrapper function of the system call.</p>
+
+<h1>Epilogue</h1>
+
+<p>In this final part of our series, we saw how our applications interface with the C Standard Library
+available in our system, and how the Library itself interfaces with the Operating system kernel
+to provide the required services needed by the userspace applications.</p>
+
+<h2>Further Reading:</h2>
+
+<p>If you want to take a look at the System Call interface in the Linux Operating System, you could
+always see the <a href="http://man7.org/linux/man-pages/man2/syscalls.2.html">man page for the Linux system calls</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[How the compiler, the Library and the Kernel work - Part 2 ]]></title>

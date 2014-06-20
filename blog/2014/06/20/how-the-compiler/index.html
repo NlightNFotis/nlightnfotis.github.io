@@ -1,0 +1,281 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>How the Compiler, the Library and the Kernel work - Part 3 - Fotis Koutoulakis</title>
+  <meta name="author" content="Fotis Koutoulakis">
+
+  
+  <meta name="description" content="How the Compiler, the Library and the Kernel Work - Part 3 Jun 20th, 2014 In the last part of this series, we talked about the compiler&rsquo;s &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://NlightNFotis.github.io/blog/2014/06/20/how-the-compiler">
+  <link href="/favicon.png" rel="icon">
+  <link href='http://fonts.googleapis.com/css?family=Quicksand:300,400' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Fotis Koutoulakis" type="application/atom+xml">
+  <script src="/js/jquery.js"></script>
+  <script src="/js/bootstrap-collapse.js"></script>
+  <script src="/js/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/js/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-42432516-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <div class="navbar navbar-inverse navbar-static-top">
+  	<div class="navbar-inner">
+  	  <div class="container">
+        <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+          <span class="fui-menu-24"></span>
+        </a>
+  	  	<div class="nav-collapse collapse navbar-responsive-collapse" style="height:0;">
+  	      <ul class="nav">
+    
+        <li ><a href="/index.html">Home</a></li>
+    
+        <li ><a href="/blog/archives/index.html">Archives</a></li>
+    
+        <li ><a href="/about.html">About</a></li>
+    
+</ul>
+
+<ul class="nav pull-right">
+    
+    <li><a href="http://github.com/NlightNFotis" title="Github Profile"><i class="icon-github-sign social-navbar"></i></a></li>
+    
+    
+    
+    <li><a href="http://twitter.com/NlightNFotis" title="Twitter Profile"><i class="icon-twitter-sign social-navbar"></i></a></li>
+    
+    
+    <li><a href="http://plus.google.com/+FotisKoutoulakis" title="Google+ Profile"><i class="icon-google-plus-sign social-navbar"></i></a></li>
+    
+    
+</ul>
+
+  	    </div>
+  	  </div>
+  	</div>
+  </div>
+  <div class="container" id="main">
+    <div class="span12">
+      <div class="row-fluid">
+        <div id="content">
+          <div>
+<article class="hentry" role="article">
+  
+
+  <header>
+  <div class="jumbotron">
+    How the Compiler, the Library and the Kernel Work - Part 3
+	<h5>
+
+
+
+
+
+
+
+
+  
+
+
+<i class="icon-calendar-empty"></i> <time datetime="2014-06-20T20:49:00+03:00" pubdate data-updated="true">Jun 20<span>th</span>, 2014</time></h5>
+  </div>
+</header>
+  <div class="row-fluid">
+    <div class="span12">
+      <p>In the last part of this series, we talked about the compiler&rsquo;s composition, including the assembler
+and the linker. We showed what happens when the compiler runs, and what&rsquo;s the output
+of translation software such as <code>cc1</code> or <code>as</code> etc. In this final part of the series, we are going
+to talk about the C library, how our programs interface with it, and how it interfaces with
+the kernel.</p>
+
+<h1>The C Standard Library</h1>
+
+<p>The C Standard Library is pretty much a part of every UNIX like operating system. It&rsquo;s basically
+a collection of code, including functions, macros, type definitions etc, in order to provide facilities
+such as string handling (<code>string.h</code>), mathematical computations (<code>math.h</code>), input and output
+(<code>stdio.h</code>), etc.</p>
+
+<p>GNU/Linux operating systems are generally using the <a href="http://www.gnu.org/software/libc/libc.html">GNU C Library implementation(GLIBC)</a>,
+but it&rsquo;s common to find other C libraries being used (especially in embedded systems) such as
+<a href="http://www.uclibc.org">uClibC</a>, <a href="http://sources.redhat.com/newlib">newlib</a>, or in the case
+of Android/Linux systems <a href="https://android.googlesource.com/platform/bionic.git">Bionic</a>.
+BSD style operating systems usually have their own implementation of a C library.</p>
+
+<h2>So, how does one &ldquo;use&rdquo; the C Standard Library?</h2>
+
+<p>So, now that we are acquainted with the C Library, how do you make use of it, you ask? The answer is:
+<strong>automagically</strong> :). Hold on right there; that&rsquo;s not exactly a hyperbole. You see, when you
+write a basic C program, you usually <code>#include &lt;some_header.h&gt;</code> and then continue with
+using the code declared in that header. We have explained in the previous part of this series
+that when we use a function, say <code>printf()</code>, in reality it&rsquo;s the linker that does the hard work
+and allows us to use this function, by linking our program against the <code>libc</code>&rsquo;s <code>so</code> (shared
+object). So in essence, when you need to use the C Standard Library, you just <code>#include</code>
+headers that belong to it, and the linker will resolve the references to the code included.</p>
+
+<p>Apart from the functions that are defined in the Standards however, a C Library might also
+implement further functionality. For example, the Standards don&rsquo;t say anything about networking.
+As a matter of fact, most libraries today may implement not only what&rsquo;s in the C Standards,
+but may also choose to comply with the requirements of the POSIX C library, which is a superset
+of the C Standard library.</p>
+
+<h2>Ok, and how does the C Library manage to provide these services?</h2>
+
+<p>The answer to this question is simple: Some of the services that the library provides, it does so
+without needing any sort of special privileges, being normal, userspace C code, while others
+need to ask the Operating&rsquo;s system Kernel to provide these facilities for the library.</p>
+
+<p>How does it do so? By calling some functions exported by the kernel to provide certain functionality
+ named <strong>system calls</strong>. System calls are the fundamental interface between a userspace
+application and the Operating System Kernel. For example consider this:</p>
+
+<p>You might have a program that has code like this at one point: <code>fd = open("log.txt", "w+");</code>. That
+<code>open</code> function is provided by the C Library, but the C Library itself can not execute all of the
+functionality that&rsquo;s required to open a file, so it may call a <code>sys_open()</code> system call that will
+ask the kernel to do what&rsquo;s required to load the file. In this case we say that the library&rsquo;s <code>open</code>
+call acts as a wrapper function of the system call.</p>
+
+<h1>Epilogue</h1>
+
+<p>In this final part of our series, we saw how our applications interface with the C Standard Library
+available in our system, and how the Library itself interfaces with the Operating system kernel
+to provide the required services needed by the userspace applications.</p>
+
+<h2>Further Reading:</h2>
+
+<p>If you want to take a look at the System Call interface in the Linux Operating System, you could
+always see the <a href="http://man7.org/linux/man-pages/man2/syscalls.2.html">man page for the Linux system calls</a></p>
+
+    </div>
+  </div>
+
+
+
+  <footer>
+    <hr>
+    
+    <div class="row-fluid">
+      
+      <div class="span6">
+        <p class="meta">
+        
+        
+
+
+
+  <a href="/blog/categories/compiler/"><span class="badge">compiler</span></a>
+
+  <a href="/blog/categories/kernel/"><span class="badge">kernel</span></a>
+
+  <a href="/blog/categories/libc/"><span class="badge">libc</span></a>
+
+
+
+
+        </p>
+      </div>
+      
+      <div class="span6 social-sharing">
+        <div class="sharing">
+  <div class="addthis_toolbox addthis_default_style ">
+  
+  
+  <a class="addthis_button_tweet"></a>
+  
+  
+  <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+      </div>
+      
+      
+    </div>
+    
+    <div class="row-fluid">
+      <div class="span12">
+        <p class="meta">
+          
+            <a class="basic-alignment left" href="/blog/2014/04/28/introduction-to-xv6-adding-a-new-system-call/" title="Previous Post: Introduction to xv6: Adding a new system call.">&laquo; Introduction to xv6: Adding a new system call.</a>
+          
+          
+        </p>
+      </div>
+    </div>
+  </footer>
+</article>
+
+</div>
+
+
+
+        </div>
+      </div>
+      <div class="row-fluid">
+        <footer class="footer-page" role="contentinfo">
+          <p>
+  Copyright &copy; 2014 - Fotis Koutoulakis -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span> - Theme by <a href="http://alexgaribay.com">Alex Garibay</a>
+</p>
+
+
+        </footer>
+      </div>
+    </div>
+  </div>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
