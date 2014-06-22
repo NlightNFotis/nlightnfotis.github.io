@@ -4,7 +4,7 @@
   <title><![CDATA[Category: libc | Fotis Koutoulakis]]></title>
   <link href="http://NlightNFotis.github.io/blog/categories/libc/atom.xml" rel="self"/>
   <link href="http://NlightNFotis.github.io/"/>
-  <updated>2014-06-20T21:32:38+03:00</updated>
+  <updated>2014-06-22T15:32:10+03:00</updated>
   <id>http://NlightNFotis.github.io/</id>
   <author>
     <name><![CDATA[Fotis Koutoulakis]]></name>
@@ -288,10 +288,23 @@ has been written. Yet, most programmers' knowledge of the program is limited to 
 <h1>Enter the C preprocessor.</h1>
 
 <p>You may have heard of the C Preprocessor. It&rsquo;s the first stage of a c or c++ file compilation,
-and it&rsquo;s actually responsible for things such as <strong>inclusion of header files</strong> (it does so by replacing
-<code>#include &lt;header.h&gt;</code> with the content of this file, and the file it includes recursively),
-<strong>macro expansion</strong> (such as the famous comparison of two numbers (a greater than b)
-<code>#define gt(a, b) ((a &gt;= b) ? 1 : 0)</code>), <strong>conditional compilation</strong> (things such as:</p>
+and it&rsquo;s actually responsible for things such as:</p>
+
+<ul>
+<li><strong>inclusion of header files</strong> (it does so by replacing
+<code>#include &lt;header.h&gt;</code> with the content of this file, and the file it includes recursively),</li>
+<li><strong>macro expansion</strong>, such as the famous comparison of two numbers (a greater than b). In essence, if you define
+the following macro <code>#define gt(a, b) ((a &gt; b) ? 1 : 0)</code>, then in a statement such as this:
+<code>c
+if (gt (5, 3)) printf ("The first parameter is greater than the second.\n");
+</code>
+<code>gt (5, 3)</code> gets expanded to the macro definition, so after the preprocessor has run you end up with something like this:
+<code>c
+if (((5 &gt; 3) ? 1 : 0)) printf ("The first parameter is greater than the second.\n");
+</code></li>
+<li><strong>conditional compilation</strong> (things such as:</li>
+</ul>
+
 
 <p>```c</p>
 
@@ -311,7 +324,7 @@ that the header files include the function to be called.</em>. <strong>That&rsqu
 <strong>function prototypes</strong> (and some type definitions, etc) <strong>only</strong>. It doesn&rsquo;t include the body of the function
 to be called.</p>
 
-<p>Some people are quite surprised by that fact. In fact, it isn&rsquo;t, if you get to understand what the compiler
+<p>Some people find that fact quite surprising, though, it isn&rsquo;t, if you get to understand what the compiler
 does with it.</p>
 
 <h1>Say hello to the compiler.</h1>
@@ -336,7 +349,7 @@ is being used correctly. Below is a program that demonstrates the function proto
 
 <h1>include &lt;stdio.h></h1>
 
-<p>int add_nums (int first, int second)</p>
+<p>int add_nums (int first, int second);</p>
 
 <p>int
 main (void)

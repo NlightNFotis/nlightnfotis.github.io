@@ -4,7 +4,7 @@
   <title><![CDATA[Fotis Koutoulakis]]></title>
   <link href="http://NlightNFotis.github.io/atom.xml" rel="self"/>
   <link href="http://NlightNFotis.github.io/"/>
-  <updated>2014-06-20T21:32:38+03:00</updated>
+  <updated>2014-06-22T15:32:10+03:00</updated>
   <id>http://NlightNFotis.github.io/</id>
   <author>
     <name><![CDATA[Fotis Koutoulakis]]></name>
@@ -809,10 +809,32 @@ has been written. Yet, most programmers&#8217; knowledge of the program is limit
 <h1>Enter the C preprocessor.</h1>
 
 <p>You may have heard of the C Preprocessor. It&rsquo;s the first stage of a c or c++ file compilation,
-and it&rsquo;s actually responsible for things such as <strong>inclusion of header files</strong> (it does so by replacing
-<code>#include &lt;header.h&gt;</code> with the content of this file, and the file it includes recursively),
-<strong>macro expansion</strong> (such as the famous comparison of two numbers (a greater than b)
-<code>#define gt(a, b) ((a &gt;= b) ? 1 : 0)</code>), <strong>conditional compilation</strong> (things such as:</p>
+and it&rsquo;s actually responsible for things such as:</p>
+
+<ul>
+<li><strong>inclusion of header files</strong> (it does so by replacing
+<code>#include &lt;header.h&gt;</code> with the content of this file, and the file it includes recursively),</li>
+<li><strong>macro expansion</strong>, such as the famous comparison of two numbers (a greater than b). In essence, if you define
+the following macro <code>#define gt(a, b) ((a &gt; b) ? 1 : 0)</code>, then in a statement such as this:</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'> <span class="k">if</span> <span class="p">(</span><span class="n">gt</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span> <span class="n">printf</span> <span class="p">(</span><span class="s">&quot;The first parameter is greater than the second.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <code>gt (5, 3)</code> gets expanded to the macro definition, so after the preprocessor has run you end up with something like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'> <span class="k">if</span> <span class="p">(((</span><span class="mi">5</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">)</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="mi">0</span><span class="p">))</span> <span class="n">printf</span> <span class="p">(</span><span class="s">&quot;The first parameter is greater than the second.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><strong>conditional compilation</strong> (things such as:</li>
+</ul>
+
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -830,7 +852,7 @@ that the header files include the function to be called.</em>. <strong>That&rsqu
 <strong>function prototypes</strong> (and some type definitions, etc) <strong>only</strong>. It doesn&rsquo;t include the body of the function
 to be called.</p>
 
-<p>Some people are quite surprised by that fact. In fact, it isn&rsquo;t, if you get to understand what the compiler
+<p>Some people find that fact quite surprising, though, it isn&rsquo;t, if you get to understand what the compiler
 does with it.</p>
 
 <h1>Say hello to the compiler.</h1>
@@ -870,10 +892,10 @@ is being used correctly. Below is a program that demonstrates the function proto
 <span class='line-number'>17</span>
 </pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="kt">int</span> <span class="nf">add_nums</span> <span class="p">(</span><span class="kt">int</span> <span class="n">first</span><span class="p">,</span> <span class="kt">int</span> <span class="n">second</span><span class="p">)</span>
+</span><span class='line'><span class="kt">int</span> <span class="nf">add_nums</span> <span class="p">(</span><span class="kt">int</span> <span class="n">first</span><span class="p">,</span> <span class="kt">int</span> <span class="n">second</span><span class="p">);</span>
 </span><span class='line'>
 </span><span class='line'><span class="kt">int</span>
-</span><span class='line'><span class="n">main</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+</span><span class='line'><span class="nf">main</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 </span><span class='line'><span class="p">{</span>
 </span><span class='line'>    <span class="n">printf</span> <span class="p">(</span><span class="s">&quot;5 + 5 results in %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">add_nums</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">));</span>
 </span><span class='line'>
