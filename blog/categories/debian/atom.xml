@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: linux | Fotis Koutoulakis]]></title>
-  <link href="http://NlightNFotis.github.io/blog/categories/linux/atom.xml" rel="self"/>
+  <title><![CDATA[Category: debian | Fotis Koutoulakis]]></title>
+  <link href="http://NlightNFotis.github.io/blog/categories/debian/atom.xml" rel="self"/>
   <link href="http://NlightNFotis.github.io/"/>
   <updated>2014-07-09T21:48:03+03:00</updated>
   <id>http://NlightNFotis.github.io/</id>
