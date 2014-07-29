@@ -9,7 +9,7 @@
   <meta name="author" content="Fotis Koutoulakis">
 
   
-  <meta name="description" content="How the Compiler, the Library and the Kernel Work - Part 1 Dec 12th, 2013 Before we get any further, it might be good if we provided some context. &hellip;">
+  <meta name="description" content="Tweet How the Compiler, the Library and the Kernel Work - Part 1 Dec 12th, 2013 Before we get any further, it might be good if we provided some &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,18 +18,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://NlightNFotis.github.io/blog/2013/12/12/how-the-compiler">
+  <link rel="canonical" href="http://NlightNFotis.github.io/blog/2013/12/12/how-the-compiler/">
   <link href="/favicon.png" rel="icon">
-  <link href='http://fonts.googleapis.com/css?family=Quicksand:300,400' rel='stylesheet' type='text/css'>
-  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="Fotis Koutoulakis" type="application/atom+xml">
-  <script src="/js/jquery.js"></script>
-  <script src="/js/bootstrap-collapse.js"></script>
-  <script src="/js/modernizr-2.0.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
-  <script src="/js/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -50,54 +45,97 @@
 
 </head>
 
-<body   >
-  <div class="navbar navbar-inverse navbar-static-top">
-  	<div class="navbar-inner">
-  	  <div class="container">
-        <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-responsive-collapse">
-          <span class="fui-menu-24"></span>
-        </a>
-  	  	<div class="nav-collapse collapse navbar-responsive-collapse" style="height:0;">
-  	      <ul class="nav">
-    
-        <li ><a href="/index.html">Home</a></li>
-    
-        <li ><a href="/blog/archives/index.html">Archives</a></li>
-    
-        <li ><a href="/about.html">About</a></li>
-    
+<body >
+  <header role="banner" id="sidebar">
+    <!-- Logo -->
+<!-- This is ugly as hell, but does well for now. -->
+<!-- TODO: Move this in a seperate stylesheet. -->
+<style>
+IMG.displayed {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    vertical-align: text-bottom;
+}
+</style>
+
+<IMG class="displayed" src="../../images/me2.png">
+
+
+<ul id="menu">
+
+  <li class="title">
+    <h1 id="title"><a href="/">Fotis Koutoulakis</a></h1>
+  </li>
+
+
+  <li class="subtitle">
+    <h2 id="subtitle">I spend my time pretending I know about computers.</h2>
+  </li>
+
+  <li class="link">
+    <img src="../../images/email.png">
+    <a href="/about/">about</a>
+  </li>
+
+  <li class="link">
+    <img src="../../images/glyphicons_391_twitter_t.png">
+    <a href="http://twitter.com/NlightNFotis/">twitter</a>
+  </li>
+
+
+  <li class="link">
+    <img src="../../images/glyphicons_381_github.png">
+    <a href="http://github.com/NlightNFotis/">github</a>
+  </li>
+
+  <li class="link rss">
+    <img src="../../images/glyphicons_social_37_rss.png">
+    <a href="/atom.xml">rss feed</a>
+  </li>
 </ul>
 
-<ul class="nav pull-right">
-    
-    <li><a href="http://github.com/NlightNFotis" title="Github Profile"><i class="icon-github-sign social-navbar"></i></a></li>
-    
-    
-    
-    <li><a href="http://twitter.com/NlightNFotis" title="Twitter Profile"><i class="icon-twitter-sign social-navbar"></i></a></li>
-    
-    
-    <li><a href="http://plus.google.com/+FotisKoutoulakis" title="Google+ Profile"><i class="icon-google-plus-sign social-navbar"></i></a></li>
-    
-    
-</ul>
 
-  	    </div>
-  	  </div>
-  	</div>
-  </div>
-  <div class="container" id="main">
-    <div class="span12">
-      <div class="row-fluid">
-        <div id="content">
-          <div>
-<article class="hentry" role="article">
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:NlightNFotis.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+
+<!-- Octopress Love -->
+<aside id="octopress_linkback">
+  <a href="http://octopress.org/">
+    <span class="unicode_square">
+      <span class="unicode_circle">
+        &nbsp;
+      </span>
+    </span>
+    <span class="octopress">Powered by Octopress</span>
+  </a>
+</aside>
+
+
+  </header>
+  <section id="main">
+    <article class="post">
+  <div class="sharing-box">
   
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://NlightNFotis.github.io/blog/2013/12/12/how-the-compiler/" data-via="NlightNFotis" data-counturl="http://NlightNFotis.github.io/blog/2013/12/12/how-the-compiler/" data-size="large">Tweet</a>
+  
+  
+  
+</div>
 
+  
   <header>
-  <div class="jumbotron">
-    How the Compiler, the Library and the Kernel Work - Part 1
-	<h5>
+    
+      <h2 class="entry-title">How the Compiler, the Library and the Kernel Work - Part 1</h2>
+    
+    
+      <p class="meta">
+        
 
 
 
@@ -109,107 +147,106 @@
   
 
 
-<i class="icon-calendar-empty"></i> <time datetime="2013-12-12T16:13:00+02:00" pubdate data-updated="true">Dec 12<span>th</span>, 2013</time></h5>
-  </div>
-</header>
-  <div class="row-fluid">
-    <div class="span12">
-      <p>Before we get any further, it might be good if we provided some context.</p>
-
-<h1>Hello world. Again.</h1>
-
-<figure class='code'><figcaption><span>helloworld.c</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">int</span>
-</span><span class='line'><span class="nf">main</span> <span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="n">printf</span> <span class="p">(</span><span class="s">&quot;Hello world!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<time datetime="2013-12-12T16:13:00+02:00" pubdate data-updated="true">Dec 12<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
 
 
-<p>Every user space programmer, has written a hello world program. Only god knows how many times this program
-has been written. Yet, most programmers&#8217; knowledge of the program is limited to something along the lines of:</p>
+<p>Before we get any further, it might be good if we provided some context.</p>
 
-<blockquote><ul>
-<li>It sends the string passed as a parameter to the system to print.</li>
-<li>It takes the printf function from stdio.h and prints the string</li>
-</ul>
+<h1 id="hello-world-again">Hello world. Again.</h1>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption class="code-header" style="margin-bottom:-5px;"><span>helloworld.c </span></figcaption>
+ <div class="CodeRay">
+  <div class="code"><pre>
+<span class="preprocessor">#include</span> <span class="include">&lt;stdio.h&gt;</span>
+
+<span class="predefined-type">int</span>
+main (<span class="predefined-type">int</span> argc, <span class="predefined-type">char</span> **argv)
+{
+    printf (<span class="string"><span class="delimiter">&quot;</span><span class="content">Hello world!</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>);
+
+    <span class="keyword">return</span> <span class="integer">0</span>;
+}
+</pre></div>
+</div>
+ </figure></notextile></div>
+
+<p>Every user space (read: application) programmer, has written a hello world program. 
+Only god knows how many times this program has been written. Yet, 
+most programmers’ knowledge of the program is limited to something along the lines of:</p>
+
+<blockquote>
+  <ul>
+    <li>It sends the string passed as a parameter to the system to print.  </li>
+    <li>It takes the printf function from stdio.h and prints the string</li>
+  </ul>
 </blockquote>
 
-<p>and various other things, which are anywhere between plain wrong, or partially correct.</p>
+<p>and various other things, which are anywhere between plain wrong, or partially correct. </p>
 
-<p><strong> So why not demistify the process? </strong></p>
+<p>** So why not demistify the process? **</p>
 
-<h1>Enter the C preprocessor.</h1>
+<h1 id="enter-the-c-preprocessor">Enter the C preprocessor.</h1>
 
-<p>You may have heard of the C Preprocessor. It&rsquo;s the first stage of a c or c++ file compilation,
-and it&rsquo;s actually responsible for things such as:</p>
+<p>You may have heard of the C Preprocessor. It’s the first stage of a c or c++ file compilation,
+and it’s actually responsible for things such as:</p>
 
 <ul>
-<li><strong>inclusion of header files</strong> (it does so by replacing
+  <li><strong>inclusion of header files</strong> (it does so by replacing
 <code>#include &lt;header.h&gt;</code> with the content of this file, and the file it includes recursively),</li>
-<li><strong>macro expansion</strong>, such as the famous comparison of two numbers (a greater than b). In essence, if you define
-the following macro <code>#define gt(a, b) ((a &gt; b) ? 1 : 0)</code>, then in a statement such as this:</li>
+  <li><strong>macro expansion</strong>, such as the famous comparison of two numbers (a greater than b). In essence, if you define
+ the following macro <code>#define gt(a, b) ((a &gt; b) ? 1 : 0)</code>, then in a statement such as this:</li>
 </ul>
 
+<div><div class="CodeRay">
+  <div class="code"><pre> <span class="keyword">if</span> (gt (<span class="integer">5</span>, <span class="integer">3</span>)) printf (<span class="string"><span class="delimiter">&quot;</span><span class="content">The first parameter is greater than the second.</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>);
+</pre></div>
+</div>
+</div>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'> <span class="k">if</span> <span class="p">(</span><span class="n">gt</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span> <span class="n">printf</span> <span class="p">(</span><span class="s">&quot;The first parameter is greater than the second.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
+<p><code>gt (5, 3)</code> gets expanded to the macro definition, so after the preprocessor has run you end up with something like this:</p>
 
-
-<p> <code>gt (5, 3)</code> gets expanded to the macro definition, so after the preprocessor has run you end up with something like this:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'> <span class="k">if</span> <span class="p">(((</span><span class="mi">5</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">)</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="mi">0</span><span class="p">))</span> <span class="n">printf</span> <span class="p">(</span><span class="s">&quot;The first parameter is greater than the second.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div><div class="CodeRay">
+  <div class="code"><pre> <span class="keyword">if</span> (((<span class="integer">5</span> &gt; <span class="integer">3</span>) ? <span class="integer">1</span> : <span class="integer">0</span>)) printf (<span class="string"><span class="delimiter">&quot;</span><span class="content">The first parameter is greater than the second.</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>);
+</pre></div>
+</div>
+</div>
 
 <ul>
-<li><strong>conditional compilation</strong> (things such as:</li>
+  <li><strong>conditional compilation</strong> (things such as: </li>
 </ul>
 
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#ifdef WIN32 </span>
-</span><span class='line'>    <span class="n">printf</span> <span class="p">(</span><span class="s">&quot;We are on windows</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="cp">#endif</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="CodeRay">
+  <div class="code"><pre>
+<span class="preprocessor">#ifdef</span> WIN32 
+    printf (<span class="string"><span class="delimiter">&quot;</span><span class="content">We are on windows</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>); 
+<span class="preprocessor">#endif</span>
+</pre></div>
+</div>
+ </figure></notextile></div>
 
 <p>amongst others. You can see it for yourself. Write the hello world program, and pass it to cpp: <code>cpp hello_world.c</code></p>
 
-<p>So now that we know what it does it&rsquo;s time to demistify a common myth regarding it: <em>Some people believe
-that the header files include the function to be called.</em>. <strong>That&rsquo;s wrong.</strong> What it does include is
-<strong>function prototypes</strong> (and some type definitions, etc) <strong>only</strong>. It doesn&rsquo;t include the body of the function
+<p>So now that we know what it does it’s time to demistify a common myth regarding it: <em>Some people believe
+that the header files include the function to be called.</em>. <strong>That’s wrong.</strong> What it does include is 
+<strong>function prototypes</strong> (and some type definitions, etc) <strong>only</strong>. It doesn’t include the body of the function
 to be called.</p>
 
-<p>Some people find that fact quite surprising, though, it isn&rsquo;t, if you get to understand what the compiler
+<p>Some people find that fact quite surprising, though, it isn’t, if you get to understand what the compiler
 does with it.</p>
 
-<h1>Say hello to the compiler.</h1>
+<h1 id="say-hello-to-the-compiler">Say hello to the compiler.</h1>
 
-<p>Here we are gonna unmask another pile of misconceptions. First of all, some people think that when they call
+<p>Here we are gonna unmask another pile of misconceptions. First of all, some people think that when they call 
 <code>gcc</code> on the command line they are actually calling the compiler. <strong>They are not.</strong> <em>In fact they are calling
 the software commonly called <strong>the compilation driver</strong>, whose job is to run all the software needed to fully
 turn source to binary, including preprocessors, the actual compiler, an assembler and finally the linker</em></p>
 
-<p>Having said that, the actual compiler that&rsquo;s getting called when you call <code>gcc</code> is called <code>cc1</code>. You may have seen it some times when the driver reports errors. Wanna take a look at it, to make sure I&rsquo;m not lying to you?
-(Hint: I&rsquo;m not!) Fair enough. Why don&rsquo;t you type this in the command line: <code>gcc -print-prog-name=cc1</code>. It should tell you where the actual compiler is located in your system.</p>
+<p>Having said that, the actual compiler that’s getting called when you call <code>gcc</code> is called <code>cc1</code>. You may have seen it some times when the driver reports errors. Wanna take a look at it, to make sure I’m not lying to you? 
+(Hint: I’m not!) Fair enough. Why don’t you type this in the command line: <code>gcc -print-prog-name=cc1</code>. It should tell you where the actual compiler is located in your system.</p>
 
 <p>So now that we have this (misconception) out of our minds, we can continue with our analysis. Last time we talked
 about it, we said that the header files include <strong>prototypes</strong> and not the whole function.</p>
@@ -219,153 +256,69 @@ is to provide the compiler with the ability to perform <strong>type checking</st
 passed are correct, both in number, and in type, and to verify that the returned value (assuming there is one)
 is being used correctly. Below is a program that demonstrates the function prototype:</p>
 
-<figure class='code'><figcaption><span>prototype.c</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">int</span> <span class="nf">add_nums</span> <span class="p">(</span><span class="kt">int</span> <span class="n">first</span><span class="p">,</span> <span class="kt">int</span> <span class="n">second</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">int</span>
-</span><span class='line'><span class="nf">main</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="n">printf</span> <span class="p">(</span><span class="s">&quot;5 + 5 results in %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">add_nums</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">));</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">int</span>
-</span><span class='line'><span class="nf">add_nums</span> <span class="p">(</span><span class="kt">int</span> <span class="n">first</span><span class="p">,</span> <span class="kt">int</span> <span class="n">second</span><span class="p">)</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">first</span> <span class="o">+</span> <span class="n">second</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption class="code-header" style="margin-bottom:-5px;"><span>prototype.c </span></figcaption>
+ <div class="CodeRay">
+  <div class="code"><pre>
+<span class="preprocessor">#include</span> <span class="include">&lt;stdio.h&gt;</span>
 
+<span class="predefined-type">int</span> add_nums (<span class="predefined-type">int</span> first, <span class="predefined-type">int</span> second);
+
+<span class="predefined-type">int</span>
+main (<span class="directive">void</span>)
+{
+    printf (<span class="string"><span class="delimiter">&quot;</span><span class="content">5 + 5 results in %d</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>, add_nums (<span class="integer">5</span>, <span class="integer">5</span>));
+
+    <span class="keyword">return</span> <span class="integer">0</span>;
+}
+
+<span class="predefined-type">int</span>
+add_nums (<span class="predefined-type">int</span> first, <span class="predefined-type">int</span> second)
+{
+    <span class="keyword">return</span> first + second;
+}
+</pre></div>
+</div>
+ </figure></notextile></div>
 
 <p>In this particular example, the prototype gives the compiler a wide variety of information. It tells it
 that function <code>add_nums</code> takes two int arguments and returns an integer to the calling function. Now the
-compiler can verify that I am passing correct arguments to it when I call it inside printf. If I don&rsquo;t include
-the function prototype, and do something slightly evil such as calling <code>add_nums</code> with <code>float</code> arguments then
+compiler can verify that I am passing correct arguments to it when I call it inside printf. If I don’t include
+the function prototype, and do something slightly evil such as calling <code>add_nums</code> with <code>float</code> arguments then 
 this might happen:</p>
 
-<figure class='code'><figcaption><span>prototype.c</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="mi">5</span> <span class="o">+</span> <span class="mi">4</span> <span class="n">results</span> <span class="n">in</span> <span class="mi">2054324224</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<pre><code>5 + 4 results in 2054324224
+</code></pre>
 
 <p>Now that you know that the compiler (the real one) only needs the prototype and not the actual function code,
-you may be wondering how the compiler actually compiles it if it doesn&rsquo;t know it&rsquo;s code.</p>
+you may be wondering how the compiler actually compiles it if it doesn’t know it’s code.</p>
 
 <p>Now is the time to bring down another missconception. The word <em>compiler</em> is just a fancy name for software
-otherwise known as <em>translators</em>. A <em>translator&rsquo;s</em> job is to get input and turn it from one language (source language) to a second language (target language), whatever that may be. Most of the times, when you compile software,
+otherwise known as <em>translators</em>. A <em>translator’s</em> job is to get input and turn it from one language (source language) to a second language (target language), whatever that may be. Most of the times, when you compile software,
 you compile it to run in your computer, which runs on a processor from the x86 architecture family of processors.
 A processor is typically associated with an assembly language for that architecture (which is just human friendly
-mnemonics for common processor tasks), so your <em>x86 computer runs x86 assembly</em> (ok that&rsquo;s not 100% true, but for
-simplicity&rsquo;s sake at the moment, it should serve. We will see why it&rsquo;s not true later.) So the compiler
-(in a typical translation) translates (compiles) your C source code to x86 assembly.
+mnemonics for common processor tasks), so your <em>x86 computer runs x86 assembly</em> (ok that’s not 100% true, but for
+simplicity’s sake at the moment, it should serve. We will see why it’s not true later.) So the compiler 
+(in a typical translation) translates (compiles) your C source code to x86 assembly. 
 You can see this by compiling your hello world example and passing the compiler the <code>-S</code> (which asks it to stop,
 after x86 assembly is produced) parameter, likewise <code>gcc -S hello.c</code>.</p>
 
-<h1>Conclusion</h1>
+<h1 id="conclusion">Conclusion</h1>
 
-<p>At this part, we saw how the compiler and the preprocessor work with our code, in an attempt to demistify the
+<p>At this part, we saw how the compiler and the preprocessor work with our code, in an attempt to demistify the 
 so called library calls. In the next part, we are going to study the assembler and the linker, and for the final
 part the loader and the kernel.</p>
 
-    </div>
-  </div>
 
 
-
-  <footer>
-    <hr>
-    
-    <div class="row-fluid">
-      
-      <div class="span6">
-        <p class="meta">
-        
-        
-
-
-
-  <a href="/blog/categories/compiler/"><span class="badge">compiler</span></a>
-
-  <a href="/blog/categories/kernel/"><span class="badge">kernel</span></a>
-
-  <a href="/blog/categories/libc/"><span class="badge">libc</span></a>
-
-
-
-
-        </p>
-      </div>
-      
-      <div class="span6 social-sharing">
-        <div class="sharing">
-  <div class="addthis_toolbox addthis_default_style ">
-  
-  
-  <a class="addthis_button_tweet"></a>
-  
-  
-  <a class="addthis_counter addthis_pill_style"></a>
-  </div>
-  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
-</div>
-
-      </div>
-      
-      
-    </div>
-    
-    <div class="row-fluid">
-      <div class="span12">
-        <p class="meta">
-          
-            <a class="basic-alignment left" href="/blog/2013/09/02/gsoc-week-11-report/" title="Previous Post: GSOC Week 11 report">&laquo; GSOC Week 11 report</a>
-          
-          
-            <a class="basic-alignment right" href="/blog/2014/02/23/my-linux-from-scratch-experience/" title="Next Post: My Linux from Scratch Experience">My Linux from Scratch Experience &raquo;</a>
-          
-        </p>
-      </div>
-    </div>
-  </footer>
 </article>
 
-</div>
 
+    <nav role="navigation" id="pagination">
 
+</nav>
+  </section>
+  
 
-        </div>
-      </div>
-      <div class="row-fluid">
-        <footer class="footer-page" role="contentinfo">
-          <p>
-  Copyright &copy; 2014 - Fotis Koutoulakis -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span> - Theme by <a href="http://alexgaribay.com">Alex Garibay</a>
-</p>
-
-
-        </footer>
-      </div>
-    </div>
-  </div>
   
 
 
@@ -383,7 +336,6 @@ part the loader and the kernel.</p>
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>
-
 
 
 

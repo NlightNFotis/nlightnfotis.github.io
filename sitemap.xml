@@ -2,69 +2,73 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://NlightNFotis.github.io/blog/2013/07/14/hello-world/</loc>
-        <lastmod>2014-02-23T22:57:24+02:00</lastmod>
+        <lastmod>2014-07-29T12:49:46+03:00</lastmod>
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/blog/2013/07/15/gsoc-week-4-report/</loc>
-        <lastmod>2014-02-23T22:57:24+02:00</lastmod>
+        <lastmod>2014-07-29T13:28:03+03:00</lastmod>
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/blog/2013/07/24/gsoc-week-5-report/</loc>
-        <lastmod>2014-02-23T22:57:24+02:00</lastmod>
+        <lastmod>2014-07-29T13:48:57+03:00</lastmod>
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/blog/2013/07/31/gsoc-week-6-report/</loc>
-        <lastmod>2014-02-23T22:57:24+02:00</lastmod>
+        <lastmod>2014-07-29T12:49:46+03:00</lastmod>
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/blog/2013/08/05/gsoc-partial-week-7-report/</loc>
-        <lastmod>2014-02-23T22:57:24+02:00</lastmod>
+        <lastmod>2014-07-29T12:49:46+03:00</lastmod>
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/blog/2013/08/12/gsoc-week-8-partial-report/</loc>
-        <lastmod>2014-02-23T22:57:24+02:00</lastmod>
+        <lastmod>2014-07-29T14:25:45+03:00</lastmod>
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/blog/2013/08/19/gsoc-week-9-partial-report/</loc>
-        <lastmod>2014-02-23T22:57:24+02:00</lastmod>
+        <lastmod>2014-07-29T14:15:01+03:00</lastmod>
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/blog/2013/08/26/gsoc-week-10-report/</loc>
-        <lastmod>2014-02-23T22:57:24+02:00</lastmod>
+        <lastmod>2014-07-29T14:22:54+03:00</lastmod>
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/blog/2013/09/02/gsoc-week-11-report/</loc>
-        <lastmod>2014-02-23T22:57:24+02:00</lastmod>
+        <lastmod>2014-07-29T14:20:38+03:00</lastmod>
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/blog/2013/12/12/how-the-compiler/</loc>
-        <lastmod>2014-06-22T15:32:09+03:00</lastmod>
+        <lastmod>2014-07-29T14:07:40+03:00</lastmod>
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/blog/2014/02/23/my-linux-from-scratch-experience/</loc>
-        <lastmod>2014-02-23T22:57:24+02:00</lastmod>
+        <lastmod>2014-07-29T12:49:46+03:00</lastmod>
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/blog/2014/04/25/how-the-compiler/</loc>
-        <lastmod>2014-04-25T19:41:20+03:00</lastmod>
+        <lastmod>2014-07-29T14:10:40+03:00</lastmod>
     </url>
     <url>
         <loc>
             http://NlightNFotis.github.io/blog/2014/04/28/introduction-to-xv6-adding-a-new-system-call/
         </loc>
-        <lastmod>2014-04-30T02:20:26+03:00</lastmod>
+        <lastmod>2014-07-29T14:01:22+03:00</lastmod>
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/blog/2014/06/20/how-the-compiler/</loc>
-        <lastmod>2014-06-20T21:32:37+03:00</lastmod>
+        <lastmod>2014-07-29T12:49:46+03:00</lastmod>
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/blog/2014/07/09/distro-forking-101/</loc>
-        <lastmod>2014-07-10T11:45:51+03:00</lastmod>
+        <lastmod>2014-07-29T12:49:46+03:00</lastmod>
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/blog/archives/</loc>
-        <lastmod>2014-07-10T11:45:51+03:00</lastmod>
+        <lastmod>2014-07-29T14:25:45+03:00</lastmod>
+    </url>
+    <url>
+        <loc>http://NlightNFotis.github.io/about/</loc>
+        <lastmod>2014-07-29T14:28:48+03:00</lastmod>
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/robots.txt</loc>
@@ -72,10 +76,10 @@
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/</loc>
-        <lastmod>2014-07-10T11:45:51+03:00</lastmod>
+        <lastmod>2014-07-29T14:25:45+03:00</lastmod>
     </url>
     <url>
         <loc>http://NlightNFotis.github.io/about.html</loc>
-        <lastmod>2014-02-23T22:57:24+02:00</lastmod>
+        <lastmod>2014-07-29T12:49:46+03:00</lastmod>
     </url>
 </urlset>

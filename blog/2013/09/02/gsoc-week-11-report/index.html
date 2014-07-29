@@ -9,8 +9,8 @@
   <meta name="author" content="Fotis Koutoulakis">
 
   
-  <meta name="description" content="GSOC Week 11 Report Sep 2nd, 2013 Introduction This week was spent investigating the runtime and debugging executables with gdb.
-It was interesting &hellip;">
+  <meta name="description" content="Tweet GSOC Week 11 Report Sep 2nd, 2013 Introduction This week was spent investigating the runtime and debugging executables with gdb.
+It was &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,18 +19,13 @@ It was interesting &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://NlightNFotis.github.io/blog/2013/09/02/gsoc-week-11-report">
+  <link rel="canonical" href="http://NlightNFotis.github.io/blog/2013/09/02/gsoc-week-11-report/">
   <link href="/favicon.png" rel="icon">
-  <link href='http://fonts.googleapis.com/css?family=Quicksand:300,400' rel='stylesheet' type='text/css'>
-  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="Fotis Koutoulakis" type="application/atom+xml">
-  <script src="/js/jquery.js"></script>
-  <script src="/js/bootstrap-collapse.js"></script>
-  <script src="/js/modernizr-2.0.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
-  <script src="/js/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -51,54 +46,97 @@ It was interesting &hellip;">
 
 </head>
 
-<body   >
-  <div class="navbar navbar-inverse navbar-static-top">
-  	<div class="navbar-inner">
-  	  <div class="container">
-        <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-responsive-collapse">
-          <span class="fui-menu-24"></span>
-        </a>
-  	  	<div class="nav-collapse collapse navbar-responsive-collapse" style="height:0;">
-  	      <ul class="nav">
-    
-        <li ><a href="/index.html">Home</a></li>
-    
-        <li ><a href="/blog/archives/index.html">Archives</a></li>
-    
-        <li ><a href="/about.html">About</a></li>
-    
+<body >
+  <header role="banner" id="sidebar">
+    <!-- Logo -->
+<!-- This is ugly as hell, but does well for now. -->
+<!-- TODO: Move this in a seperate stylesheet. -->
+<style>
+IMG.displayed {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    vertical-align: text-bottom;
+}
+</style>
+
+<IMG class="displayed" src="../../images/me2.png">
+
+
+<ul id="menu">
+
+  <li class="title">
+    <h1 id="title"><a href="/">Fotis Koutoulakis</a></h1>
+  </li>
+
+
+  <li class="subtitle">
+    <h2 id="subtitle">I spend my time pretending I know about computers.</h2>
+  </li>
+
+  <li class="link">
+    <img src="../../images/email.png">
+    <a href="/about/">about</a>
+  </li>
+
+  <li class="link">
+    <img src="../../images/glyphicons_391_twitter_t.png">
+    <a href="http://twitter.com/NlightNFotis/">twitter</a>
+  </li>
+
+
+  <li class="link">
+    <img src="../../images/glyphicons_381_github.png">
+    <a href="http://github.com/NlightNFotis/">github</a>
+  </li>
+
+  <li class="link rss">
+    <img src="../../images/glyphicons_social_37_rss.png">
+    <a href="/atom.xml">rss feed</a>
+  </li>
 </ul>
 
-<ul class="nav pull-right">
-    
-    <li><a href="http://github.com/NlightNFotis" title="Github Profile"><i class="icon-github-sign social-navbar"></i></a></li>
-    
-    
-    
-    <li><a href="http://twitter.com/NlightNFotis" title="Twitter Profile"><i class="icon-twitter-sign social-navbar"></i></a></li>
-    
-    
-    <li><a href="http://plus.google.com/+FotisKoutoulakis" title="Google+ Profile"><i class="icon-google-plus-sign social-navbar"></i></a></li>
-    
-    
-</ul>
 
-  	    </div>
-  	  </div>
-  	</div>
-  </div>
-  <div class="container" id="main">
-    <div class="span12">
-      <div class="row-fluid">
-        <div id="content">
-          <div>
-<article class="hentry" role="article">
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:NlightNFotis.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+
+<!-- Octopress Love -->
+<aside id="octopress_linkback">
+  <a href="http://octopress.org/">
+    <span class="unicode_square">
+      <span class="unicode_circle">
+        &nbsp;
+      </span>
+    </span>
+    <span class="octopress">Powered by Octopress</span>
+  </a>
+</aside>
+
+
+  </header>
+  <section id="main">
+    <article class="post">
+  <div class="sharing-box">
   
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://NlightNFotis.github.io/blog/2013/09/02/gsoc-week-11-report/" data-via="NlightNFotis" data-counturl="http://NlightNFotis.github.io/blog/2013/09/02/gsoc-week-11-report/" data-size="large">Tweet</a>
+  
+  
+  
+</div>
 
+  
   <header>
-  <div class="jumbotron">
-    GSOC Week 11 Report
-	<h5>
+    
+      <h2 class="entry-title">GSOC Week 11 Report</h2>
+    
+    
+      <p class="meta">
+        
 
 
 
@@ -110,459 +148,300 @@ It was interesting &hellip;">
   
 
 
-<i class="icon-calendar-empty"></i> <time datetime="2013-09-02T09:25:00+03:00" pubdate data-updated="true">Sep 2<span>nd</span>, 2013</time></h5>
-  </div>
-</header>
-  <div class="row-fluid">
-    <div class="span12">
-      <h1>Introduction</h1>
+<time datetime="2013-09-02T09:25:00+03:00" pubdate data-updated="true">Sep 2<span>nd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<h1 id="introduction">Introduction</h1>
 
 <p>This week was spent investigating the runtime and debugging executables with gdb.
 It was interesting in the sense that it provided me with some interesting
-pieces of information. Without any further ado, let&rsquo;s present our findings:</p>
+pieces of information. Without any further ado, let’s present our findings:</p>
 
-<h2>My findings</h2>
+<h2 id="my-findings">My findings</h2>
 
 <p>Before starting out playing with libpthread, and glibc, I wanted to make sure
 that the goruntime behaved the way I believed it behaved, and make some further
 assurances about the goruntime. These assurances had to do with the total number
 of goroutines and the total number of machine threads at various checkpoints
-in the language runtime.</p>
+in the language runtime.  </p>
 
 <ul>
-<li>The first thread in the program is initialised during <code>runtime_schedinit</code>.</li>
-<li>The number of m&rsquo;s (kernel threads) is dependent on the number of goroutines.
-The runtime basically attempts to create an equal amount of m&rsquo;s to run the goroutines.
+  <li>The first thread in the program is initialised during <code>runtime_schedinit</code>.</li>
+  <li>The number of m’s (kernel threads) is dependent on the number of goroutines.
+The runtime basically attempts to create an equal amount of m’s to run the goroutines.
 We can observe everytime a new goroutine is created, there is a number of calls
 to initiate a new kernel thread.</li>
-<li>There are at least two kernel threads. One that supports the runtime (mainly the
+  <li>There are at least two kernel threads. One that supports the runtime (mainly the 
 garbage collector) and one that executes the code of the go program.</li>
 </ul>
-
 
 <p>There is only one small piece of code in the goruntime that creates some sort of
 confusion for me, and that is the code for a new m initialisation. Let me first
 present the code that confuses me:</p>
 
-<figure class='code'><figcaption><span>gcc/libgo/runtime/proc.c</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">M</span><span class="o">*</span>
-</span><span class='line'><span class="nf">runtime_newm</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="p">...</span>
-</span><span class='line'>  <span class="n">mp</span> <span class="o">=</span> <span class="n">runtime_mal</span><span class="p">(</span><span class="k">sizeof</span> <span class="o">*</span><span class="n">mp</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="p">...</span>
-</span><span class='line'>  <span class="n">mcommoninit</span><span class="p">(</span><span class="n">mp</span><span class="p">);</span>
-</span><span class='line'>  <span class="n">mp</span><span class="o">-&gt;</span><span class="n">g0</span> <span class="o">=</span> <span class="n">runtime_malg</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">nil</span><span class="p">,</span> <span class="n">nil</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="p">...</span>
-</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
-</span><span class='line'>      <span class="n">runtime_throw</span><span class="p">(</span><span class="s">&quot;pthread_attr_init&quot;</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_setdetachstate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">PTHREAD_CREATE_DETACHED</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
-</span><span class='line'>      <span class="n">runtime_throw</span><span class="p">(</span><span class="s">&quot;pthread_attr_setdetachstate&quot;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="p">...</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption class="code-header" style="margin-bottom:-5px;"><span>gcc/libgo/runtime/proc.c </span></figcaption>
+ <div class="CodeRay">
+  <div class="code"><pre>
 
+M*
+runtime_newm(<span class="directive">void</span>)
+{
+
+    ...
+        mp = runtime_mal(<span class="keyword">sizeof</span> *mp);
+
+    ...
+        mcommoninit(mp);
+        mp-&gt;g0 = runtime_malg(-<span class="integer">1</span>, nil, nil);
+
+    ...
+        <span class="keyword">if</span>(pthread_attr_init(&amp;attr) != <span class="integer">0</span>)
+                runtime_throw(<span class="string"><span class="delimiter">&quot;</span><span class="content">pthread_attr_init</span><span class="delimiter">&quot;</span></span>);
+        <span class="keyword">if</span>(pthread_attr_setdetachstate(&amp;attr, PTHREAD_CREATE_DETACHED) != <span class="integer">0</span>)
+                runtime_throw(<span class="string"><span class="delimiter">&quot;</span><span class="content">pthread_attr_setdetachstate</span><span class="delimiter">&quot;</span></span>);
+
+    ...
+}
+</pre></div>
+</div>
+ </figure></notextile></div>
 
 <p>I purposely compacted the function for brevity, as it only serves as a demonstration for a point.
 Now, my confusion lies in the line <code>mp-&gt;g0 = runtime_malg(-1, nil, nil)</code>. It is a piece of code
 that allocates memory for a new goroutine. Now I am ok with that, <strong>but</strong> what I do not understand
-is that new kernel threads (m&rsquo;s) are supposed to be pick and run a goroutine from the global
-goroutine pool &ndash; that is run an existing one, and not create a new one. Now, the <code>runtime_malg</code>
-is given parameters that don&rsquo;t initialise a new goroutine properly, but still, new memory
+is that new kernel threads (m’s) are supposed to be pick and run a goroutine from the global 
+goroutine pool - that is run an existing one, and not create a new one. Now, the <code>runtime_malg</code>
+is given parameters that don’t initialise a new goroutine properly, but still, new memory
 is allocated for a new goroutine, and is returned to <code>mp-&gt;g0</code> from runtime_malg.</p>
 
-<p>Assuming I have not misunderstood something, and I am not mistaken (which is kind of likely),
+<p>Assuming I have not misunderstood something, and I am not mistaken (which is kind of likely), 
 this is behavior that could lead to a number of questions and/or problems. For instance,
 what happens to the goroutine created by <code>runtime_malg</code>? Is it killed after the m is assigned
 a new goroutine to execute? Is it parked on the goroutine global list? Is it just ignored?
-Does it affect the runtime scheduler&rsquo;s goroutine count? This is the last thing I feel I wanna
-clear out regarding gccgo&rsquo;s runtime.</p>
+Does it affect the runtime scheduler’s goroutine count? This is the last thing I feel I wanna
+clear out regarding gccgo’s runtime.</p>
 
-<h2>gdb</h2>
+<h2 id="gdb">gdb</h2>
 
 <p>For this week, I also run the executables created by gccgo through gdb. It was a fertile attempt
 that, most of the time, confirmed my findings in the goruntime. It also provided us with some
-other nice pieces of information regarding the crashing of goroutines, but also left me with a
+other nice pieces of information regarding the crashing of goroutines, but also left me with a 
 question.</p>
 
 <p>The code in question that I run through gdb is this:</p>
 
-<figure class='code'><figcaption><span>goroutine.go</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='go'><span class='line'><span class="kn">package</span> <span class="nx">main</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">import</span> <span class="s">&quot;fmt&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">func</span> <span class="nx">say</span><span class="p">(</span><span class="nx">s</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;[!!] right before a go statement&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">go</span> <span class="nx">say</span><span class="p">(</span><span class="s">&quot;world&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="nx">say</span> <span class="p">(</span><span class="s">&quot;hello&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption class="code-header" style="margin-bottom:-5px;"><span>goroutine.go </span></figcaption>
+ <div class="CodeRay">
+  <div class="code"><pre>
+<span class="keyword">package</span> main
 
+<span class="keyword">import</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">fmt</span><span class="delimiter">&quot;</span></span>
 
-<p>Your very typical hello world like goroutine program. Now, setting a break point in main
-(not the program&rsquo;s main, that&rsquo;s <code>main.main</code>. <code>main</code> as far as the runtime is concerned is
+<span class="keyword">func</span> say(s <span class="predefined-type">string</span>) {
+    <span class="keyword">for</span> i := <span class="integer">0</span>; i &lt; <span class="integer">5</span>; i++ {
+        fmt.Println(s)
+    }
+}
+
+<span class="keyword">func</span> main() {
+    fmt.Println(<span class="string"><span class="delimiter">&quot;</span><span class="content">[!!] right before a go statement</span><span class="delimiter">&quot;</span></span>)
+    <span class="keyword">go</span> say(<span class="string"><span class="delimiter">&quot;</span><span class="content">world</span><span class="delimiter">&quot;</span></span>)
+    say (<span class="string"><span class="delimiter">&quot;</span><span class="content">hello</span><span class="delimiter">&quot;</span></span>)
+}
+</pre></div>
+</div>
+ </figure></notextile></div>
+
+<p>Your very typical hello world like goroutine program. Now, setting a break point in main 
+(not the program’s main, that’s <code>main.main</code>. <code>main</code> as far as the runtime is concerned is
  the runtime entry point, in <code>go-main.c</code>) and running it through gdb yields the following
 results:</p>
 
-<figure class='code'><figcaption><span>goroutine.go</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='go'><span class='line'><span class="nx">Breakpoint</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">main</span> <span class="p">()</span> <span class="nx">at</span> <span class="p">..</span><span class="o">/</span><span class="p">..</span><span class="o">/</span><span class="p">..</span><span class="o">/</span><span class="nx">gcc_source</span><span class="o">/</span><span class="nx">libgo</span><span class="o">/</span><span class="nx">runtime</span><span class="o">/</span><span class="k">go</span><span class="o">-</span><span class="nx">main</span><span class="p">.</span><span class="nx">c</span><span class="p">:</span><span class="mi">52</span>
-</span><span class='line'><span class="mi">52</span> <span class="nx">runtime_check</span> <span class="p">();</span>
-</span><span class='line'><span class="mi">2</span><span class="p">:</span>  <span class="nx">__pthread_total</span> <span class="p">=</span> <span class="mi">1</span>
-</span><span class='line'><span class="mi">1</span><span class="p">:</span> <span class="nx">runtime_sched</span><span class="p">.</span><span class="nx">mcount</span> <span class="p">=</span> <span class="mi">0</span>
-</span><span class='line'><span class="p">(</span><span class="nx">gdb</span><span class="p">)</span> <span class="nx">next</span>
-</span><span class='line'><span class="mi">53</span> <span class="nx">runtime_args</span> <span class="p">(</span><span class="nx">argc</span><span class="p">,</span> <span class="p">(</span><span class="kt">byte</span> <span class="o">**</span><span class="p">)</span> <span class="nx">argv</span><span class="p">);</span>
-</span><span class='line'><span class="mi">2</span><span class="p">:</span> <span class="nx">__pthread_total</span> <span class="p">=</span> <span class="mi">1</span>
-</span><span class='line'><span class="mi">1</span><span class="p">:</span> <span class="nx">runtime_sched</span><span class="p">.</span><span class="nx">mcount</span> <span class="p">=</span> <span class="mi">0</span>
-</span><span class='line'><span class="mi">54</span> <span class="nx">runtime_osinit</span> <span class="p">();</span>
-</span><span class='line'><span class="mi">2</span><span class="p">:</span> <span class="nx">__pthread_total</span> <span class="p">=</span> <span class="mi">1</span>
-</span><span class='line'><span class="mi">1</span><span class="p">:</span> <span class="nx">runtime_sched</span><span class="p">.</span><span class="nx">mcount</span> <span class="p">=</span> <span class="mi">0</span>
-</span><span class='line'><span class="mi">63</span><span class="p">:</span> <span class="nx">runtime_schedinit</span> <span class="p">();</span>
-</span><span class='line'><span class="mi">2</span><span class="p">:</span> <span class="nx">__pthread_total</span> <span class="p">=</span> <span class="mi">1</span>
-</span><span class='line'><span class="mi">1</span><span class="p">:</span> <span class="nx">runtime_sched</span><span class="p">.</span><span class="nx">mcount</span> <span class="p">=</span> <span class="mi">1</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="CodeRay">
+  <div class="code"><pre>
+Breakpoint 1, main () at ../../../gcc_source/libgo/runtime/go-main.c:52
+52 runtime_check ();
+2:  __pthread_total = 1
+1: runtime_sched.mcount = 0
+(gdb) next
+53 runtime_args (argc, (byte **) argv);
+2: __pthread_total = 1
+1: runtime_sched.mcount = 0
+54 runtime_osinit ();
+2: __pthread_total = 1
+1: runtime_sched.mcount = 0
+63: runtime_schedinit ();
+2: __pthread_total = 1
+1: runtime_sched.mcount = 1
+</pre></div>
+</div>
+ </figure></notextile></div>
 
 <p>Up until now, nothing unexpected. The kernel thread is registered with the runtime scheduler
-during its initialisation process in <code>runtime_schedinit</code> and that&#8217; why the <code>runtime_sched.mcount</code>
+during its initialisation process in <code>runtime_schedinit</code> and that’ why the <code>runtime_sched.mcount</code>
 is reported to be zero many times before schedinit is run.</p>
 
-<figure class='code'><figcaption><span>goroutine.go</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='go'><span class='line'><span class="mi">68</span> <span class="nx">__go_go</span> <span class="p">(</span><span class="nx">mainstart</span><span class="p">,</span> <span class="nx">NULL</span><span class="p">);</span>
-</span><span class='line'><span class="mi">2</span><span class="p">:</span> <span class="nx">__pthread_total</span> <span class="p">=</span> <span class="mi">1</span>
-</span><span class='line'><span class="mi">1</span><span class="p">:</span> <span class="nx">runtime_sched</span><span class="p">.</span><span class="nx">mcount</span> <span class="p">=</span> <span class="mi">1</span>
-</span><span class='line'><span class="p">(</span><span class="nx">gdb</span><span class="p">)</span> <span class="nx">display</span> <span class="nx">runtime_sched</span><span class="p">.</span><span class="nx">gcount</span>
-</span><span class='line'><span class="mi">3</span><span class="p">:</span> <span class="nx">runtime_sched</span><span class="p">.</span><span class="nx">gcount</span> <span class="p">=</span> <span class="mi">0</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="CodeRay">
+  <div class="code"><pre>
+68 __go_go (mainstart, NULL);
+2: __pthread_total = 1
+1: runtime_sched.mcount = 1
+(gdb) display runtime_sched.gcount
+3: runtime_sched.gcount = 0
+</pre></div>
+</div>
+ </figure></notextile></div>
 
 <p>That too is ok, because a new goroutine is registered with the scheduler during the call to
 <code>__go_go</code>. Now I am gonna fast forward a bit, to a more interesting point.</p>
 
-<figure class='code'><figcaption><span>goroutine.go</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='go'><span class='line'><span class="o">...</span>
-</span><span class='line'><span class="p">[</span><span class="nx">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="nx">in</span> <span class="nx">runtime_gogo</span><span class="p">)</span> <span class="nx">new</span> <span class="nx">goroutine</span><span class="err">&#39;</span><span class="nx">s</span> <span class="nx">status</span> <span class="nx">is</span> <span class="mi">2</span>
-</span><span class='line'><span class="p">[</span><span class="nx">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="nx">in</span> <span class="nx">runtime_gogo</span><span class="p">)</span> <span class="nx">number</span> <span class="nx">of</span> <span class="nx">goroutines</span> <span class="nx">now</span> <span class="nx">is</span> <span class="mi">2</span>
-</span><span class='line'><span class="p">[</span><span class="nx">New</span> <span class="nx">Thread</span> <span class="mf">629.30</span><span class="p">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">Program</span> <span class="nx">received</span> <span class="nx">SIGTRAP</span><span class="p">,</span> <span class="nx">Trace</span><span class="o">/</span><span class="nx">breakpoint</span> <span class="nx">trap</span><span class="p">.</span>
-</span><span class='line'><span class="mh">0x01da48ec</span> <span class="nx">in</span> <span class="err">??</span> <span class="p">()</span> <span class="nx">from</span> <span class="o">/</span><span class="nx">lib</span><span class="o">/</span><span class="nx">i386</span><span class="o">-</span><span class="nx">gnu</span><span class="o">/</span><span class="nx">libc</span><span class="p">.</span><span class="nx">so</span><span class="mf">.0.3</span>
-</span><span class='line'><span class="mi">3</span><span class="p">:</span> <span class="nx">runtime_sched</span><span class="p">.</span><span class="nx">gcount</span> <span class="p">=</span> <span class="mi">2</span>
-</span><span class='line'><span class="mi">2</span><span class="p">:</span> <span class="nx">__pthread_total</span> <span class="p">=</span> <span class="mi">2</span>
-</span><span class='line'><span class="mi">1</span><span class="p">:</span> <span class="nx">runtime_sched</span><span class="p">.</span><span class="nx">mcount</span> <span class="p">=</span> <span class="mi">2</span>
-</span><span class='line'><span class="p">(</span><span class="nx">gdb</span><span class="p">)</span> <span class="nx">info</span> <span class="nx">threads</span>
-</span><span class='line'> <span class="nx">Id</span>   <span class="nx">Target</span>  <span class="nx">Id</span>       <span class="nx">Frame</span>
-</span><span class='line'> <span class="mi">6</span>    <span class="nx">Thread</span>  <span class="mf">629.30</span>   <span class="mh">0x08048eb7</span> <span class="nx">in</span> <span class="nx">main</span><span class="p">.</span><span class="nx">main</span> <span class="p">()</span> <span class="nx">at</span> <span class="nx">goroutine</span><span class="p">.</span><span class="k">go</span><span class="p">:</span><span class="mi">12</span>
-</span><span class='line'> <span class="mi">5</span>    <span class="nx">Thread</span>  <span class="mf">629.29</span>   <span class="mh">0x01da48ec</span> <span class="nx">in</span> <span class="err">??</span> <span class="p">()</span> <span class="nx">from</span> <span class="o">/</span><span class="nx">lib</span><span class="o">/</span><span class="nx">i386</span><span class="o">-</span><span class="nx">gnu</span><span class="o">/</span><span class="nx">libc</span><span class="p">.</span><span class="nx">so</span><span class="mf">.0.3</span>
-</span><span class='line'><span class="o">*</span><span class="mi">4</span>    <span class="nx">Thread</span>  <span class="mf">629.28</span>   <span class="mh">0x01da48ec</span> <span class="nx">in</span> <span class="err">??</span> <span class="p">()</span> <span class="nx">from</span> <span class="o">/</span><span class="nx">lib</span><span class="o">/</span><span class="nx">i386</span><span class="o">-</span><span class="nx">gnu</span><span class="o">/</span><span class="nx">libc</span><span class="p">.</span><span class="nx">so</span><span class="mf">.0.3</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="CodeRay">
+  <div class="code"><pre>
+...
+[DEBUG] (in runtime_gogo) new goroutine's status is 2
+[DEBUG] (in runtime_gogo) number of goroutines now is 2
+[New Thread 629.30]
 
+Program received SIGTRAP, Trace/breakpoint trap.
+0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3
+3: runtime_sched.gcount = 2
+2: __pthread_total = 2
+1: runtime_sched.mcount = 2
+(gdb) info threads
+ Id   Target  Id       Frame
+ 6    Thread  629.30   0x08048eb7 in main.main () at goroutine.go:12
+ 5    Thread  629.29   0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3
+*4    Thread  629.28   0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3
+&lt;div class='bogus-wrapper'&gt;&lt;notextile&gt;&lt;figure class='code'&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre class=&quot;line-numbers&quot;&gt;&lt;span class='line-number'&gt;1&lt;/span&gt;
+&lt;span class='line-number'&gt;2&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class='code'&gt;&lt;pre&gt;&lt;code class=''&gt;&lt;span class='line'&gt;This is getting weird. I mean, libpthread is reporting that 2 threads are active,
+&lt;/span&gt;&lt;span class='line'&gt;but gdb reports that 3 are active. Anyway, let's continue:
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/notextile&gt;&lt;/div&gt;
+[DEBUG] (in runtime_stoptheworld) stopped the garbage collector
+[DEBUG] (in runtime_starttheworld) starting the garbage collector
+[DEBUG] (in runtime_starttheworld) number of m's now is: 2
+[DEBUG] (in runtime_starttheworld) [note] there is already one gc thread
+[!!] right before a go statement
 
-<p>This is getting weird. I mean, libpthread is reporting that 2 threads are active,
-but gdb reports that 3 are active. Anyway, let&rsquo;s continue:</p>
+Program received signal SIGTRAP, Trace/breakpoint trap.
+0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3
+3: runtime_sched.gcount = 2
+2: __pthread_total = 2
+1: runtime_sched.mcount = 2
+(gdb) continue
+... (output omitted by me for brevity)
 
-<figure class='code'><figcaption><span>goroutine.go</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='go'><span class='line'><span class="p">[</span><span class="nx">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="nx">in</span> <span class="nx">runtime_stoptheworld</span><span class="p">)</span> <span class="nx">stopped</span> <span class="nx">the</span> <span class="nx">garbage</span> <span class="nx">collector</span>
-</span><span class='line'><span class="p">[</span><span class="nx">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="nx">in</span> <span class="nx">runtime_starttheworld</span><span class="p">)</span> <span class="nx">starting</span> <span class="nx">the</span> <span class="nx">garbage</span> <span class="nx">collector</span>
-</span><span class='line'><span class="p">[</span><span class="nx">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="nx">in</span> <span class="nx">runtime_starttheworld</span><span class="p">)</span> <span class="nx">number</span> <span class="nx">of</span> <span class="nx">m</span><span class="err">&#39;</span><span class="nx">s</span> <span class="nx">now</span> <span class="nx">is</span><span class="p">:</span> <span class="mi">2</span>
-</span><span class='line'><span class="p">[</span><span class="nx">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="nx">in</span> <span class="nx">runtime_starttheworld</span><span class="p">)</span> <span class="p">[</span><span class="nx">note</span><span class="p">]</span> <span class="nx">there</span> <span class="nx">is</span> <span class="nx">already</span> <span class="nx">one</span> <span class="nx">gc</span> <span class="nx">thread</span>
-</span><span class='line'><span class="p">[!!]</span> <span class="nx">right</span> <span class="nx">before</span> <span class="nx">a</span> <span class="k">go</span> <span class="nx">statement</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">Program</span> <span class="nx">received</span> <span class="nx">signal</span> <span class="nx">SIGTRAP</span><span class="p">,</span> <span class="nx">Trace</span><span class="o">/</span><span class="nx">breakpoint</span> <span class="nx">trap</span><span class="p">.</span>
-</span><span class='line'><span class="mh">0x01da48ec</span> <span class="nx">in</span> <span class="err">??</span> <span class="p">()</span> <span class="nx">from</span> <span class="o">/</span><span class="nx">lib</span><span class="o">/</span><span class="nx">i386</span><span class="o">-</span><span class="nx">gnu</span><span class="o">/</span><span class="nx">libc</span><span class="p">.</span><span class="nx">so</span><span class="mf">.0.3</span>
-</span><span class='line'><span class="mi">3</span><span class="p">:</span> <span class="nx">runtime_sched</span><span class="p">.</span><span class="nx">gcount</span> <span class="p">=</span> <span class="mi">2</span>
-</span><span class='line'><span class="mi">2</span><span class="p">:</span> <span class="nx">__pthread_total</span> <span class="p">=</span> <span class="mi">2</span>
-</span><span class='line'><span class="mi">1</span><span class="p">:</span> <span class="nx">runtime_sched</span><span class="p">.</span><span class="nx">mcount</span> <span class="p">=</span> <span class="mi">2</span>
-</span><span class='line'><span class="p">(</span><span class="nx">gdb</span><span class="p">)</span> <span class="k">continue</span>
-</span><span class='line'><span class="o">...</span> <span class="p">(</span><span class="nx">output</span> <span class="nx">omitted</span> <span class="nx">by</span> <span class="nx">me</span> <span class="k">for</span> <span class="nx">brevity</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">[</span><span class="nx">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="nx">in</span> <span class="nx">runtime_newm</span><span class="p">)</span> <span class="nx">Right</span> <span class="nx">before</span> <span class="nx">the</span> <span class="nx">call</span> <span class="nx">to</span> <span class="nx">pthread_create</span><span class="p">.</span>
-</span><span class='line'><span class="nx">a</span><span class="p">.</span><span class="nx">out</span><span class="p">:</span> <span class="p">.</span><span class="o">/</span><span class="nx">pthread</span><span class="o">/</span><span class="nx">pt</span><span class="o">-</span><span class="nx">create</span><span class="p">.</span><span class="nx">c</span><span class="p">:</span><span class="mi">167</span><span class="p">:</span> <span class="nx">__pthread_create_internal</span><span class="p">:</span> <span class="nx">Assertion</span> <span class="err">`</span><span class="p">({</span> <span class="nx">mach_port_t</span> <span class="nx">ktid</span> <span class="p">=</span> <span class="nx">__mach_thread_self</span> <span class="p">();</span> <span class="kt">int</span> <span class="nx">ok</span> <span class="p">=</span> <span class="nx">thread</span><span class="o">-</span><span class="p">&gt;</span><span class="nx">kernel_thread</span> <span class="o">==</span> <span class="nx">ktid</span><span class="p">;</span>
-</span><span class='line'><span class="nx">__mach_port_deallocate</span> <span class="p">((</span><span class="nx">__mach_task_self</span> <span class="o">+</span> <span class="mi">0</span><span class="p">),</span> <span class="nx">ktid</span><span class="p">);</span> <span class="nx">ok</span><span class="p">;</span> <span class="p">})</span><span class="err">&#39;</span> <span class="nx">failed</span><span class="p">.</span>
-</span><span class='line'><span class="p">[</span><span class="nx">New</span> <span class="nx">Thread</span> <span class="mf">629.31</span><span class="p">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">Program</span> <span class="nx">received</span> <span class="nx">signal</span> <span class="nx">SIGABRT</span><span class="p">,</span> <span class="nx">Aborted</span><span class="p">.</span>
-</span><span class='line'><span class="mh">0x01da48ec</span> <span class="nx">in</span> <span class="err">??</span> <span class="p">()</span> <span class="nx">from</span> <span class="o">/</span><span class="nx">lib</span><span class="o">/</span><span class="nx">i386</span><span class="o">-</span><span class="nx">gnu</span><span class="o">/</span><span class="nx">libc</span><span class="p">.</span><span class="nx">so</span><span class="mf">.0.3</span>
-</span><span class='line'><span class="mi">3</span><span class="p">:</span> <span class="nx">runtime_sched</span><span class="p">.</span><span class="nx">gcount</span> <span class="p">=</span> <span class="mi">3</span>
-</span><span class='line'><span class="mi">2</span><span class="p">:</span> <span class="nx">__pthread_total</span> <span class="p">=</span> <span class="mi">2</span>
-</span><span class='line'><span class="mi">1</span><span class="p">:</span> <span class="nx">runtime_sched</span><span class="p">.</span><span class="nx">mcount</span> <span class="p">=</span> <span class="mi">3</span>
-</span></code></pre></td></tr></table></div></figure>
+[DEBUG] (in runtime_newm) Right before the call to pthread_create.
+a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&gt;kernel_thread == ktid;
+__mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })' failed.
+[New Thread 629.31]
 
+Program received signal SIGABRT, Aborted.
+0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3
+3: runtime_sched.gcount = 3
+2: __pthread_total = 2
+1: runtime_sched.mcount = 3
+</pre></div>
+</div>
+ </figure></notextile></div>
 
 <p>Oh my goodness. From a first glance, this seems to be a very serious inconsistency between libpthread and the goruntime.
-At this point, the go scheduler reports 3 threads (3 registered threads, that means
+At this point, the go scheduler reports 3 threads (3 registered threads, that means 
 that flow of execution has passed <code>mcommoninit</code>, the kernel thread initialisation function
 which also registers the kernel thread with the runtime_scheduler) whereas libpthread reports 2 threads.</p>
 
 <p><strong>But WAIT! Where are you going? Things are about to get even more interesting!</strong></p>
 
-<figure class='code'><figcaption><span>goroutine.go</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='go'><span class='line'><span class="p">(</span><span class="nx">gdb</span><span class="p">)</span> <span class="nx">info</span> <span class="nx">threads</span>
-</span><span class='line'> <span class="nx">Id</span>   <span class="nx">Target</span>  <span class="nx">Id</span>       <span class="nx">Frame</span>
-</span><span class='line'> <span class="mi">7</span>    <span class="nx">Thread</span>  <span class="mf">629.31</span>   <span class="mh">0x01f4da00</span> <span class="nx">in</span> <span class="nx">entry_point</span> <span class="p">()</span> <span class="nx">from</span> <span class="o">/</span><span class="nx">lib</span><span class="o">/</span><span class="nx">i386</span><span class="o">-</span><span class="nx">gnu</span><span class="o">/</span><span class="nx">libpthread</span><span class="p">.</span><span class="nx">so</span><span class="mf">.0.3</span>
-</span><span class='line'> <span class="mi">6</span>    <span class="nx">Thread</span>  <span class="mf">629.30</span>   <span class="mh">0x01da48ec</span> <span class="nx">in</span> <span class="err">??</span> <span class="p">()</span> <span class="nx">from</span> <span class="o">/</span><span class="nx">lib</span><span class="o">/</span><span class="nx">i386</span><span class="o">-</span><span class="nx">gnu</span><span class="o">/</span><span class="nx">libc</span><span class="p">.</span><span class="nx">so</span><span class="mf">.0.3</span>
-</span><span class='line'> <span class="mi">5</span>    <span class="nx">Thread</span>  <span class="mf">629.29</span>   <span class="mh">0x01da48ec</span> <span class="nx">in</span> <span class="err">??</span> <span class="p">()</span> <span class="nx">from</span> <span class="o">/</span><span class="nx">lib</span><span class="o">/</span><span class="nx">i386</span><span class="o">-</span><span class="nx">gnu</span><span class="o">/</span><span class="nx">libc</span><span class="p">.</span><span class="nx">so</span><span class="mf">.0.3</span>
-</span><span class='line'><span class="o">*</span><span class="mi">4</span>    <span class="nx">Thread</span>  <span class="mf">629.28</span>   <span class="mh">0x01da48ec</span> <span class="nx">in</span> <span class="err">??</span> <span class="p">()</span> <span class="nx">from</span> <span class="o">/</span><span class="nx">lib</span><span class="o">/</span><span class="nx">i386</span><span class="o">-</span><span class="nx">gnu</span><span class="o">/</span><span class="nx">libc</span><span class="p">.</span><span class="nx">so</span><span class="mf">.0.3</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="CodeRay">
+  <div class="code"><pre>
+(gdb) info threads
+ Id   Target  Id       Frame
+ 7    Thread  629.31   0x01f4da00 in entry_point () from /lib/i386-gnu/libpthread.so.0.3
+ 6    Thread  629.30   0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3
+ 5    Thread  629.29   0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3
+*4    Thread  629.28   0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3
+</pre></div>
+</div>
+ </figure></notextile></div>
 
 <p>GDB reports 4 threads. Yes, 4 threads ladies and gentlemen. Now take a look closely.
 3 threads are in the same frame, with the one with id 4 being the one currently executed.
 And there is also a pattern. <code>0x01da48ec</code> is the value of the <code>eip</code> register for all 3 of them.</p>
 
-<p>That&rsquo;s one thing that is for certain. Now I already have an idea. Why not change
-the current thread to the one with id 7? I&rsquo;m sold to the idea, let&rsquo;s do this:</p>
+<p>That’s one thing that is for certain. Now I already have an idea. Why not change
+the current thread to the one with id 7? I’m sold to the idea, let’s do this:</p>
 
-<figure class='code'><figcaption><span>goroutine.go</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='go'><span class='line'><span class="p">(</span><span class="nx">gdb</span><span class="p">)</span> <span class="nx">thread</span> <span class="mi">7</span>
-</span><span class='line'><span class="p">[</span><span class="nx">Switching</span> <span class="nx">to</span> <span class="nx">thread</span> <span class="mi">7</span> <span class="p">(</span><span class="nx">Thread</span> <span class="mf">629.31</span><span class="p">)]</span>
-</span><span class='line'><span class="err">#</span><span class="mi">0</span>  <span class="mh">0x01f4da00</span> <span class="nx">in</span> <span class="nx">entry_point</span> <span class="p">()</span> <span class="nx">from</span> <span class="o">/</span><span class="nx">lib</span><span class="o">/</span><span class="nx">i386</span><span class="o">-</span><span class="nx">gnu</span><span class="o">/</span><span class="nx">libpthread</span><span class="p">.</span><span class="nx">so</span><span class="mf">.0.3</span>
-</span><span class='line'><span class="p">(</span><span class="nx">gdb</span><span class="p">)</span> <span class="k">continue</span>
-</span><span class='line'><span class="nx">Continuing</span><span class="p">.</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">Program</span> <span class="nx">received</span> <span class="nx">signal</span> <span class="nx">SIGABRT</span><span class="p">,</span> <span class="nx">Aborted</span><span class="p">.</span>
-</span><span class='line'><span class="p">[</span><span class="nx">Switching</span> <span class="nx">to</span> <span class="nx">Thread</span> <span class="mf">629.28</span><span class="p">]</span>
-</span><span class='line'><span class="mh">0x01da48ec</span> <span class="nx">in</span> <span class="err">??</span> <span class="p">()</span> <span class="nx">from</span> <span class="o">/</span><span class="nx">lib</span><span class="o">/</span><span class="nx">i386</span><span class="o">-</span><span class="nx">gnu</span><span class="o">/</span><span class="nx">libc</span><span class="p">.</span><span class="nx">so</span><span class="mf">.0.3</span>
-</span><span class='line'><span class="mi">3</span><span class="p">:</span> <span class="nx">runtime_sched</span><span class="p">.</span><span class="nx">gcount</span> <span class="p">=</span> <span class="mi">3</span>
-</span><span class='line'><span class="mi">2</span><span class="p">:</span> <span class="nx">__pthread_total</span> <span class="p">=</span> <span class="mi">2</span>
-</span><span class='line'><span class="mi">1</span><span class="p">:</span> <span class="nx">runtime_sched</span><span class="p">.</span><span class="nx">mcount</span> <span class="p">=</span> <span class="mi">3</span>
-</span><span class='line'><span class="p">(</span><span class="nx">gdb</span><span class="p">)</span> <span class="nx">info</span> <span class="nx">threads</span>
-</span><span class='line'> <span class="nx">Id</span>   <span class="nx">Target</span>  <span class="nx">Id</span>       <span class="nx">Frame</span>
-</span><span class='line'> <span class="mi">7</span>    <span class="nx">Thread</span>  <span class="mf">629.31</span>   <span class="mh">0x01dc08b0</span> <span class="nx">in</span> <span class="err">??</span> <span class="p">()</span> <span class="nx">from</span> <span class="o">/</span><span class="nx">lib</span><span class="o">/</span><span class="nx">i386</span><span class="o">-</span><span class="nx">gnu</span><span class="o">/</span><span class="nx">libc</span><span class="p">.</span><span class="nx">so</span><span class="mf">.0.3</span>
-</span><span class='line'> <span class="mi">6</span>    <span class="nx">Thread</span>  <span class="mf">629.30</span>   <span class="mh">0x01da48ec</span> <span class="nx">in</span> <span class="err">??</span> <span class="p">()</span> <span class="nx">from</span> <span class="o">/</span><span class="nx">lib</span><span class="o">/</span><span class="nx">i386</span><span class="o">-</span><span class="nx">gnu</span><span class="o">/</span><span class="nx">libc</span><span class="p">.</span><span class="nx">so</span><span class="mf">.0.3</span>
-</span><span class='line'> <span class="mi">5</span>    <span class="nx">Thread</span>  <span class="mf">629.29</span>   <span class="mh">0x01da48ec</span> <span class="nx">in</span> <span class="err">??</span> <span class="p">()</span> <span class="nx">from</span> <span class="o">/</span><span class="nx">lib</span><span class="o">/</span><span class="nx">i386</span><span class="o">-</span><span class="nx">gnu</span><span class="o">/</span><span class="nx">libc</span><span class="p">.</span><span class="nx">so</span><span class="mf">.0.3</span>
-</span><span class='line'><span class="o">*</span><span class="mi">4</span>    <span class="nx">Thread</span>  <span class="mf">629.28</span>   <span class="mh">0x01da48ec</span> <span class="nx">in</span> <span class="err">??</span> <span class="p">()</span> <span class="nx">from</span> <span class="o">/</span><span class="nx">lib</span><span class="o">/</span><span class="nx">i386</span><span class="o">-</span><span class="nx">gnu</span><span class="o">/</span><span class="nx">libc</span><span class="p">.</span><span class="nx">so</span><span class="mf">.0.3</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="CodeRay">
+  <div class="code"><pre>
+(gdb) thread 7
+[Switching to thread 7 (Thread 629.31)]
+#0  0x01f4da00 in entry_point () from /lib/i386-gnu/libpthread.so.0.3
+(gdb) continue
+Continuing.
 
+Program received signal SIGABRT, Aborted.
+[Switching to Thread 629.28]
+0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3
+3: runtime_sched.gcount = 3
+2: __pthread_total = 2
+1: runtime_sched.mcount = 3
+(gdb) info threads
+ Id   Target  Id       Frame
+ 7    Thread  629.31   0x01dc08b0 in ?? () from /lib/i386-gnu/libc.so.0.3
+ 6    Thread  629.30   0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3
+ 5    Thread  629.29   0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3
+*4    Thread  629.28   0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3
+</pre></div>
+</div>
+ </figure></notextile></div>
 
-<p>Damn. But I am curious. What&rsquo;s the next value to be executed?</p>
+<p>Damn. But I am curious. What’s the next value to be executed?</p>
 
-<figure class='code'><figcaption><span>goroutine.go</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='go'><span class='line'><span class="p">(</span><span class="nx">gdb</span><span class="p">)</span> <span class="nx">x</span><span class="o">/</span><span class="nx">i</span> <span class="err">$</span><span class="nx">eip</span>
-</span><span class='line'><span class="p">=&gt;</span> <span class="mh">0x1da48ec</span><span class="p">:</span> <span class="nx">ret</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="CodeRay">
+  <div class="code"><pre>
+(gdb) x/i $eip
+=&gt; 0x1da48ec: ret
+</pre></div>
+</div>
+ </figure></notextile></div>
 
 <p>And what is the next value to be executed for the thread with id 7?</p>
 
-<figure class='code'><figcaption><span>goroutine.go</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='go'><span class='line'><span class="p">(</span><span class="nx">gdb</span><span class="p">)</span> <span class="nx">x</span><span class="o">/</span><span class="nx">i</span> <span class="err">$</span><span class="nx">eip</span>
-</span><span class='line'><span class="p">=&gt;</span> <span class="mh">0x1dc08b0</span><span class="p">:</span> <span class="nx">call</span> <span class="o">*%</span><span class="nx">edx</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="CodeRay">
+  <div class="code"><pre>
+(gdb) x/i $eip
+=&gt; 0x1dc08b0: call *%edx
+</pre></div>
+</div>
+ </figure></notextile></div>
 
-
-<h1>Conclusion</h1>
+<h1 id="conclusion">Conclusion</h1>
 
 <p>Apparently, there is still much debugging left to checkout what is really happening.
-But we have got some leads in the right direction, that hopefully will lead us to
+But we have got some leads in the right direction, that hopefully will lead us to 
 finally finding out where the problem lies, and correct it.</p>
 
 <p>Most importantly, in my immediate plans, before iI start playing around with libpthread
 is to attempt the same debugging run on the same code, under linux (x86). Seeing as
-go is clean on linux, it would provide some clues as to what the expected results
+go is clean on linux, it would provide some clues as to what the expected results 
 should be, and where the execution differentiates substantially, a clue
 that might be vital to finding the problem.</p>
 
-    </div>
-  </div>
 
 
-
-  <footer>
-    <hr>
-    
-    <div class="row-fluid">
-      
-      <div class="span6">
-        <p class="meta">
-        
-        
-
-
-
-  <a href="/blog/categories/gcc/"><span class="badge">gcc</span></a>
-
-  <a href="/blog/categories/golang/"><span class="badge">golang</span></a>
-
-  <a href="/blog/categories/gsoc/"><span class="badge">gsoc</span></a>
-
-
-
-
-        </p>
-      </div>
-      
-      <div class="span6 social-sharing">
-        <div class="sharing">
-  <div class="addthis_toolbox addthis_default_style ">
-  
-  
-  <a class="addthis_button_tweet"></a>
-  
-  
-  <a class="addthis_counter addthis_pill_style"></a>
-  </div>
-  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
-</div>
-
-      </div>
-      
-      
-    </div>
-    
-    <div class="row-fluid">
-      <div class="span12">
-        <p class="meta">
-          
-            <a class="basic-alignment left" href="/blog/2013/08/26/gsoc-week-10-report/" title="Previous Post: GSOC week 10 report">&laquo; GSOC week 10 report</a>
-          
-          
-            <a class="basic-alignment right" href="/blog/2013/12/12/how-the-compiler/" title="Next Post: How the compiler, the Library and the kernel work - Part 1">How the compiler, the Library and the kernel work - Part 1 &raquo;</a>
-          
-        </p>
-      </div>
-    </div>
-  </footer>
 </article>
 
-</div>
 
+    <nav role="navigation" id="pagination">
 
+</nav>
+  </section>
+  
 
-        </div>
-      </div>
-      <div class="row-fluid">
-        <footer class="footer-page" role="contentinfo">
-          <p>
-  Copyright &copy; 2014 - Fotis Koutoulakis -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span> - Theme by <a href="http://alexgaribay.com">Alex Garibay</a>
-</p>
-
-
-        </footer>
-      </div>
-    </div>
-  </div>
   
 
 
@@ -580,7 +459,6 @@ that might be vital to finding the problem.</p>
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>
-
 
 
 

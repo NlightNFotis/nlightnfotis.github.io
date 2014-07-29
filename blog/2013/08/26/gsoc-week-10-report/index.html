@@ -9,7 +9,7 @@
   <meta name="author" content="Fotis Koutoulakis">
 
   
-  <meta name="description" content="GSOC Week 10 Report Aug 26th, 2013 Introduction This week was spent attempting to debug the gccgo runtime via print statements. There were many &hellip;">
+  <meta name="description" content="Tweet GSOC Week 10 Report Aug 26th, 2013 Introduction This week was spent attempting to debug the gccgo runtime via print statements. There were &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,18 +18,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://NlightNFotis.github.io/blog/2013/08/26/gsoc-week-10-report">
+  <link rel="canonical" href="http://NlightNFotis.github.io/blog/2013/08/26/gsoc-week-10-report/">
   <link href="/favicon.png" rel="icon">
-  <link href='http://fonts.googleapis.com/css?family=Quicksand:300,400' rel='stylesheet' type='text/css'>
-  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="Fotis Koutoulakis" type="application/atom+xml">
-  <script src="/js/jquery.js"></script>
-  <script src="/js/bootstrap-collapse.js"></script>
-  <script src="/js/modernizr-2.0.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
-  <script src="/js/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -50,54 +45,97 @@
 
 </head>
 
-<body   >
-  <div class="navbar navbar-inverse navbar-static-top">
-  	<div class="navbar-inner">
-  	  <div class="container">
-        <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-responsive-collapse">
-          <span class="fui-menu-24"></span>
-        </a>
-  	  	<div class="nav-collapse collapse navbar-responsive-collapse" style="height:0;">
-  	      <ul class="nav">
-    
-        <li ><a href="/index.html">Home</a></li>
-    
-        <li ><a href="/blog/archives/index.html">Archives</a></li>
-    
-        <li ><a href="/about.html">About</a></li>
-    
+<body >
+  <header role="banner" id="sidebar">
+    <!-- Logo -->
+<!-- This is ugly as hell, but does well for now. -->
+<!-- TODO: Move this in a seperate stylesheet. -->
+<style>
+IMG.displayed {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    vertical-align: text-bottom;
+}
+</style>
+
+<IMG class="displayed" src="../../images/me2.png">
+
+
+<ul id="menu">
+
+  <li class="title">
+    <h1 id="title"><a href="/">Fotis Koutoulakis</a></h1>
+  </li>
+
+
+  <li class="subtitle">
+    <h2 id="subtitle">I spend my time pretending I know about computers.</h2>
+  </li>
+
+  <li class="link">
+    <img src="../../images/email.png">
+    <a href="/about/">about</a>
+  </li>
+
+  <li class="link">
+    <img src="../../images/glyphicons_391_twitter_t.png">
+    <a href="http://twitter.com/NlightNFotis/">twitter</a>
+  </li>
+
+
+  <li class="link">
+    <img src="../../images/glyphicons_381_github.png">
+    <a href="http://github.com/NlightNFotis/">github</a>
+  </li>
+
+  <li class="link rss">
+    <img src="../../images/glyphicons_social_37_rss.png">
+    <a href="/atom.xml">rss feed</a>
+  </li>
 </ul>
 
-<ul class="nav pull-right">
-    
-    <li><a href="http://github.com/NlightNFotis" title="Github Profile"><i class="icon-github-sign social-navbar"></i></a></li>
-    
-    
-    
-    <li><a href="http://twitter.com/NlightNFotis" title="Twitter Profile"><i class="icon-twitter-sign social-navbar"></i></a></li>
-    
-    
-    <li><a href="http://plus.google.com/+FotisKoutoulakis" title="Google+ Profile"><i class="icon-google-plus-sign social-navbar"></i></a></li>
-    
-    
-</ul>
 
-  	    </div>
-  	  </div>
-  	</div>
-  </div>
-  <div class="container" id="main">
-    <div class="span12">
-      <div class="row-fluid">
-        <div id="content">
-          <div>
-<article class="hentry" role="article">
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:NlightNFotis.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+
+<!-- Octopress Love -->
+<aside id="octopress_linkback">
+  <a href="http://octopress.org/">
+    <span class="unicode_square">
+      <span class="unicode_circle">
+        &nbsp;
+      </span>
+    </span>
+    <span class="octopress">Powered by Octopress</span>
+  </a>
+</aside>
+
+
+  </header>
+  <section id="main">
+    <article class="post">
+  <div class="sharing-box">
   
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://NlightNFotis.github.io/blog/2013/08/26/gsoc-week-10-report/" data-via="NlightNFotis" data-counturl="http://NlightNFotis.github.io/blog/2013/08/26/gsoc-week-10-report/" data-size="large">Tweet</a>
+  
+  
+  
+</div>
 
+  
   <header>
-  <div class="jumbotron">
-    GSOC Week 10 Report
-	<h5>
+    
+      <h2 class="entry-title">GSOC Week 10 Report</h2>
+    
+    
+      <p class="meta">
+        
 
 
 
@@ -109,74 +147,62 @@
   
 
 
-<i class="icon-calendar-empty"></i> <time datetime="2013-08-26T09:00:00+03:00" pubdate data-updated="true">Aug 26<span>th</span>, 2013</time></h5>
-  </div>
-</header>
-  <div class="row-fluid">
-    <div class="span12">
-      <h1>Introduction</h1>
+<time datetime="2013-08-26T09:00:00+03:00" pubdate data-updated="true">Aug 26<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<h1 id="introduction">Introduction</h1>
 
 <p>This week was spent attempting to debug the gccgo runtime via print statements. There were many things
 that I gained from this endeavour. The most significant of which, is the fact that I have got a great
-deal of information regarding the bootstrapping of a go process. Let&rsquo;s proceed into presenting this
-week&rsquo;s findings, shall we?</p>
+deal of information regarding the bootstrapping of a go process. Let’s proceed into presenting this 
+week’s findings, shall we?</p>
 
-<h1>Findings</h1>
+<h1 id="findings">Findings</h1>
 
-<h2>The process bootstrapping sequence</h2>
+<h2 id="the-process-bootstrapping-sequence">The process bootstrapping sequence</h2>
 
 <p>The code that begins a new go-process is conveniently located in a file called <code>go-main.c</code>, the most significant
 part of which is the following:</p>
 
-<figure class='code'><figcaption><span>go-main.c</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="kt">int</span>
-</span><span class='line'><span class="nf">main</span> <span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="n">runtime_check</span> <span class="p">();</span>
-</span><span class='line'>  <span class="n">runtime_args</span> <span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="p">(</span><span class="n">byte</span> <span class="o">**</span><span class="p">)</span> <span class="n">argv</span><span class="p">);</span>
-</span><span class='line'>  <span class="n">runtime_osinit</span> <span class="p">();</span>
-</span><span class='line'>  <span class="n">runtime_schedinit</span> <span class="p">();</span>
-</span><span class='line'>  <span class="n">__go_go</span> <span class="p">(</span><span class="n">mainstart</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
-</span><span class='line'>  <span class="n">runtime_mstart</span> <span class="p">(</span><span class="n">runtime_m</span> <span class="p">());</span>
-</span><span class='line'>  <span class="n">abort</span> <span class="p">();</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">static</span> <span class="kt">void</span>
-</span><span class='line'><span class="nf">mainstart</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">arg</span> <span class="n">__attribute__</span> <span class="p">((</span><span class="n">unused</span><span class="p">)))</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="n">runtime_main</span> <span class="p">();</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption class="code-header" style="margin-bottom:-5px;"><span>go-main.c </span></figcaption>
+ <div class="CodeRay">
+  <div class="code"><pre>
+<span class="predefined-type">int</span>
+main (<span class="predefined-type">int</span> argc, <span class="predefined-type">char</span> **argv)
+{
+  runtime_check ();
+  runtime_args (argc, (byte **) argv);
+  runtime_osinit ();
+  runtime_schedinit ();
+  __go_go (mainstart, <span class="predefined-constant">NULL</span>);
+  runtime_mstart (runtime_m ());
+  abort ();
+}
 
+<span class="directive">static</span> <span class="directive">void</span>
+mainstart (<span class="directive">void</span> *arg __attribute__ ((unused)))
+{
+  runtime_main ();
+}
+</pre></div>
+</div>
+ </figure></notextile></div>
 
 <p>The process is as follows:</p>
 
 <ul>
-<li>First <code>runtime_check</code> runs and registers the os_Args and syscall_Envs as runtime_roots with the garbage collector. I am still investigating what this function exactly is doing, but it seems like some early initialisation of the garbage collector</li>
-<li>Secondly, <code>runtime_args</code> is run. It&rsquo;s job is to call a specific argument handler for the arguments passed to <code>main</code>.</li>
-<li>Thirdly, <code>runtime_osinit</code> is run, whose job is to call the lowlevel _CPU_COUNT function, to get the number of CPUs (in a specific data structure that represents a set of CPUs)</li>
-<li>After that, <code>runtime_schedinit</code> is run, whose job is to create the very first goroutine (g) and system thread (m), and continues with parsing the command line arguments, and the environment variables. After that it sets the maximum number of cpus that are to be used (via <code>GOMAXPROCS</code>), runs the first goroutine, and does some last pieces of the scheduler&rsquo;s initialisation.</li>
-<li>Following <code>runtime_schedinit</code>, <code>__go_go</code> is run, a function whose purpose is to create a new queue, tell it to execute the function that is passed to it as the first parameter, and then queue the goroutine in the
+  <li>First <code>runtime_check</code> runs and registers the os_Args and syscall_Envs as runtime_roots with the garbage collector. I am still investigating what this function exactly is doing, but it seems like some early initialisation of the garbage collector</li>
+  <li>Secondly, <code>runtime_args</code> is run. It’s job is to call a specific argument handler for the arguments passed to <code>main</code>.</li>
+  <li>Thirdly, <code>runtime_osinit</code> is run, whose job is to call the lowlevel _CPU_COUNT function, to get the number of CPUs (in a specific data structure that represents a set of CPUs)</li>
+  <li>After that, <code>runtime_schedinit</code> is run, whose job is to create the very first goroutine (g) and system thread (m), and continues with parsing the command line arguments, and the environment variables. After that it sets the maximum number of cpus that are to be used (via <code>GOMAXPROCS</code>), runs the first goroutine, and does some last pieces of the scheduler’s initialisation.</li>
+  <li>Following <code>runtime_schedinit</code>, <code>__go_go</code> is run, a function whose purpose is to create a new queue, tell it to execute the function that is passed to it as the first parameter, and then queue the goroutine in the
 global ready-to-run goroutine pool.</li>
-<li>Last but not least, <code>runtime_mstart</code> runs, which seems to be starting te execution of the kernel thread created during <code>runtime_schedinit</code>.</li>
+  <li>Last but not least, <code>runtime_mstart</code> runs, which seems to be starting te execution of the kernel thread created during <code>runtime_schedinit</code>.</li>
 </ul>
-
 
 <p>The very last piece of code that is run (and most probably the most important) is <code>runtime_main</code>. Remember that this is passed as a parameter to a goroutine created during the <code>__go_go</code> call, and its job is to mark the goroutine that called it as <em>the main os thread</em>, to initialise the sceduler, and create a goroutine whose job is to release unused memory (from the heap) back to the OS.
 It then starts executing the process user defined instructions (the code the programmer run) via a call to a
@@ -185,190 +211,90 @@ macro that directs it to <code>__go_init_main</code> in the assembly generated b
 <p><code>Runtime_main</code> is also the function that terminates the execution of a go process, with a call to <code>runtime_exit</code>
 which seems to be a macro to the <code>exit</code> function.</p>
 
-<h2>Other findings</h2>
+<h2 id="other-findings">Other findings</h2>
 
 <p>During our debugging sessions we found out that the total count of kernel threads that are running in a simple program is at least two.
-The first one is the bootstrap M, (the one initialised during the program&rsquo;s initialisation, inside <code>runtime_schedinit</code>) and at least another one, (I am still invistigating the validity of the following claim)
-created to be used by the garbage collector.</p>
+The first one is the bootstrap M, (the one initialised during the program’s initialisation, inside <code>runtime_schedinit</code>) and at least another one, (I am still invistigating the validity of the following claim) 
+created to be used by the garbage collector. </p>
 
 <p>A simple go program such as one doing arithmetic or printing a helloworld like message evidently has no issue
 running.
 The issues arrise when we use a <code>go statement</code>. With all our debugging messages activated, this is how a simple
 go program flows:</p>
 
-<figure class='code'><figcaption><span>go-main.c</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">root</span><span class="err">@</span><span class="n">debian</span><span class="o">:~/</span><span class="n">Software</span><span class="o">/</span><span class="n">Experiments</span><span class="o">/</span><span class="n">go</span><span class="err">#</span> <span class="p">.</span><span class="o">/</span><span class="n">a</span><span class="p">.</span><span class="n">out</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">in</span> <span class="n">main</span><span class="p">)</span> <span class="n">before</span> <span class="n">runtime_mcheck</span> <span class="n">is</span> <span class="n">run</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">in</span> <span class="n">main</span><span class="p">)</span> <span class="n">before</span> <span class="n">runtime_args</span> <span class="n">is</span> <span class="n">run</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">in</span> <span class="n">main</span><span class="p">)</span> <span class="n">before</span> <span class="n">runtime_osinit</span> <span class="n">is</span> <span class="n">run</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">in</span> <span class="n">main</span><span class="p">)</span> <span class="n">before</span> <span class="n">runtime_schedinit</span> <span class="n">is</span> <span class="n">run</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">in</span> <span class="n">main</span><span class="p">)</span> <span class="n">before</span> <span class="n">runtime_mstart</span> <span class="n">is</span> <span class="n">run</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">in</span> <span class="n">runtime_mstart</span><span class="p">)</span> <span class="n">right</span> <span class="n">before</span> <span class="n">the</span> <span class="n">call</span> <span class="n">to</span> <span class="n">runtime_minit</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">in</span> <span class="n">mainstart</span><span class="p">)</span> <span class="n">right</span> <span class="n">before</span> <span class="n">the</span> <span class="n">call</span> <span class="n">to</span> <span class="n">runtime_main</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">in</span> <span class="n">runtime_main</span><span class="p">)</span> <span class="n">Beginning</span> <span class="n">of</span> <span class="n">runtime_main</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">start</span> <span class="n">of</span> <span class="n">runtime_newm</span><span class="p">)</span> <span class="n">Total</span> <span class="n">number</span> <span class="n">of</span> <span class="n">m</span><span class="err">&#39;</span><span class="n">s</span> <span class="n">is</span> <span class="mi">1</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">in</span> <span class="n">runtime_newm</span><span class="p">)</span> <span class="n">Preparing</span> <span class="n">to</span> <span class="n">create</span> <span class="n">a</span> <span class="n">new</span> <span class="kr">thread</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">in</span> <span class="n">runtime_newm</span><span class="p">)</span> <span class="n">Right</span> <span class="n">before</span> <span class="n">the</span> <span class="n">call</span> <span class="n">to</span> <span class="n">pthread_create</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">in</span> <span class="n">runtime_newm</span><span class="p">)</span> <span class="n">pthread_create</span> <span class="n">returned</span> <span class="mi">0</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">in</span> <span class="n">runtime_mstart</span><span class="p">)</span> <span class="n">right</span> <span class="n">before</span> <span class="n">the</span> <span class="n">call</span> <span class="n">to</span> <span class="n">runtime_minit</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">end</span> <span class="n">of</span> <span class="n">runtime_newm</span><span class="p">)</span> <span class="n">Total</span> <span class="n">number</span> <span class="n">of</span> <span class="n">m</span><span class="err">&#39;</span><span class="n">s</span> <span class="n">is</span> <span class="mi">2</span>
-</span><span class='line'><span class="n">Hello</span><span class="p">,</span> <span class="n">fotis</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">in</span> <span class="n">runtime_main</span><span class="p">)</span> <span class="n">Right</span> <span class="n">before</span> <span class="n">runtime_exit</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="CodeRay">
+  <div class="code"><pre>
+root@debian:~/Software/Experiments/go# ./a.out
+[DEBUG] (in main) before runtime_mcheck is run
+[DEBUG] (in main) before runtime_args is run
+[DEBUG] (in main) before runtime_osinit is run
+[DEBUG] (in main) before runtime_schedinit is run
+[DEBUG] (in main) before runtime_mstart is run
+[DEBUG] (in runtime_mstart) right before the call to runtime_minit
+[DEBUG] (in mainstart) right before the call to runtime_main
+[DEBUG] (in runtime_main) Beginning of runtime_main
+[DEBUG] (start of runtime_newm) Total number of m's is 1
+[DEBUG] (in runtime_newm) Preparing to create a new thread
+[DEBUG] (in runtime_newm) Right before the call to pthread_create
+[DEBUG] (in runtime_newm) pthread_create returned 0
+[DEBUG] (in runtime_mstart) right before the call to runtime_minit
+[DEBUG] (end of runtime_newm) Total number of m's is 2
+Hello, fotis
+[DEBUG] (in runtime_main) Right before runtime_exit
+</pre></div>
+</div>
+ </figure></notextile></div>
 
 <p>And this is how a goroutine powered program fails:</p>
 
-<figure class='code'><figcaption><span>go-main.c</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">root</span><span class="err">@</span><span class="n">debian</span><span class="o">:~/</span><span class="n">Software</span><span class="o">/</span><span class="n">Experiments</span><span class="o">/</span><span class="n">go</span><span class="err">#</span> <span class="p">.</span><span class="o">/</span><span class="n">a</span><span class="p">.</span><span class="n">out</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">in</span> <span class="n">main</span><span class="p">)</span> <span class="n">before</span> <span class="n">runtime_mcheck</span> <span class="n">is</span> <span class="n">run</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">in</span> <span class="n">main</span><span class="p">)</span> <span class="n">before</span> <span class="n">runtime_args</span> <span class="n">is</span> <span class="n">run</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">in</span> <span class="n">main</span><span class="p">)</span> <span class="n">before</span> <span class="n">runtime_osinit</span> <span class="n">is</span> <span class="n">run</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">in</span> <span class="n">main</span><span class="p">)</span> <span class="n">before</span> <span class="n">runtime_schedinit</span> <span class="n">is</span> <span class="n">run</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">in</span> <span class="n">main</span><span class="p">)</span> <span class="n">before</span> <span class="n">runtime_mstart</span> <span class="n">is</span> <span class="n">run</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">in</span> <span class="n">runtime_mstart</span><span class="p">)</span> <span class="n">right</span> <span class="n">before</span> <span class="n">the</span> <span class="n">call</span> <span class="n">to</span> <span class="n">runtime_minit</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">in</span> <span class="n">mainstart</span><span class="p">)</span> <span class="n">right</span> <span class="n">before</span> <span class="n">the</span> <span class="n">call</span> <span class="n">to</span> <span class="n">runtime_main</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">in</span> <span class="n">runtime_main</span><span class="p">)</span> <span class="n">Beginning</span> <span class="n">of</span> <span class="n">runtime_main</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">start</span> <span class="n">of</span> <span class="n">runtime_newm</span><span class="p">)</span> <span class="n">Total</span> <span class="n">number</span> <span class="n">of</span> <span class="n">m</span><span class="err">&#39;</span><span class="n">s</span> <span class="n">is</span> <span class="mi">1</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">in</span> <span class="n">runtime_newm</span><span class="p">)</span> <span class="n">Preparing</span> <span class="n">to</span> <span class="n">create</span> <span class="n">a</span> <span class="n">new</span> <span class="kr">thread</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">in</span> <span class="n">runtime_newm</span><span class="p">)</span> <span class="n">Right</span> <span class="n">before</span> <span class="n">the</span> <span class="n">call</span> <span class="n">to</span> <span class="n">pthread_create</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">in</span> <span class="n">runtime_newm</span><span class="p">)</span> <span class="n">pthread_create</span> <span class="n">returned</span> <span class="mi">0</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">in</span> <span class="n">runtime_mstart</span><span class="p">)</span> <span class="n">right</span> <span class="n">before</span> <span class="n">the</span> <span class="n">call</span> <span class="n">to</span> <span class="n">runtime_minit</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">end</span> <span class="n">of</span> <span class="n">runtime_newm</span><span class="p">)</span> <span class="n">Total</span> <span class="n">number</span> <span class="n">of</span> <span class="n">m</span><span class="err">&#39;</span><span class="n">s</span> <span class="n">is</span> <span class="mi">2</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">start</span> <span class="n">of</span> <span class="n">runtime_new</span><span class="p">)</span> <span class="n">Total</span> <span class="n">number</span> <span class="n">of</span> <span class="n">m</span><span class="err">&#39;</span><span class="n">s</span> <span class="n">is</span> <span class="mi">2</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">in</span> <span class="n">runtime_newm</span><span class="p">)</span> <span class="n">Preparing</span> <span class="n">to</span> <span class="n">create</span> <span class="n">a</span> <span class="n">new</span> <span class="kr">thread</span><span class="p">.</span>
-</span><span class='line'><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="p">(</span><span class="n">in</span> <span class="n">runtime_newm</span><span class="p">)</span> <span class="n">Right</span> <span class="n">before</span> <span class="n">the</span> <span class="n">call</span> <span class="n">to</span> <span class="n">pthread_create</span>
-</span><span class='line'><span class="n">a</span><span class="p">.</span><span class="n">out</span><span class="o">:</span> <span class="p">.</span><span class="o">/</span><span class="n">pthread</span><span class="o">/</span><span class="n">pt</span><span class="o">-</span><span class="n">create</span><span class="p">.</span><span class="n">c</span><span class="o">:</span><span class="mi">167</span><span class="o">:</span> <span class="n">__pthread_create_internal</span><span class="o">:</span> <span class="n">Assertion</span> <span class="err">`</span><span class="p">({</span> <span class="n">mach_port_t</span> <span class="n">ktid</span> <span class="o">=</span> <span class="n">__mach_thread_self</span> <span class="p">();</span> <span class="kt">int</span> <span class="n">ok</span> <span class="o">=</span> <span class="kr">thread</span><span class="o">-&gt;</span><span class="n">kernel_thread</span> <span class="o">==</span> <span class="n">ktid</span><span class="p">;</span>
-</span><span class='line'><span class="n">__mach_port_deallocate</span> <span class="p">((</span><span class="n">__mach_task_self</span> <span class="o">+</span> <span class="mi">0</span><span class="p">),</span> <span class="n">ktid</span><span class="p">);</span> <span class="n">ok</span><span class="p">;</span> <span class="p">})</span><span class="err">&#39;</span> <span class="n">failed</span><span class="p">.</span>
-</span><span class='line'><span class="n">Aborted</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="CodeRay">
+  <div class="code"><pre>
+root@debian:~/Software/Experiments/go# ./a.out
+[DEBUG] (in main) before runtime_mcheck is run
+[DEBUG] (in main) before runtime_args is run
+[DEBUG] (in main) before runtime_osinit is run
+[DEBUG] (in main) before runtime_schedinit is run
+[DEBUG] (in main) before runtime_mstart is run
+[DEBUG] (in runtime_mstart) right before the call to runtime_minit
+[DEBUG] (in mainstart) right before the call to runtime_main
+[DEBUG] (in runtime_main) Beginning of runtime_main
+[DEBUG] (start of runtime_newm) Total number of m's is 1
+[DEBUG] (in runtime_newm) Preparing to create a new thread
+[DEBUG] (in runtime_newm) Right before the call to pthread_create
+[DEBUG] (in runtime_newm) pthread_create returned 0
+[DEBUG] (in runtime_mstart) right before the call to runtime_minit
+[DEBUG] (end of runtime_newm) Total number of m's is 2
+[DEBUG] (start of runtime_new) Total number of m's is 2
+[DEBUG] (in runtime_newm) Preparing to create a new thread.
+[DEBUG] (in runtime_newm) Right before the call to pthread_create
+a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&gt;kernel_thread == ktid;
+__mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })' failed.
+Aborted
+</pre></div>
+</div>
+ </figure></notextile></div>
 
-
-<h1>Work for the next week</h1>
+<h1 id="work-for-the-next-week">Work for the next week</h1>
 
 <p>I will of course continue to print debug until I have knowledge of the exact flow of execution in the go
 runtime. Right now I have very good knowledge of the flow, but there are some things that I need to sort out.
-For instance it is not exactly clear to me why we call certain functions, or what they are supposed to be doing at certain parts. After I sort this out,  I also plan to start debugging the libpthread to see what&rsquo;s libpthreads status
+For instance it is not exactly clear to me why we call certain functions, or what they are supposed to be doing at certain parts. After I sort this out,  I also plan to start debugging the libpthread to see what’s libpthreads status
 during a hello world like program, and during a goroutine powered program, to get to see if we get
 to find something interesting in libpthread (like how many threads does libpthread report against how
 many the goruntime reports)</p>
 
-    </div>
-  </div>
 
 
 
-  <footer>
-    <hr>
-    
-    <div class="row-fluid">
-      
-      <div class="span6">
-        <p class="meta">
-        
-        
-
-
-
-  <a href="/blog/categories/gcc/"><span class="badge">gcc</span></a>
-
-  <a href="/blog/categories/golang/"><span class="badge">golang</span></a>
-
-  <a href="/blog/categories/gsoc/"><span class="badge">gsoc</span></a>
-
-
-
-
-        </p>
-      </div>
-      
-      <div class="span6 social-sharing">
-        <div class="sharing">
-  <div class="addthis_toolbox addthis_default_style ">
-  
-  
-  <a class="addthis_button_tweet"></a>
-  
-  
-  <a class="addthis_counter addthis_pill_style"></a>
-  </div>
-  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
-</div>
-
-      </div>
-      
-      
-    </div>
-    
-    <div class="row-fluid">
-      <div class="span12">
-        <p class="meta">
-          
-            <a class="basic-alignment left" href="/blog/2013/08/19/gsoc-week-9-partial-report/" title="Previous Post: GSOC Week 9 (Partial) report">&laquo; GSOC Week 9 (Partial) report</a>
-          
-          
-            <a class="basic-alignment right" href="/blog/2013/09/02/gsoc-week-11-report/" title="Next Post: GSOC Week 11 report">GSOC Week 11 report &raquo;</a>
-          
-        </p>
-      </div>
-    </div>
-  </footer>
 </article>
 
-</div>
 
+    <nav role="navigation" id="pagination">
 
+</nav>
+  </section>
+  
 
-        </div>
-      </div>
-      <div class="row-fluid">
-        <footer class="footer-page" role="contentinfo">
-          <p>
-  Copyright &copy; 2014 - Fotis Koutoulakis -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span> - Theme by <a href="http://alexgaribay.com">Alex Garibay</a>
-</p>
-
-
-        </footer>
-      </div>
-    </div>
-  </div>
   
 
 
@@ -386,7 +312,6 @@ many the goruntime reports)</p>
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>
-
 
 
 

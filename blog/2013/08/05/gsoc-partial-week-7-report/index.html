@@ -9,7 +9,7 @@
   <meta name="author" content="Fotis Koutoulakis">
 
   
-  <meta name="description" content="GSOC (Partial) Week 7 Report Aug 5th, 2013 An exciting week. This week was exciting. Spending it on learning about the go runtime was the reason for &hellip;">
+  <meta name="description" content="Tweet GSOC (Partial) Week 7 Report Aug 5th, 2013 An exciting week. This week was exciting. Spending it on learning about the go runtime was the &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,18 +18,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://NlightNFotis.github.io/blog/2013/08/05/gsoc-partial-week-7-report">
+  <link rel="canonical" href="http://NlightNFotis.github.io/blog/2013/08/05/gsoc-partial-week-7-report/">
   <link href="/favicon.png" rel="icon">
-  <link href='http://fonts.googleapis.com/css?family=Quicksand:300,400' rel='stylesheet' type='text/css'>
-  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="Fotis Koutoulakis" type="application/atom+xml">
-  <script src="/js/jquery.js"></script>
-  <script src="/js/bootstrap-collapse.js"></script>
-  <script src="/js/modernizr-2.0.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
-  <script src="/js/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -50,54 +45,97 @@
 
 </head>
 
-<body   >
-  <div class="navbar navbar-inverse navbar-static-top">
-  	<div class="navbar-inner">
-  	  <div class="container">
-        <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-responsive-collapse">
-          <span class="fui-menu-24"></span>
-        </a>
-  	  	<div class="nav-collapse collapse navbar-responsive-collapse" style="height:0;">
-  	      <ul class="nav">
-    
-        <li ><a href="/index.html">Home</a></li>
-    
-        <li ><a href="/blog/archives/index.html">Archives</a></li>
-    
-        <li ><a href="/about.html">About</a></li>
-    
+<body >
+  <header role="banner" id="sidebar">
+    <!-- Logo -->
+<!-- This is ugly as hell, but does well for now. -->
+<!-- TODO: Move this in a seperate stylesheet. -->
+<style>
+IMG.displayed {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    vertical-align: text-bottom;
+}
+</style>
+
+<IMG class="displayed" src="../../images/me2.png">
+
+
+<ul id="menu">
+
+  <li class="title">
+    <h1 id="title"><a href="/">Fotis Koutoulakis</a></h1>
+  </li>
+
+
+  <li class="subtitle">
+    <h2 id="subtitle">I spend my time pretending I know about computers.</h2>
+  </li>
+
+  <li class="link">
+    <img src="../../images/email.png">
+    <a href="/about/">about</a>
+  </li>
+
+  <li class="link">
+    <img src="../../images/glyphicons_391_twitter_t.png">
+    <a href="http://twitter.com/NlightNFotis/">twitter</a>
+  </li>
+
+
+  <li class="link">
+    <img src="../../images/glyphicons_381_github.png">
+    <a href="http://github.com/NlightNFotis/">github</a>
+  </li>
+
+  <li class="link rss">
+    <img src="../../images/glyphicons_social_37_rss.png">
+    <a href="/atom.xml">rss feed</a>
+  </li>
 </ul>
 
-<ul class="nav pull-right">
-    
-    <li><a href="http://github.com/NlightNFotis" title="Github Profile"><i class="icon-github-sign social-navbar"></i></a></li>
-    
-    
-    
-    <li><a href="http://twitter.com/NlightNFotis" title="Twitter Profile"><i class="icon-twitter-sign social-navbar"></i></a></li>
-    
-    
-    <li><a href="http://plus.google.com/+FotisKoutoulakis" title="Google+ Profile"><i class="icon-google-plus-sign social-navbar"></i></a></li>
-    
-    
-</ul>
 
-  	    </div>
-  	  </div>
-  	</div>
-  </div>
-  <div class="container" id="main">
-    <div class="span12">
-      <div class="row-fluid">
-        <div id="content">
-          <div>
-<article class="hentry" role="article">
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:NlightNFotis.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+
+<!-- Octopress Love -->
+<aside id="octopress_linkback">
+  <a href="http://octopress.org/">
+    <span class="unicode_square">
+      <span class="unicode_circle">
+        &nbsp;
+      </span>
+    </span>
+    <span class="octopress">Powered by Octopress</span>
+  </a>
+</aside>
+
+
+  </header>
+  <section id="main">
+    <article class="post">
+  <div class="sharing-box">
   
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://NlightNFotis.github.io/blog/2013/08/05/gsoc-partial-week-7-report/" data-via="NlightNFotis" data-counturl="http://NlightNFotis.github.io/blog/2013/08/05/gsoc-partial-week-7-report/" data-size="large">Tweet</a>
+  
+  
+  
+</div>
 
+  
   <header>
-  <div class="jumbotron">
-    GSOC (Partial) Week 7 Report
-	<h5>
+    
+      <h2 class="entry-title">GSOC (Partial) Week 7 Report</h2>
+    
+    
+      <p class="meta">
+        
 
 
 
@@ -109,386 +147,313 @@
   
 
 
-<i class="icon-calendar-empty"></i> <time datetime="2013-08-05T01:36:00+03:00" pubdate data-updated="true">Aug 5<span>th</span>, 2013</time></h5>
-  </div>
-</header>
-  <div class="row-fluid">
-    <div class="span12">
-      <h1>An exciting week.</h1>
+<time datetime="2013-08-05T01:36:00+03:00" pubdate data-updated="true">Aug 5<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<h1 id="an-exciting-week">An exciting week.</h1>
 
 <p>This week was exciting. Spending it on learning about the go runtime was the reason for this. As insightfull as it was however,
 it also confused me a little bit. Before this goes any further, I should state that this is a partial report on my research
 and my findings. My aims for this week were the following: <strong>To investigate the behavior of go programs under the Hurd, to
-study the go runtime, and possibly modify it to see if the goroutine issues are libpthread&rsquo;s issue or the go&rsquo;s runtime issue</strong>.</p>
+study the go runtime, and possibly modify it to see if the goroutine issues are libpthread’s issue or the go’s runtime issue</strong>. </p>
 
-<h1>Presenting my findings.</h1>
+<h1 id="presenting-my-findings">Presenting my findings.</h1>
 
 <p>Most of my time was spent studying the gcc go frontend, libgo and the go runtime. Fortunatelly, I can say (gladly) that it was
 time well spent. What I got from it were some nice pieces of insight, but also some slight confusion and doubts.</p>
 
 <p>The first interesting thing in my findings was this:</p>
 
-<figure class='code'><figcaption><span>runtime.h</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-</pre></td><td class='code'><pre><code class='go'><span class='line'><span class="kd">struct</span> <span class="nx">G</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="nx">Defer</span><span class="o">*</span>   <span class="k">defer</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">Panic</span><span class="o">*</span>   <span class="nx">panic</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">void</span><span class="o">*</span>    <span class="nx">exception</span><span class="p">;</span>   <span class="c1">// current exception being thrown</span>
-</span><span class='line'>  <span class="kt">bool</span>    <span class="nx">is_foreign</span><span class="p">;</span>  <span class="c1">// whether current exception from other language</span>
-</span><span class='line'>  <span class="nx">void</span>    <span class="o">*</span><span class="nx">gcstack</span><span class="p">;</span> <span class="c1">// if status==Gsyscall, gcstack = stackbase to use during gc</span>
-</span><span class='line'>  <span class="kt">uintptr</span> <span class="nx">gcstack_size</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">void</span><span class="o">*</span>    <span class="nx">gcnext_segment</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">void</span><span class="o">*</span>    <span class="nx">gcnext_sp</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">void</span><span class="o">*</span>    <span class="nx">gcinitial_sp</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">ucontext_t</span> <span class="nx">gcregs</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">byte</span><span class="o">*</span>    <span class="nx">entry</span><span class="p">;</span>       <span class="c1">// initial function</span>
-</span><span class='line'>  <span class="nx">G</span><span class="o">*</span>   <span class="nx">alllink</span><span class="p">;</span> <span class="c1">// on allg</span>
-</span><span class='line'>  <span class="nx">void</span><span class="o">*</span>    <span class="nx">param</span><span class="p">;</span>       <span class="c1">// passed parameter on wakeup</span>
-</span><span class='line'>  <span class="kt">bool</span>    <span class="nx">fromgogo</span><span class="p">;</span>    <span class="c1">// reached from gogo</span>
-</span><span class='line'>  <span class="kt">int16</span>   <span class="nx">status</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">int64</span>   <span class="nx">goid</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">uint32</span>  <span class="nx">selgen</span><span class="p">;</span>      <span class="c1">// valid sudog pointer</span>
-</span><span class='line'>  <span class="kd">const</span> <span class="nx">char</span><span class="o">*</span>  <span class="nx">waitreason</span><span class="p">;</span>  <span class="c1">// if status==Gwaiting</span>
-</span><span class='line'>  <span class="nx">G</span><span class="o">*</span>   <span class="nx">schedlink</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">bool</span>    <span class="nx">readyonstop</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">bool</span>    <span class="nx">ispanic</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">bool</span>    <span class="nx">issystem</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">int8</span>    <span class="nx">raceignore</span><span class="p">;</span> <span class="c1">// ignore race detection events</span>
-</span><span class='line'>  <span class="nx">M</span><span class="o">*</span>   <span class="nx">m</span><span class="p">;</span>       <span class="c1">// for debuggers, but offset not hard-coded</span>
-</span><span class='line'>  <span class="nx">M</span><span class="o">*</span>   <span class="nx">lockedm</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">M</span><span class="o">*</span>   <span class="nx">idlem</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">int32</span>   <span class="nx">sig</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">int32</span>   <span class="nx">writenbuf</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">byte</span><span class="o">*</span>    <span class="nx">writebuf</span><span class="p">;</span>
-</span><span class='line'>  <span class="c1">// DeferChunk  *dchunk;</span>
-</span><span class='line'>  <span class="c1">// DeferChunk  *dchunknext;</span>
-</span><span class='line'>  <span class="kt">uintptr</span> <span class="nx">sigcode0</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">uintptr</span> <span class="nx">sigcode1</span><span class="p">;</span>
-</span><span class='line'>  <span class="c1">// uintptr sigpc;</span>
-</span><span class='line'>  <span class="kt">uintptr</span> <span class="nx">gopc</span><span class="p">;</span>    <span class="c1">// pc of go statement that created this goroutine</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="kt">int32</span>   <span class="nx">ncgo</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">CgoMal</span><span class="o">*</span>  <span class="nx">cgomal</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">Traceback</span><span class="o">*</span> <span class="nx">traceback</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">ucontext_t</span>  <span class="nx">context</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">void</span><span class="o">*</span>        <span class="nx">stack_context</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
-</span><span class='line'><span class="p">};</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>runtime.h</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+<span class="line-number">39</span>
+<span class="line-number">40</span>
+<span class="line-number">41</span>
+<span class="line-number">42</span>
+<span class="line-number">43</span>
+<span class="line-number">44</span>
+<span class="line-number">45</span>
+<span class="line-number">46</span>
+</pre></td><td class="code"><pre><code class="go"><span class="line"><span class="kd">struct</span>	<span class="nx">G</span>
+</span><span class="line"><span class="p">{</span>
+</span><span class="line">	<span class="nx">Defer</span><span class="o">*</span>	<span class="k">defer</span><span class="p">;</span>
+</span><span class="line">	<span class="nx">Panic</span><span class="o">*</span>	<span class="nx">panic</span><span class="p">;</span>
+</span><span class="line">	<span class="nx">void</span><span class="o">*</span>	<span class="nx">exception</span><span class="p">;</span>	<span class="c1">// current exception being thrown</span>
+</span><span class="line">	<span class="kt">bool</span>	<span class="nx">is_foreign</span><span class="p">;</span>	<span class="c1">// whether current exception from other language</span>
+</span><span class="line">	<span class="nx">void</span>	<span class="o">*</span><span class="nx">gcstack</span><span class="p">;</span>	<span class="c1">// if status==Gsyscall, gcstack = stackbase to use during gc</span>
+</span><span class="line">	<span class="kt">uintptr</span>	<span class="nx">gcstack_size</span><span class="p">;</span>
+</span><span class="line">	<span class="nx">void</span><span class="o">*</span>	<span class="nx">gcnext_segment</span><span class="p">;</span>
+</span><span class="line">	<span class="nx">void</span><span class="o">*</span>	<span class="nx">gcnext_sp</span><span class="p">;</span>
+</span><span class="line">	<span class="nx">void</span><span class="o">*</span>	<span class="nx">gcinitial_sp</span><span class="p">;</span>
+</span><span class="line">	<span class="nx">ucontext_t</span> <span class="nx">gcregs</span><span class="p">;</span>
+</span><span class="line">	<span class="kt">byte</span><span class="o">*</span>	<span class="nx">entry</span><span class="p">;</span>		<span class="c1">// initial function</span>
+</span><span class="line">	<span class="nx">G</span><span class="o">*</span>	<span class="nx">alllink</span><span class="p">;</span>	<span class="c1">// on allg</span>
+</span><span class="line">	<span class="nx">void</span><span class="o">*</span>	<span class="nx">param</span><span class="p">;</span>		<span class="c1">// passed parameter on wakeup</span>
+</span><span class="line">	<span class="kt">bool</span>	<span class="nx">fromgogo</span><span class="p">;</span>	<span class="c1">// reached from gogo</span>
+</span><span class="line">	<span class="kt">int16</span>	<span class="nx">status</span><span class="p">;</span>
+</span><span class="line">	<span class="kt">int64</span>	<span class="nx">goid</span><span class="p">;</span>
+</span><span class="line">	<span class="kt">uint32</span>	<span class="nx">selgen</span><span class="p">;</span>		<span class="c1">// valid sudog pointer</span>
+</span><span class="line">	<span class="kd">const</span> <span class="nx">char</span><span class="o">*</span>	<span class="nx">waitreason</span><span class="p">;</span>	<span class="c1">// if status==Gwaiting</span>
+</span><span class="line">	<span class="nx">G</span><span class="o">*</span>	<span class="nx">schedlink</span><span class="p">;</span>
+</span><span class="line">	<span class="kt">bool</span>	<span class="nx">readyonstop</span><span class="p">;</span>
+</span><span class="line">	<span class="kt">bool</span>	<span class="nx">ispanic</span><span class="p">;</span>
+</span><span class="line">	<span class="kt">bool</span>	<span class="nx">issystem</span><span class="p">;</span>
+</span><span class="line">	<span class="kt">int8</span>	<span class="nx">raceignore</span><span class="p">;</span> <span class="c1">// ignore race detection events</span>
+</span><span class="line">	<span class="nx">M</span><span class="o">*</span>	<span class="nx">m</span><span class="p">;</span>		<span class="c1">// for debuggers, but offset not hard-coded</span>
+</span><span class="line">	<span class="nx">M</span><span class="o">*</span>	<span class="nx">lockedm</span><span class="p">;</span>
+</span><span class="line">	<span class="nx">M</span><span class="o">*</span>	<span class="nx">idlem</span><span class="p">;</span>
+</span><span class="line">	<span class="kt">int32</span>	<span class="nx">sig</span><span class="p">;</span>
+</span><span class="line">	<span class="kt">int32</span>	<span class="nx">writenbuf</span><span class="p">;</span>
+</span><span class="line">	<span class="kt">byte</span><span class="o">*</span>	<span class="nx">writebuf</span><span class="p">;</span>
+</span><span class="line">	<span class="c1">// DeferChunk	*dchunk;</span>
+</span><span class="line">	<span class="c1">// DeferChunk	*dchunknext;</span>
+</span><span class="line">	<span class="kt">uintptr</span>	<span class="nx">sigcode0</span><span class="p">;</span>
+</span><span class="line">	<span class="kt">uintptr</span>	<span class="nx">sigcode1</span><span class="p">;</span>
+</span><span class="line">	<span class="c1">// uintptr	sigpc;</span>
+</span><span class="line">	<span class="kt">uintptr</span>	<span class="nx">gopc</span><span class="p">;</span>	<span class="c1">// pc of go statement that created this goroutine</span>
+</span><span class="line">
+</span><span class="line">	<span class="kt">int32</span>	<span class="nx">ncgo</span><span class="p">;</span>
+</span><span class="line">	<span class="nx">CgoMal</span><span class="o">*</span>	<span class="nx">cgomal</span><span class="p">;</span>
+</span><span class="line">
+</span><span class="line">	<span class="nx">Traceback</span><span class="o">*</span> <span class="nx">traceback</span><span class="p">;</span>
+</span><span class="line">
+</span><span class="line">	<span class="nx">ucontext_t</span>	<span class="nx">context</span><span class="p">;</span>
+</span><span class="line">	<span class="nx">void</span><span class="o">*</span>		<span class="nx">stack_context</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+</span><span class="line"><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>Yep. This is the code that resembles a (yeah, you guessed it, a <strong>goroutine</strong>). I was pretty surprised at first to see that a thread is resembled as a struct. But then again,
 taking a closer look at it, it makes perfect sense. The next one though was a <em>lot trickier</em>:</p>
 
-<figure class='code'><figcaption><span>runtime.h</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-</pre></td><td class='code'><pre><code class='go'><span class='line'><span class="kd">struct</span> <span class="nx">M</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="nx">G</span><span class="o">*</span>   <span class="nx">g0</span><span class="p">;</span>      <span class="c1">// goroutine with scheduling stack</span>
-</span><span class='line'>  <span class="nx">G</span><span class="o">*</span>   <span class="nx">gsignal</span><span class="p">;</span> <span class="c1">// signal-handling G</span>
-</span><span class='line'>  <span class="nx">G</span><span class="o">*</span>   <span class="nx">curg</span><span class="p">;</span>        <span class="c1">// current running goroutine</span>
-</span><span class='line'>  <span class="kt">int32</span>   <span class="nx">id</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">int32</span>   <span class="nx">mallocing</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">int32</span>   <span class="nx">throwing</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">int32</span>   <span class="nx">gcing</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">int32</span>   <span class="nx">locks</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">int32</span>   <span class="nx">nomemprof</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">int32</span>   <span class="nx">waitnextg</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">int32</span>   <span class="nx">dying</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">int32</span>   <span class="nx">profilehz</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">int32</span>   <span class="nx">helpgc</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">uint32</span>  <span class="nx">fastrand</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">uint64</span>  <span class="nx">ncgocall</span><span class="p">;</span>    <span class="c1">// number of cgo calls in total</span>
-</span><span class='line'>  <span class="nx">Note</span>    <span class="nx">havenextg</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">G</span><span class="o">*</span>   <span class="nx">nextg</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">M</span><span class="o">*</span>   <span class="nx">alllink</span><span class="p">;</span> <span class="c1">// on allm</span>
-</span><span class='line'>  <span class="nx">M</span><span class="o">*</span>   <span class="nx">schedlink</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">MCache</span>  <span class="o">*</span><span class="nx">mcache</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">G</span><span class="o">*</span>   <span class="nx">lockedg</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">G</span><span class="o">*</span>   <span class="nx">idleg</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">Location</span> <span class="nx">createstack</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span> <span class="c1">// Stack that created this thread.</span>
-</span><span class='line'>  <span class="nx">M</span><span class="o">*</span>   <span class="nx">nextwaitm</span><span class="p">;</span>   <span class="c1">// next M waiting for lock</span>
-</span><span class='line'>  <span class="kt">uintptr</span> <span class="nx">waitsema</span><span class="p">;</span>    <span class="c1">// semaphore for parking on locks</span>
-</span><span class='line'>  <span class="kt">uint32</span>  <span class="nx">waitsemacount</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">uint32</span>  <span class="nx">waitsemalock</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">GCStats</span> <span class="nx">gcstats</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">bool</span>    <span class="nx">racecall</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">void</span><span class="o">*</span>    <span class="nx">racepc</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="kt">uintptr</span> <span class="nx">settype_buf</span><span class="p">[</span><span class="mi">1024</span><span class="p">];</span>
-</span><span class='line'>  <span class="kt">uintptr</span> <span class="nx">settype_bufsize</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="kt">uintptr</span> <span class="nx">end</span><span class="p">[];</span>
-</span><span class='line'><span class="p">};</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>runtime.h</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+</pre></td><td class="code"><pre><code class="go"><span class="line"><span class="kd">struct</span>	<span class="nx">M</span>
+</span><span class="line"><span class="p">{</span>
+</span><span class="line">	<span class="nx">G</span><span class="o">*</span>	<span class="nx">g0</span><span class="p">;</span>		<span class="c1">// goroutine with scheduling stack</span>
+</span><span class="line">	<span class="nx">G</span><span class="o">*</span>	<span class="nx">gsignal</span><span class="p">;</span>	<span class="c1">// signal-handling G</span>
+</span><span class="line">	<span class="nx">G</span><span class="o">*</span>	<span class="nx">curg</span><span class="p">;</span>		<span class="c1">// current running goroutine</span>
+</span><span class="line">	<span class="kt">int32</span>	<span class="nx">id</span><span class="p">;</span>
+</span><span class="line">	<span class="kt">int32</span>	<span class="nx">mallocing</span><span class="p">;</span>
+</span><span class="line">	<span class="kt">int32</span>	<span class="nx">throwing</span><span class="p">;</span>
+</span><span class="line">	<span class="kt">int32</span>	<span class="nx">gcing</span><span class="p">;</span>
+</span><span class="line">	<span class="kt">int32</span>	<span class="nx">locks</span><span class="p">;</span>
+</span><span class="line">	<span class="kt">int32</span>	<span class="nx">nomemprof</span><span class="p">;</span>
+</span><span class="line">	<span class="kt">int32</span>	<span class="nx">waitnextg</span><span class="p">;</span>
+</span><span class="line">	<span class="kt">int32</span>	<span class="nx">dying</span><span class="p">;</span>
+</span><span class="line">	<span class="kt">int32</span>	<span class="nx">profilehz</span><span class="p">;</span>
+</span><span class="line">	<span class="kt">int32</span>	<span class="nx">helpgc</span><span class="p">;</span>
+</span><span class="line">	<span class="kt">uint32</span>	<span class="nx">fastrand</span><span class="p">;</span>
+</span><span class="line">	<span class="kt">uint64</span>	<span class="nx">ncgocall</span><span class="p">;</span>	<span class="c1">// number of cgo calls in total</span>
+</span><span class="line">	<span class="nx">Note</span>	<span class="nx">havenextg</span><span class="p">;</span>
+</span><span class="line">	<span class="nx">G</span><span class="o">*</span>	<span class="nx">nextg</span><span class="p">;</span>
+</span><span class="line">	<span class="nx">M</span><span class="o">*</span>	<span class="nx">alllink</span><span class="p">;</span>	<span class="c1">// on allm</span>
+</span><span class="line">	<span class="nx">M</span><span class="o">*</span>	<span class="nx">schedlink</span><span class="p">;</span>
+</span><span class="line">	<span class="nx">MCache</span>	<span class="o">*</span><span class="nx">mcache</span><span class="p">;</span>
+</span><span class="line">	<span class="nx">G</span><span class="o">*</span>	<span class="nx">lockedg</span><span class="p">;</span>
+</span><span class="line">	<span class="nx">G</span><span class="o">*</span>	<span class="nx">idleg</span><span class="p">;</span>
+</span><span class="line">	<span class="nx">Location</span> <span class="nx">createstack</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>	<span class="c1">// Stack that created this thread.</span>
+</span><span class="line">	<span class="nx">M</span><span class="o">*</span>	<span class="nx">nextwaitm</span><span class="p">;</span>	<span class="c1">// next M waiting for lock</span>
+</span><span class="line">	<span class="kt">uintptr</span>	<span class="nx">waitsema</span><span class="p">;</span>	<span class="c1">// semaphore for parking on locks</span>
+</span><span class="line">	<span class="kt">uint32</span>	<span class="nx">waitsemacount</span><span class="p">;</span>
+</span><span class="line">	<span class="kt">uint32</span>	<span class="nx">waitsemalock</span><span class="p">;</span>
+</span><span class="line">	<span class="nx">GCStats</span>	<span class="nx">gcstats</span><span class="p">;</span>
+</span><span class="line">	<span class="kt">bool</span>	<span class="nx">racecall</span><span class="p">;</span>
+</span><span class="line">	<span class="nx">void</span><span class="o">*</span>	<span class="nx">racepc</span><span class="p">;</span>
+</span><span class="line">
+</span><span class="line">	<span class="kt">uintptr</span>	<span class="nx">settype_buf</span><span class="p">[</span><span class="mi">1024</span><span class="p">];</span>
+</span><span class="line">	<span class="kt">uintptr</span>	<span class="nx">settype_bufsize</span><span class="p">;</span>
+</span><span class="line">
+</span><span class="line">	<span class="kt">uintptr</span>	<span class="nx">end</span><span class="p">[];</span>
+</span><span class="line"><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-
-<p>This was a source of endless confusion at the beginning. It does have some hints reassuring the fact that G&rsquo;s are indeed goroutines, but nothing that really helps to describe what an M is.
-It&rsquo;s structure is identical to that of the G however, which means that it might have something to do with a thread. And indeed it is. Further study of the source code
-made me speculate that <strong>M&rsquo;s must be the real operating system scheduled (kernel) threads, while G&rsquo;s (goroutines) must be the lightweight threads managed by the go runtime.</strong></p>
+<p>This was a source of endless confusion at the beginning. It does have some hints reassuring the fact that G’s are indeed goroutines, but nothing that really helps to describe what an M is.
+It’s structure is identical to that of the G however, which means that it might have something to do with a thread. And indeed it is. Further study of the source code
+made me speculate that <strong>M’s must be the real operating system scheduled (kernel) threads, while G’s (goroutines) must be the lightweight threads managed by the go runtime.</strong></p>
 
 <p>I was more than happy to find comments that reassured that position of mine.</p>
 
-<figure class='code'><figcaption><span>runtime.h</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='go'><span class='line'><span class="c1">// The go scheduler&#39;s job is to match ready-to-run goroutines (`g&#39;s)</span>
-</span><span class='line'><span class="c1">// with waiting-for-work schedulers (`m&#39;s)</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>runtime.h</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="go"><span class="line"><span class="c1">// The go scheduler&#39;s job is to match ready-to-run goroutines (`g&#39;s)</span>
+</span><span class="line"><span class="c1">// with waiting-for-work schedulers (`m&#39;s)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<p>Another cool finding was the go (runtime) scheduler - from which the above comment originates:</p>
 
-<p>Another cool finding was the go (runtime) scheduler &ndash; from which the above comment originates:</p>
-
-<figure class='code'><figcaption><span>proc.c</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-</pre></td><td class='code'><pre><code class='go'><span class='line'><span class="kd">struct</span> <span class="nx">Sched</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">Lock</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">G</span> <span class="o">*</span><span class="nx">gfree</span><span class="p">;</span> <span class="c1">// available g&#39;s (status == Gdead)</span>
-</span><span class='line'>  <span class="kt">int64</span> <span class="nx">goidgen</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">G</span> <span class="o">*</span><span class="nx">ghead</span><span class="p">;</span> <span class="c1">// g&#39;s waiting to run</span>
-</span><span class='line'>  <span class="nx">G</span> <span class="o">*</span><span class="nx">gtail</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">int32</span> <span class="nx">gwait</span><span class="p">;</span> <span class="c1">// number of g&#39;s waiting to run</span>
-</span><span class='line'>  <span class="kt">int32</span> <span class="nx">gcount</span><span class="p">;</span>    <span class="c1">// number of g&#39;s that are alive</span>
-</span><span class='line'>  <span class="kt">int32</span> <span class="nx">grunning</span><span class="p">;</span>  <span class="c1">// number of g&#39;s running on cpu or in syscall</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">M</span> <span class="o">*</span><span class="nx">mhead</span><span class="p">;</span> <span class="c1">// m&#39;s waiting for work</span>
-</span><span class='line'>  <span class="kt">int32</span> <span class="nx">mwait</span><span class="p">;</span> <span class="c1">// number of m&#39;s waiting for work</span>
-</span><span class='line'>  <span class="kt">int32</span> <span class="nx">mcount</span><span class="p">;</span>    <span class="c1">// number of m&#39;s that have been created</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">volatile</span> <span class="kt">uint32</span> <span class="nx">atomic</span><span class="p">;</span>  <span class="c1">// atomic scheduling word (see below)</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="kt">int32</span> <span class="nx">profilehz</span><span class="p">;</span> <span class="c1">// cpu profiling rate</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="kt">bool</span> <span class="nx">init</span><span class="p">;</span>  <span class="c1">// running initialization</span>
-</span><span class='line'>  <span class="kt">bool</span> <span class="nx">lockmain</span><span class="p">;</span>  <span class="c1">// init called runtime.LockOSThread</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">Note</span>    <span class="nx">stopped</span><span class="p">;</span> <span class="c1">// one g can set waitstop and wait here for m&#39;s to stop</span>
-</span><span class='line'><span class="p">};</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>proc.c</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+</pre></td><td class="code"><pre><code class="go"><span class="line"><span class="kd">struct</span> <span class="nx">Sched</span> <span class="p">{</span>
+</span><span class="line">	<span class="nx">Lock</span><span class="p">;</span>
+</span><span class="line">
+</span><span class="line">	<span class="nx">G</span> <span class="o">*</span><span class="nx">gfree</span><span class="p">;</span>	<span class="c1">// available g&#39;s (status == Gdead)</span>
+</span><span class="line">	<span class="kt">int64</span> <span class="nx">goidgen</span><span class="p">;</span>
+</span><span class="line">
+</span><span class="line">	<span class="nx">G</span> <span class="o">*</span><span class="nx">ghead</span><span class="p">;</span>	<span class="c1">// g&#39;s waiting to run</span>
+</span><span class="line">	<span class="nx">G</span> <span class="o">*</span><span class="nx">gtail</span><span class="p">;</span>
+</span><span class="line">	<span class="kt">int32</span> <span class="nx">gwait</span><span class="p">;</span>	<span class="c1">// number of g&#39;s waiting to run</span>
+</span><span class="line">	<span class="kt">int32</span> <span class="nx">gcount</span><span class="p">;</span>	<span class="c1">// number of g&#39;s that are alive</span>
+</span><span class="line">	<span class="kt">int32</span> <span class="nx">grunning</span><span class="p">;</span>	<span class="c1">// number of g&#39;s running on cpu or in syscall</span>
+</span><span class="line">
+</span><span class="line">	<span class="nx">M</span> <span class="o">*</span><span class="nx">mhead</span><span class="p">;</span>	<span class="c1">// m&#39;s waiting for work</span>
+</span><span class="line">	<span class="kt">int32</span> <span class="nx">mwait</span><span class="p">;</span>	<span class="c1">// number of m&#39;s waiting for work</span>
+</span><span class="line">	<span class="kt">int32</span> <span class="nx">mcount</span><span class="p">;</span>	<span class="c1">// number of m&#39;s that have been created</span>
+</span><span class="line">
+</span><span class="line">	<span class="nx">volatile</span> <span class="kt">uint32</span> <span class="nx">atomic</span><span class="p">;</span>	<span class="c1">// atomic scheduling word (see below)</span>
+</span><span class="line">
+</span><span class="line">	<span class="kt">int32</span> <span class="nx">profilehz</span><span class="p">;</span>	<span class="c1">// cpu profiling rate</span>
+</span><span class="line">
+</span><span class="line">	<span class="kt">bool</span> <span class="nx">init</span><span class="p">;</span>  <span class="c1">// running initialization</span>
+</span><span class="line">	<span class="kt">bool</span> <span class="nx">lockmain</span><span class="p">;</span>  <span class="c1">// init called runtime.LockOSThread</span>
+</span><span class="line">
+</span><span class="line">	<span class="nx">Note</span>	<span class="nx">stopped</span><span class="p">;</span>	<span class="c1">// one g can set waitstop and wait here for m&#39;s to stop</span>
+</span><span class="line"><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>From that particular piece of code, without a doubt the most interesting line is: <code>G *gfree</code>. That is a pool of the go routines that are available to be used.
 There are also helper schedulling functions, from which, the most interesting (for my purposes), was the <code>static void gfput(G*);</code> which realeases a go routine (puts it to the gfree list)</p>
 
-<figure class='code'><figcaption><span>proc.c</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='go'><span class='line'><span class="c1">// Put on gfree list.  Sched must be locked.</span>
-</span><span class='line'><span class="nx">static</span> <span class="nx">void</span>
-</span><span class='line'><span class="nx">gfput</span><span class="p">(</span><span class="nx">G</span> <span class="o">*</span><span class="nx">gp</span><span class="p">)</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="nx">gp</span><span class="o">-</span><span class="p">&gt;</span><span class="nx">schedlink</span> <span class="p">=</span> <span class="nx">runtime_sched</span><span class="p">.</span><span class="nx">gfree</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">runtime_sched</span><span class="p">.</span><span class="nx">gfree</span> <span class="p">=</span> <span class="nx">gp</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>proc.c</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="go"><span class="line"><span class="c1">// Put on gfree list.  Sched must be locked.</span>
+</span><span class="line"><span class="nx">static</span> <span class="nx">void</span>
+</span><span class="line"><span class="nx">gfput</span><span class="p">(</span><span class="nx">G</span> <span class="o">*</span><span class="nx">gp</span><span class="p">)</span>
+</span><span class="line"><span class="p">{</span>
+</span><span class="line">	<span class="nx">gp</span><span class="o">-</span><span class="p">&gt;</span><span class="nx">schedlink</span> <span class="p">=</span> <span class="nx">runtime_sched</span><span class="p">.</span><span class="nx">gfree</span><span class="p">;</span>
+</span><span class="line">	<span class="nx">runtime_sched</span><span class="p">.</span><span class="nx">gfree</span> <span class="p">=</span> <span class="nx">gp</span><span class="p">;</span>
+</span><span class="line"><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 <p>There are loads of other extremely interesting functions there, but for the sake of space I will not expand here more. However I will expand on what it is that is confusing me:</p>
 
-<h2>The source of confusion</h2>
+<h2 id="the-source-of-confusion">The source of confusion</h2>
 
 <p>My tests in this point are to include testing if removing thread destruction from the go runtime would result in difference in behavior.
-There are however (as far as go is concerned), two kinds of threads in the go runtime. <strong>Goroutines</strong> (G&rsquo;s) and the <strong>kernel schedulable threads</strong> (M&rsquo;s).</p>
+There are however (as far as go is concerned), two kinds of threads in the go runtime. <strong>Goroutines</strong> (G’s) and the <strong>kernel schedulable threads</strong> (M’s).</p>
 
-<p>Neither of which, seem to really be destroyed. From my understanding so far, G&rsquo;s are never totally destroyed (I may be wrong here, I am still researching this bit). Whenever
-they are about to &ldquo;destroyed&rdquo;, they are added to the scheduler&rsquo;s list of freeG&rsquo;s to allow for reuse, as evidenced by the <code>gfput</code> and <code>gfget</code> functions.
-M&rsquo;s on the other hand (the kernel threads), also seem to not be destroyed. A comment in go&rsquo;s scheduler seems to support this (<code>// For now, m's never go away.</code>) and as a
-matter of fact I could not find any code that destroyed M&rsquo;s (I am still researching this bit).</p>
+<p>Neither of which, seem to really be destroyed. From my understanding so far, G’s are never totally destroyed (I may be wrong here, I am still researching this bit). Whenever
+they are about to “destroyed”, they are added to the scheduler’s list of freeG’s to allow for reuse, as evidenced by the <code>gfput</code> and <code>gfget</code> functions. 
+M’s on the other hand (the kernel threads), also seem to not be destroyed. A comment in go’s scheduler seems to support this (<code>// For now, m's never go away.</code>) and as a 
+matter of fact I could not find any code that destroyed M’s (I am still researching this bit).</p>
 
 <p><strong>Since none of the two actually get destroyed, and seeing as thread creation alone should not be buggy, how come we are facing the specific bugs we are facing?</strong>
-I will try to provide with an interpretation: Either I am fairly wrong and M&rsquo;s (or G&rsquo;s or both) actually do get destroyed somewhere (possible and very much probable)
-or I looking for clues regarding the issue in the wrong place (might be possible but I don&rsquo;t see it being very probable).</p>
-
-    </div>
-  </div>
+I will try to provide with an interpretation: Either I am fairly wrong and M’s (or G’s or both) actually do get destroyed somewhere (possible and very much probable)
+or I looking for clues regarding the issue in the wrong place (might be possible but I don’t see it being very probable).</p>
 
 
 
-  <footer>
-    <hr>
-    
-    <div class="row-fluid">
-      
-      <div class="span6">
-        <p class="meta">
-        
-        
-
-
-
-  <a href="/blog/categories/gcc/"><span class="badge">gcc</span></a>
-
-  <a href="/blog/categories/golang/"><span class="badge">golang</span></a>
-
-  <a href="/blog/categories/gsoc/"><span class="badge">gsoc</span></a>
-
-
-
-
-        </p>
-      </div>
-      
-      <div class="span6 social-sharing">
-        <div class="sharing">
-  <div class="addthis_toolbox addthis_default_style ">
-  
-  
-  <a class="addthis_button_tweet"></a>
-  
-  
-  <a class="addthis_counter addthis_pill_style"></a>
-  </div>
-  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
-</div>
-
-      </div>
-      
-      
-    </div>
-    
-    <div class="row-fluid">
-      <div class="span12">
-        <p class="meta">
-          
-            <a class="basic-alignment left" href="/blog/2013/07/31/gsoc-week-6-report/" title="Previous Post: GSOC: Week 6 report">&laquo; GSOC: Week 6 report</a>
-          
-          
-            <a class="basic-alignment right" href="/blog/2013/08/12/gsoc-week-8-partial-report/" title="Next Post: GSOC Week 8 (Partial) report">GSOC Week 8 (Partial) report &raquo;</a>
-          
-        </p>
-      </div>
-    </div>
-  </footer>
 </article>
 
-</div>
 
+    <nav role="navigation" id="pagination">
 
+</nav>
+  </section>
+  
 
-        </div>
-      </div>
-      <div class="row-fluid">
-        <footer class="footer-page" role="contentinfo">
-          <p>
-  Copyright &copy; 2014 - Fotis Koutoulakis -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span> - Theme by <a href="http://alexgaribay.com">Alex Garibay</a>
-</p>
-
-
-        </footer>
-      </div>
-    </div>
-  </div>
   
 
 
@@ -506,7 +471,6 @@ or I looking for clues regarding the issue in the wrong place (might be possible
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>
-
 
 
 

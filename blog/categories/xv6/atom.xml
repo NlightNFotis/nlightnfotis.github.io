@@ -4,7 +4,7 @@
   <title><![CDATA[Category: xv6 | Fotis Koutoulakis]]></title>
   <link href="http://NlightNFotis.github.io/blog/categories/xv6/atom.xml" rel="self"/>
   <link href="http://NlightNFotis.github.io/"/>
-  <updated>2014-07-10T11:46:45+03:00</updated>
+  <updated>2014-07-29T15:47:35+03:00</updated>
   <id>http://NlightNFotis.github.io/</id>
   <author>
     <name><![CDATA[Fotis Koutoulakis]]></name>
@@ -18,70 +18,70 @@
     <link href="http://NlightNFotis.github.io/blog/2014/04/28/introduction-to-xv6-adding-a-new-system-call/"/>
     <updated>2014-04-28T18:24:00+03:00</updated>
     <id>http://NlightNFotis.github.io/blog/2014/04/28/introduction-to-xv6-adding-a-new-system-call</id>
-    <content type="html"><![CDATA[<h1>xv6: An introduction</h1>
+    <content type="html"><![CDATA[<h1 id="xv6-an-introduction">xv6: An introduction</h1>
 
-<p>If you are like me, a low level pc programmer, it&rsquo;s hard not to have heard
+<p>If you are like me, a low level pc programmer, it’s hard not to have heard
 of <strong>xv6</strong>. <a href="http://pdos.csail.mit.edu/6.828/2012/xv6.html">xv6</a>, for those
-who haven&rsquo;t really heard of it, is a <em>UNIX version 6</em> clone, designed
-at MIT to help teach operating systems.</p>
+who haven’t really heard of it, is a <em>UNIX version 6</em> clone, designed
+at MIT to help teach operating systems. </p>
 
 <p>The reasoning behind doing this was fairly simple: <a href="http://www.lemis.com/grog/Documentation/Lions/">Up until that point, MIT
-had used John Lions' famous commentary on the Sixth Edition of UNIX</a>. But V6 was challenging due to a
+had used John Lions’ famous commentary on the Sixth Edition of UNIX</a>. But V6 was challenging due to a 
 number of reasons. To begin with, it was written in a near ancient version
 of C (pre K&amp;R), and apart from that, it contained PDP-11 assembly
 (a legendary machine for us UNIX lovers, but ancient nonetheless), which
-didn&rsquo;t really help the students that had to study both PDP-11 and the
+didn’t really help the students that had to study both PDP-11 and the
 (more common) x86 architecture to develop another (exokernel) operating
-system on.</p>
+system on. </p>
 
-<p>So, to make things much more simpler, professors there decided to
-roll with a clone of UNIX version 6, that was x86 specific,
+<p>So, to make things much more simpler, professors there decided to 
+roll with a clone of UNIX version 6, that was x86 specific, 
 written in ANSI C and supported multiprocessor machines.</p>
 
-<p>For a student (or a programmer interested in operating systems), xv6 is
+<p>For a student (or a programmer interested in operating systems), xv6 is 
 a unique opportunity to introduce himself to kernel hacking and to the
-architecture of UNIX like systems. At about 15k lines of code (iirc),
+architecture of UNIX like systems. At about 15k lines of code (iirc), 
 including the (primitive) libraries, the userland and the kernel,
-it&rsquo;s very easy (or well, at least easier than production scale UNIX like
-systems) to grok, and it&rsquo;s also very easy to expand on. It also helps
+it’s very easy (or well, at least easier than production scale UNIX like
+systems) to grok, and it’s also very easy to expand on. It also helps
 tremendously that xv6 as a whole has magnificent documentation, not only
 from MIT, but from other universities that have adopted xv6 for use in their
 operating systems syllabus.</p>
 
-<h2>An introduction to Ensidia: my very personal xv6 fork</h2>
+<h2 id="an-introduction-to-ensidia-my-very-personal-xv6-fork">An introduction to Ensidia: my very personal xv6 fork</h2>
 
 <p>When I first discovered xv6 I was ecstatic. For the reasons mentioned above
-I couldn&rsquo;t lose on the opportunity to fork xv6 and use it as a personal
+I couldn’t lose on the opportunity to fork xv6 and use it as a personal
 testbed for anything I could feel like exploring or testing out.</p>
 
-<p>As a matter of fact, when I first discovered xv6, <a href="https://github.com/NlightNFotis/Fotix">I had just finished
-implementing (the base of) my own UNIX like operating system, named fotix</a>,
+<p>As a matter of fact, when I first discovered xv6, <a href="https://github.com/NlightNFotis/Fotix">I had just finished 
+implementing (the base of) my own UNIX like operating system, named fotix</a>, 
 and the timing of my discovery was great. xv6 had done what I had done,
 and also implemented most of what I was planning to work on fotix
-(for example, elf file loading), and it was a solid base for further
-development. It also had a userland, which fotix at the time didn&rsquo;t have.</p>
+(for example, elf file loading), and it was a solid base for further 
+development. It also had a userland, which fotix at the time didn’t have.</p>
 
 <p>After I forked xv6, I spent some time familiriazing myself with the code.
-I also cleaned up the source code quite a bit, structuring the code in a
-BSD like folder structure, instead of having all of the code in the same
-folder and made various small scale changes.</p>
+I also cleaned up the source code quite a bit, structuring the code in a 
+BSD like folder structure, instead of having all of the code in the same 
+folder and made various small scale changes. </p>
 
-<p>After that for quite some time, I had left ensidia alone and didn&rsquo;t touch
+<p>After that for quite some time, I had left ensidia alone and didn’t touch
 it much. However, I always felt like I wanted to develop it a bit more
 and get to play with its code in interesting ways. I was trying to think of
-a great way to get started with kernel hacking on it, in a simple way, to
-get more acquainted with the kernel, and found an interesting pdf with
+a great way to get started with kernel hacking on it, in a simple way, to 
+get more acquainted with the kernel, and found an interesting pdf with 
 interesting project ideas for it. One of them was to add a system call.
 I figured out that would be an interesting and quick hack, so hey, why not?</p>
 
-<h1>Getting started with kernel hacking on xv6: Adding the system call.</h1>
+<h1 id="getting-started-with-kernel-hacking-on-xv6-adding-the-system-call">Getting started with kernel hacking on xv6: Adding the system call.</h1>
 
 <p>The system call I decided to introduce was the suggested one. It was
 fairly simple sounding too. You have to <strong>introduce a new system call
 that returns the number of total system calls that have taken place
-so far</strong>. So let&rsquo;s see how I went about implementing it:</p>
+so far</strong>. So let’s see how I went about implementing it:</p>
 
-<h2>An introduction to system calls in xv6</h2>
+<h2 id="an-introduction-to-system-calls-in-xv6">An introduction to system calls in xv6</h2>
 
 <p>First of all, we should provide some context about what system calls are,
 how they are used, and how they are implemented in xv6.</p>
@@ -90,7 +90,7 @@ how they are used, and how they are implemented in xv6.</p>
 to ask for a specific service to be provided by the operating system. For
 instance with an <code>sbrk(n)</code> system call, a process can ask the kernel to
 grow its heap space by n bytes. Another example is the well known <code>fork()</code>
-system call in the UNIX world, that&rsquo;s used to create a new process by
+system call in the UNIX world, that’s used to create a new process by 
 cloning the caller process.</p>
 
 <p>The way applications signal the kernel that they need that service is
@@ -101,63 +101,64 @@ that information it was seeking from the disks is in some buffer, ready to
 be extracted and processed, or, that a key was pressed in the keyboard. This
 is called a hardware interrupt.</p>
 
-<p>Before the processor stops to handle the interrupt generated, it needs to
+<p>Before the processor stops to handle the interrupt generated, it needs to 
 save the current state, so that it can resume the execution in this context
-after the interrupt has been handled.</p>
+after the interrupt has been handled. </p>
 
 <p>The code that calls a system call in xv6 looks like this:</p>
 
-<p>``` gas initcode.S</p>
-
-<h1>exec(init, argv)</h1>
-
-<p> .globl start
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption class='code-header' style='margin-bottom:-5px;'><span>initcode.S </span></figcaption>
+ <div class="CodeRay">
+  <div class="code"><pre>
+# exec(init, argv)
+ .globl start
  start:
    pushl $argv
    pushl $init
    pushl $0  // where caller pc would be
    movl $SYS_exec, %eax
    int $T_SYSCALL
-```</p>
+</pre></div>
+</div>
+ </figure></notextile></div></p>
 
 <p>In essence, it pushes the argument of the call to the stack, and puts
-the system call number (in the above code, that&rsquo;s <code>$SYS_exec</code>) into <code>%eax</code>.
+the system call number (in the above code, that’s <code>$SYS_exec</code>) into <code>%eax</code>.
 The number is used to match the entry in an array that holds pointers to
 all the system calls. After that, it generates a software interrupt, with
-a code (in this case <code>$T_SYSCALL</code>) that&rsquo;s used to index the interrupt
-descriptor tables and find the appropriate interrupt handler.</p>
+a code (in this case <code>$T_SYSCALL</code>) that’s used to index the interrupt
+descriptor tables and find the appropriate interrupt handler. </p>
 
 <p>The code that is specific to find the appropriate interrupt handler is
-called <code>trap()</code> and is available in the file <code>trap.c</code>. If <code>trap()</code> check&rsquo;s
+called <code>trap()</code> and is available in the file <code>trap.c</code>. If <code>trap()</code> check’s
 out the trapnumber in the generated trapframe (a structure that represents
-the processor&rsquo;s state at the time that the trap happened) to be equal to
+the processor’s state at the time that the trap happened) to be equal to
 <code>T_SYSCALL</code>, it calls <code>syscall()</code> (the software interrupt handler)
- that&rsquo;s available in <code>syscall.c</code></p>
+ that’s available in <code>syscall.c</code></p>
 
-<p>``` c trap.c</p>
-
-<p>// This is the part of trap that
-// calls syscall()
-void
-trap(struct trapframe *tf)
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption class='code-header' style='margin-bottom:-5px;'><span>trap.c </span></figcaption>
+ <div class="CodeRay">
+  <div class="code"><pre>
+<span class="comment">// This is the part of trap that</span>
+<span class="comment">// calls syscall()</span>
+<span class="directive">void</span>
+trap(<span class="keyword">struct</span> trapframe *tf)
 {
-  if(tf->trapno == T_SYSCALL){</p>
+  <span class="keyword">if</span>(tf-&amp;gt;trapno == T_SYSCALL){
+    <span class="keyword">if</span>(proc-&amp;gt;killed)
+      exit();
+    proc-&amp;gt;tf = tf;
+    syscall();
+    <span class="keyword">if</span>(proc-&amp;gt;killed)
+      exit();
+    <span class="keyword">return</span>;
+  }
+</pre></div>
+</div>
+ </figure></notextile></div></p>
 
-<pre><code>if(proc-&gt;killed)
-  exit();
-proc-&gt;tf = tf;
-syscall();
-if(proc-&gt;killed)
-  exit();
-return;
-</code></pre>
-
-<p>  }</p>
-
-<p>```</p>
-
-<p><code>syscall()</code> is finally the function that checks out <code>%eax</code> to get the
-number of the system call (to index the array with the system
+<p><code>syscall()</code> is finally the function that checks out <code>%eax</code> to get the 
+number of the system call (to index the array with the system 
 call pointers), and execute the code corresponding to that system call.</p>
 
 <p>The implementation of system calls in xv6 is under two files. The first one
@@ -165,57 +166,54 @@ is <code>sysproc.c</code>, and is the one containing the implementation of syste
 correspondent to processes, and <code>sysfile.c</code> that contains the implementation
 of system calls regarding the file system.</p>
 
-<h2>The specific implementation of the <code>numcalls()</code> system call</h2>
+<h2 id="the-specific-implementation-of-the-numcalls-system-call">The specific implementation of the <code>numcalls()</code> system call</h2>
 
 <p>To implement the system call itself is simple. I did so with a global variable
-in <code>syscall.c</code> called <code>syscallnum</code>, that&rsquo;s incremented everytime
+in <code>syscall.c</code> called <code>syscallnum</code>, that’s incremented everytime 
 <code>syscall()</code>, calls a system call function, that is, the system call
 is valid.</p>
 
 <p>Next we just need a function, the system call implementation that returns
-that number to the userspace program that asks for it. Below is the
+that number to the userspace program that asks for it. Below is the 
 function itself, and <code>syscall()</code> after our change.</p>
 
-<p>``` c sysproc.c</p>
-
-<p>// return the number of system calls that have taken place in
-// the system
-int
-sys_numcalls(void)
-{</p>
-
-<pre><code>return syscallnum;
-</code></pre>
-
-<p>}
-```</p>
-
-<p>``` c syscall.c</p>
-
-<p>// The syscall() implementation after
-// our change
-void
-syscall(void)
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption class='code-header' style='margin-bottom:-5px;'><span>sysproc.c </span></figcaption>
+ <div class="CodeRay">
+  <div class="code"><pre>
+<span class="comment">// return the number of system calls that have taken place in</span>
+<span class="comment">// the system</span>
+<span class="predefined-type">int</span>
+sys_numcalls(<span class="directive">void</span>)
 {
-  int num;</p>
-
-<p>  num = proc->tf->eax;
-  if(num > 0 &amp;&amp; num &lt; NELEM(syscalls) &amp;&amp; syscalls[num]) {</p>
-
-<pre><code>syscallnum++; // increment the syscall counter
-proc-&gt;tf-&gt;eax = syscalls[num]();
-</code></pre>
-
-<p>  } else {</p>
-
-<pre><code>cprintf("%d %s: unknown sys call %d\n",
-        proc-&gt;pid, proc-&gt;name, num);
-proc-&gt;tf-&gt;eax = -1;
-</code></pre>
-
-<p>  }
+    <span class="keyword">return</span> syscallnum;
 }
-```</p>
+</pre></div>
+</div>
+ </figure></notextile></div></p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption class='code-header' style='margin-bottom:-5px;'><span>syscall.c </span></figcaption>
+ <div class="CodeRay">
+  <div class="code"><pre>
+<span class="comment">// The syscall() implementation after</span>
+<span class="comment">// our change</span>
+<span class="directive">void</span>
+syscall(<span class="directive">void</span>)
+{
+  <span class="predefined-type">int</span> num;&lt;/p&gt;
+
+&lt;p&gt;num = proc-&amp;gt;tf-&amp;gt;eax;
+  <span class="keyword">if</span>(num &amp;gt; <span class="integer">0</span> &amp;amp;&amp;amp; num &amp;lt; NELEM(syscalls) &amp;amp;&amp;amp; syscalls[num]) {
+    syscallnum++; <span class="comment">// increment the syscall counter</span>
+    proc-&amp;gt;tf-&amp;gt;eax = syscalls&lt;a href=<span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span>&gt;num&lt;/a&gt;;
+  } <span class="keyword">else</span> {
+    cprintf(<span class="error">“</span>%d %s: unknown sys call %d<span class="error">\</span>n<span class="error">”</span>,
+            proc-&amp;gt;pid, proc-&amp;gt;name, num);
+    proc-&amp;gt;tf-&amp;gt;eax = -<span class="integer">1</span>;
+  }
+}
+</pre></div>
+</div>
+ </figure></notextile></div></p>
 
 <p>After that was done, the next few things that were needed to be done
 were fairly straight forward. We had to add an index number for the new
@@ -226,9 +224,9 @@ that specific system call, and change the makefile to facilitate our change
 
 <p>The result after doing all this is below :)</p>
 
-<p>``` sh</p>
-
-<p>cpu1: starting
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="CodeRay">
+  <div class="code"><pre>
+cpu1: starting
 cpu0: starting
 init: starting sh
 $ ls
@@ -260,14 +258,16 @@ $ syscallnum
 The total number of syscalls so far is 767
 $ syscallnum
 The total number of syscalls so far is 829
-```</p>
+</pre></div>
+</div>
+ </figure></notextile></div></p>
 
-<h1>Epilogue</h1>
+<h1 id="epilogue">Epilogue</h1>
 
 <p>I usually end my blog posts with an epilogue. Although this is a post
-that doesn&rsquo;t necesarilly need one, <strong>I wanted to write one just to say to you
+that doesn’t necesarilly need one, <strong>I wanted to write one just to say to you
 that you should try kernel hacking</strong>, <em>that is programming jargon for
-programming an operating system kernel</em>, because it&rsquo;s an experience that
+programming an operating system kernel</em>, because it’s an experience that
 undoubtedly will teach you a great deal of things about how your computer
 actually works.</p>
 
@@ -275,15 +275,13 @@ actually works.</p>
 of xv6</a>. To see this particular
 work, take a look at the <code>syscall</code> branch.</p>
 
-<h2>References</h2>
-
+<h2 id="references">References</h2>
 <ul>
-<li><a href="http://zoo.cs.yale.edu/classes/cs422/2010/reference">CS422/522: Operating systems, Yale</a></li>
-<li><a href="http://zoo.cs.yale.edu/classes/cs422/2010/xv6-book/fscall.pdf">Chapter 8, File System calls, xv6 reference, Yale</a></li>
-<li><a href="http://zoo.cs.yale.edu/classes/cs422/2010/xv6-book/trap.pdf">Chapter 3, System calls, exceptions and interrupts, Yale</a></li>
-<li><a href="http://pdos.csail.mit.edu/6.828/2012/xv6/book-rev7.pdf">xv6 Documentation, MIT csail</a></li>
+  <li><a href="http://zoo.cs.yale.edu/classes/cs422/2010/reference">CS422/522: Operating systems, Yale</a></li>
+  <li><a href="http://zoo.cs.yale.edu/classes/cs422/2010/xv6-book/fscall.pdf">Chapter 8, File System calls, xv6 reference, Yale</a></li>
+  <li><a href="http://zoo.cs.yale.edu/classes/cs422/2010/xv6-book/trap.pdf">Chapter 3, System calls, exceptions and interrupts, Yale</a></li>
+  <li><a href="http://pdos.csail.mit.edu/6.828/2012/xv6/book-rev7.pdf">xv6 Documentation, MIT csail</a></li>
 </ul>
-
 ]]></content>
   </entry>
   
