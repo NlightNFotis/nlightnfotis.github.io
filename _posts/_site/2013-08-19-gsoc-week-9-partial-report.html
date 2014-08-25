@@ -1,0 +1,146 @@
+<p>This week was revolving around the print debugging in the gccgo runtime in search
+for clues regarding the creation of new threads under the goruntime, so as to see
+if there is something wrong with the runtime itself, or the way the runtime 
+interacts with the libpthread.</p>
+
+<h2 id="partial-presentation-of-findings">(partial presentation of) findings</h2>
+
+<p>During print debugging the gccgo runtime, I didn’t notice anything abnormal or 
+unusual so far. For example, the code that does trigger the assertion failure
+seems to work at least once, since <code>pthread_create()</code> returns <code>0</code> at least once.</p>
+
+<p>This is expected behavior, since we already have stated that there is at least
+one <code>M</code> (kernel thread) created at the initialisation of the program’s runtime.</p>
+
+<p>If however, we try to use a <em>go statement</em> in our program, to make usage of a 
+goroutine, the runtime still fails at the usual assertion fail, however the 
+output of the program is this:</p>
+
+<pre lang="shell"><code>root@debian:~/Software/Experiments/go# ./a.out
+[DEBUG] pthread_create returned 0
+a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&gt;kernel_thread == ktid;
+__mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })' failed.
+Aborted
+</code></pre>
+
+<p>The above output can give us some pieces of information:</p>
+
+<ul>
+  <li><code>pthread_create()</code> is called at least once.</li>
+  <li>it executes successfuly and without errors - libpthread code suggests that 0 is returned upon successful execution and creation of a thread</li>
+  <li>However the assertion is still triggered, which we know it’s getting triggered during thread creation.</li>
+</ul>
+
+<p>The second bullet point is also being supported by the fact that even if you exe
+cute something as simple as hello world in go, a new M is created, so you get
+something along the lines of this as an output:</p>
+
+<div class="highlight"><pre><code class="sh">root@debian:~/Software/Experiments/go# ./a.out
+<span class="o">[</span>DEBUG<span class="o">]</span> pthread_create returned 0
+Hello World!
+root@debian:~/Software/Experiments/go#</code></pre></div>
+
+<p>There is however something that the above piece of code doesn’t tell us, 
+but it would be useful to know: <em>How many times did we create a new thread?</em>
+So we modify our gcc’s source code to see how many times the runtimes 
+attempts to create a new kernel thread (M). This is what we get out of it:</p>
+
+<pre lang="shell"><code>root@debian:~/Software/Experiments/go# ./a.out
+[DEBUG] Preparing to create a new thread.
+[DEBUG] pthread_create returned 0
+a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&gt;kernel_thread == ktid;
+__mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })' failed.
+[DEBUG] Preparing to create a new thread.
+aborted.
+</code></pre>
+
+<p>The code at this point in the runtime is this:</p>
+
+<div class="highlight"><pre><code class="c"><span class="c1">// Create a new m.  It will start off with a call to runtime_mstart.</span>
+<span class="n">M</span><span class="o">*</span>
+<span class="nf">runtime_newm</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">M</span> <span class="o">*</span><span class="n">mp</span><span class="p">;</span>
+	<span class="kt">pthread_attr_t</span> <span class="n">attr</span><span class="p">;</span>
+	<span class="kt">pthread_t</span> <span class="n">tid</span><span class="p">;</span>
+	<span class="kt">size_t</span> <span class="n">stacksize</span><span class="p">;</span>
+	<span class="kt">sigset_t</span> <span class="n">clear</span><span class="p">;</span>
+	<span class="kt">sigset_t</span> <span class="n">old</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="n">ret</span><span class="p">;</span>
+
+<span class="cp">#if 0</span><span class="c"></span>
+<span class="c">	static const Type *mtype;  // The Go type M</span>
+<span class="c">	if(mtype == nil) {</span>
+<span class="c">		Eface e;</span>
+<span class="c">		runtime_gc_m_ptr(&amp;e);</span>
+<span class="c">		mtype = ((const PtrType*)e.__type_descriptor)-&gt;__element_type;</span>
+<span class="c">	}</span>
+<span class="cp">#endif</span>
+
+	<span class="c1">// XXX: Added by fotis for print debugging.</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;[DEBUG] Preparing to create a new thread.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+
+	<span class="n">mp</span> <span class="o">=</span> <span class="n">runtime_mal</span><span class="p">(</span><span class="k">sizeof</span> <span class="o">*</span><span class="n">mp</span><span class="p">);</span>
+	<span class="n">mcommoninit</span><span class="p">(</span><span class="n">mp</span><span class="p">);</span>
+	<span class="n">mp</span><span class="o">-&gt;</span><span class="n">g0</span> <span class="o">=</span> <span class="n">runtime_malg</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">nil</span><span class="p">,</span> <span class="n">nil</span><span class="p">);</span>
+
+	<span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">&quot;pthread_attr_init&quot;</span><span class="p">);</span>
+	<span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_setdetachstate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">PTHREAD_CREATE_DETACHED</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">&quot;pthread_attr_setdetachstate&quot;</span><span class="p">);</span>
+
+	<span class="c1">// &lt;http://www.gnu.org/software/hurd/open_issues/libpthread_set_stack_size.html&gt;</span>
+<span class="cp">#ifdef __GNU__</span>
+	<span class="n">stacksize</span> <span class="o">=</span> <span class="n">StackMin</span><span class="p">;</span>
+<span class="cp">#else</span>
+	<span class="n">stacksize</span> <span class="o">=</span> <span class="n">PTHREAD_STACK_MIN</span><span class="p">;</span>
+
+	<span class="c1">// With glibc before version 2.16 the static TLS size is taken</span>
+	<span class="c1">// out of the stack size, and we get an error or a crash if</span>
+	<span class="c1">// there is not enough stack space left.  Add it back in if we</span>
+	<span class="c1">// can, in case the program uses a lot of TLS space.  FIXME:</span>
+	<span class="c1">// This can be disabled in glibc 2.16 and later, if the bug is</span>
+	<span class="c1">// indeed fixed then.</span>
+	<span class="n">stacksize</span> <span class="o">+=</span> <span class="n">tlssize</span><span class="p">;</span>
+<span class="cp">#endif</span>
+
+	<span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_setstacksize</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">stacksize</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">&quot;pthread_attr_setstacksize&quot;</span><span class="p">);</span>
+
+	<span class="c1">// Block signals during pthread_create so that the new thread</span>
+	<span class="c1">// starts with signals disabled.  It will enable them in minit.</span>
+	<span class="n">sigfillset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">clear</span><span class="p">);</span>
+
+<span class="cp">#ifdef SIGTRAP</span>
+	<span class="c1">// Blocking SIGTRAP reportedly breaks gdb on Alpha GNU/Linux.</span>
+	<span class="n">sigdelset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">clear</span><span class="p">,</span> <span class="n">SIGTRAP</span><span class="p">);</span>
+<span class="cp">#endif</span>
+
+	<span class="n">sigemptyset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">old</span><span class="p">);</span>
+	<span class="n">sigprocmask</span><span class="p">(</span><span class="n">SIG_BLOCK</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">clear</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">old</span><span class="p">);</span>
+	<span class="n">ret</span> <span class="o">=</span> <span class="n">pthread_create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tid</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">runtime_mstart</span><span class="p">,</span> <span class="n">mp</span><span class="p">);</span>
+
+	<span class="cm">/* XXX: added for debug printing */</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;[DEBUG] pthread_create() returned %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">ret</span><span class="p">);</span>
+
+	<span class="n">sigprocmask</span><span class="p">(</span><span class="n">SIG_SETMASK</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">old</span><span class="p">,</span> <span class="n">nil</span><span class="p">);</span>
+
+	<span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">&quot;pthread_create&quot;</span><span class="p">);</span>
+
+	<span class="k">return</span> <span class="n">mp</span><span class="p">;</span>
+<span class="p">}</span></code></pre></div>
+
+<p>We can deduce two things about our situation right now:</p>
+
+<ul>
+  <li>There is <strong>at least one</strong> thread successfully created, and there is an attempt
+to create another one.</li>
+  <li>The second time, there is a failure before pthread_create is called.</li>
+</ul>
+
+<h2 id="continuation-of-work">Continuation of work.</h2>
+
+<p>I have been following this course of path the last week. I presented
+some of my findings, and hope to soon be able to write an exhaustive
+report on what exactly it is that causes the bug.</p>

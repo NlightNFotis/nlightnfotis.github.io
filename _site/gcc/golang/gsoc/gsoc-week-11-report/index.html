@@ -1,0 +1,417 @@
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if (IE 7)&!(IEMobile)]><html class="no-js lt-ie9 lt-ie8" lang="en"><![endif]-->
+<!--[if (IE 8)&!(IEMobile)]><html class="no-js lt-ie9" lang="en"><![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<title>GSOC Week 11 report &#8211; Fotis Koutoulakis</title>
+<meta name="description" content="Unix, Compilers, Programming Languages and more.">
+<meta name="keywords" content="">
+
+<!-- Twitter Cards -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://localhost:4000/images/">
+<meta name="twitter:title" content="GSOC Week 11 report">
+<meta name="twitter:description" content="Unix, Compilers, Programming Languages and more.">
+<meta name="twitter:creator" content="@NlightNFotis">
+
+<!-- Open Graph -->
+<meta property="og:locale" content="en_US">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GSOC Week 11 report">
+<meta property="og:description" content="Unix, Compilers, Programming Languages and more.">
+<meta property="og:url" content="http://localhost:4000/gcc/golang/gsoc/gsoc-week-11-report/">
+<meta property="og:site_name" content="Fotis Koutoulakis">
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/gcc/golang/gsoc/gsoc-week-11-report/">
+<link href="http://localhost:4000/feed.xml" type="application/atom+xml" rel="alternate" title="Fotis Koutoulakis Feed">
+<link rel="author" href="https://google.com/+NlightNFotis?rel=author">
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="http://localhost:4000/assets/css/main.min.css">
+<!-- Webfonts -->
+<link href="http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic" rel="stylesheet" type="text/css">
+
+<meta http-equiv="cleartype" content="on">
+
+<!-- Load Modernizr -->
+<script src="http://localhost:4000/assets/js/vendor/modernizr-2.6.2.custom.min.js"></script>
+
+<!-- Icons -->
+<!-- 16x16 -->
+<link rel="shortcut icon" href="http://localhost:4000/favicon.ico">
+<!-- 32x32 -->
+<link rel="shortcut icon" href="http://localhost:4000/favicon.png">
+<!-- 57x57 (precomposed) for iPhone 3GS, pre-2011 iPod Touch and older Android devices -->
+<link rel="apple-touch-icon-precomposed" href="http://localhost:4000/images/apple-touch-icon-precomposed.png">
+<!-- 72x72 (precomposed) for 1st generation iPad, iPad 2 and iPad mini -->
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="http://localhost:4000/images/apple-touch-icon-72x72-precomposed.png">
+<!-- 114x114 (precomposed) for iPhone 4, 4S, 5 and post-2011 iPod Touch -->
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="http://localhost:4000/images/apple-touch-icon-114x114-precomposed.png">
+<!-- 144x144 (precomposed) for iPad 3rd and 4th generation -->
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://localhost:4000/images/apple-touch-icon-144x144-precomposed.png">
+
+
+
+</head>
+
+<body id="post" >
+
+<!--[if lt IE 9]><div class="upgrade"><strong><a href="http://whatbrowser.org/">Your browser is quite old!</strong> Why not upgrade to a different browser to better enjoy this site?</a></div><![endif]-->
+<nav id="dl-menu" class="dl-menuwrapper" role="navigation">
+	<button class="dl-trigger">Open Menu</button>
+	<ul class="dl-menu">
+		<li><a href="http://localhost:4000">Home</a></li>
+		<li>
+			<a href="#">About</a>
+			<ul class="dl-submenu">
+				<li>
+					<img src="http://localhost:4000/images/me.png" alt="Fotis Koutoulakis photo" class="author-photo">
+					<h4>Fotis Koutoulakis</h4>
+					<p>I spend my time pretending I know about computers.</p>
+				</li>
+				<li><a href="http://localhost:4000/about/">Learn More</a></li>
+				<li>
+					<a href="mailto:fotis.koutoulakis@gmail.com"><i class="fa fa-envelope"></i> Email</a>
+				</li>
+				<li>
+					<a href="http://twitter.com/NlightNFotis"><i class="fa fa-twitter"></i> Twitter</a>
+				</li>
+				
+				<li>
+					<a href="https://google.com/+NlightNFotis"><i class="fa fa-google-plus"></i> Google+</a>
+				</li>
+				
+				<li>
+					<a href="http://github.com/NlightNFotis"><i class="fa fa-github"></i> GitHub</a>
+				</li>
+				<li>
+					<a href="http://stackoverflow.com/users/1426969/nlightnfotis"><i class="fa fa-stack-exchange"></i> Stackexchange</a>
+				</li>
+				
+				
+				
+			</ul><!-- /.dl-submenu -->
+		</li>
+		<li>
+			<a href="#">Posts</a>
+			<ul class="dl-submenu">
+				<li><a href="http://localhost:4000/posts/">All Posts</a></li>
+				<li><a href="http://localhost:4000/tags/">All Tags</a></li>
+			</ul>
+		</li>
+		<li><a href="http://localhost:4000/Books">Books</a></li>
+	</ul><!-- /.dl-menu -->
+</nav><!-- /.dl-menuwrapper -->
+
+
+
+
+<div id="main" role="main">
+  <article class="hentry">
+    <header class="header-title">
+      <div class="header-title-wrap">
+        
+          <h1 class="entry-title"><a href="http://localhost:4000/gcc/golang/gsoc/gsoc-week-11-report/" rel="bookmark" title="GSOC Week 11 report">GSOC Week 11 report</a></h1>
+        
+        <h2>September 02, 2013</h2>
+        
+        <p class="entry-reading-time">
+          <i class="fa fa-clock-o"></i>
+          
+          Reading time ~8 minutes
+        </p><!-- /.entry-reading-time -->
+        
+      </div><!-- /.header-title-wrap -->
+    </header>
+    <div class="entry-content">
+      <h1 id="introduction">Introduction</h1>
+
+<p>This week was spent investigating the runtime and debugging executables with gdb.
+It was interesting in the sense that it provided me with some interesting
+pieces of information. Without any further ado, let’s present our findings:</p>
+
+<h2 id="my-findings">My findings</h2>
+
+<p>Before starting out playing with libpthread, and glibc, I wanted to make sure
+that the goruntime behaved the way I believed it behaved, and make some further
+assurances about the goruntime. These assurances had to do with the total number
+of goroutines and the total number of machine threads at various checkpoints
+in the language runtime.  </p>
+
+<ul>
+  <li>The first thread in the program is initialised during <code>runtime_schedinit</code>.</li>
+  <li>The number of m’s (kernel threads) is dependent on the number of goroutines.
+The runtime basically attempts to create an equal amount of m’s to run the goroutines.
+We can observe everytime a new goroutine is created, there is a number of calls
+to initiate a new kernel thread.</li>
+  <li>There are at least two kernel threads. One that supports the runtime (mainly the 
+garbage collector) and one that executes the code of the go program.</li>
+</ul>
+
+<p>There is only one small piece of code in the goruntime that creates some sort of
+confusion for me, and that is the code for a new m initialisation. Let me first
+present the code that confuses me:</p>
+
+<div class="highlight"><pre><code class="c"><span class="n">M</span><span class="o">*</span>
+<span class="nf">runtime_newm</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+
+    <span class="p">...</span>
+	<span class="n">mp</span> <span class="o">=</span> <span class="n">runtime_mal</span><span class="p">(</span><span class="k">sizeof</span> <span class="o">*</span><span class="n">mp</span><span class="p">);</span>
+
+    <span class="p">...</span>
+	<span class="n">mcommoninit</span><span class="p">(</span><span class="n">mp</span><span class="p">);</span>
+	<span class="n">mp</span><span class="o">-&gt;</span><span class="n">g0</span> <span class="o">=</span> <span class="n">runtime_malg</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">nil</span><span class="p">,</span> <span class="n">nil</span><span class="p">);</span>
+
+    <span class="p">...</span>
+	<span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">&quot;pthread_attr_init&quot;</span><span class="p">);</span>
+	<span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_setdetachstate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">PTHREAD_CREATE_DETACHED</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">&quot;pthread_attr_setdetachstate&quot;</span><span class="p">);</span>
+
+    <span class="p">...</span>
+<span class="p">}</span></code></pre></div>
+
+<p>I purposely compacted the function for brevity, as it only serves as a demonstration for a point.
+Now, my confusion lies in the line <code>mp-&gt;g0 = runtime_malg(-1, nil, nil)</code>. It is a piece of code
+that allocates memory for a new goroutine. Now I am ok with that, <strong>but</strong> what I do not understand
+is that new kernel threads (m’s) are supposed to be pick and run a goroutine from the global 
+goroutine pool - that is run an existing one, and not create a new one. Now, the <code>runtime_malg</code>
+is given parameters that don’t initialise a new goroutine properly, but still, new memory
+is allocated for a new goroutine, and is returned to <code>mp-&gt;g0</code> from runtime_malg.</p>
+
+<p>Assuming I have not misunderstood something, and I am not mistaken (which is kind of likely), 
+this is behavior that could lead to a number of questions and/or problems. For instance,
+what happens to the goroutine created by <code>runtime_malg</code>? Is it killed after the m is assigned
+a new goroutine to execute? Is it parked on the goroutine global list? Is it just ignored?
+Does it affect the runtime scheduler’s goroutine count? This is the last thing I feel I wanna
+clear out regarding gccgo’s runtime.</p>
+
+<h2 id="gdb">gdb</h2>
+
+<p>For this week, I also run the executables created by gccgo through gdb. It was a fertile attempt
+that, most of the time, confirmed my findings in the goruntime. It also provided us with some
+other nice pieces of information regarding the crashing of goroutines, but also left me with a 
+question.</p>
+
+<p>The code in question that I run through gdb is this:</p>
+
+<div class="highlight"><pre><code class="c"><span class="n">package</span> <span class="n">main</span>
+
+<span class="n">import</span> <span class="s">&quot;fmt&quot;</span>
+
+<span class="n">func</span> <span class="n">say</span><span class="p">(</span><span class="n">s</span> <span class="n">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="n">fmt</span><span class="p">.</span><span class="n">Println</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="p">.</span><span class="n">Println</span><span class="p">(</span><span class="s">&quot;[!!] right before a go statement&quot;</span><span class="p">)</span>
+    <span class="n">go</span> <span class="n">say</span><span class="p">(</span><span class="s">&quot;world&quot;</span><span class="p">)</span>
+    <span class="n">say</span> <span class="p">(</span><span class="s">&quot;hello&quot;</span><span class="p">)</span>
+<span class="p">}</span></code></pre></div>
+
+<p>Your very typical hello world like goroutine program. Now, setting a break point in main 
+(not the program’s main, that’s <code>main.main</code>. <code>main</code> as far as the runtime is concerned is
+ the runtime entry point, in <code>go-main.c</code>) and running it through gdb yields the following
+results:</p>
+
+<div class="highlight"><pre><code class="sh">Breakpoint 1, main <span class="o">()</span> at ../../../gcc_source/libgo/runtime/go-main.c:52
+52 runtime_check <span class="o">()</span><span class="p">;</span>
+2:  <span class="nv">__pthread_total</span> <span class="o">=</span> 1
+1: runtime_sched.mcount <span class="o">=</span> 0
+<span class="o">(</span>gdb<span class="o">)</span> next
+53 runtime_args <span class="o">(</span>argc, <span class="o">(</span>byte **<span class="o">)</span> argv<span class="o">)</span><span class="p">;</span>
+2: <span class="nv">__pthread_total</span> <span class="o">=</span> 1
+1: runtime_sched.mcount <span class="o">=</span> 0
+54 runtime_osinit <span class="o">()</span><span class="p">;</span>
+2: <span class="nv">__pthread_total</span> <span class="o">=</span> 1
+1: runtime_sched.mcount <span class="o">=</span> 0
+63: runtime_schedinit <span class="o">()</span><span class="p">;</span>
+2: <span class="nv">__pthread_total</span> <span class="o">=</span> 1
+1: runtime_sched.mcount <span class="o">=</span> 1</code></pre></div>
+
+<p>Up until now, nothing unexpected. The kernel thread is registered with the runtime scheduler
+during its initialisation process in <code>runtime_schedinit</code> and that’ why the <code>runtime_sched.mcount</code>
+is reported to be zero many times before schedinit is run.</p>
+
+<div class="highlight"><pre><code class="sh">68 __go_go <span class="o">(</span>mainstart, NULL<span class="o">)</span><span class="p">;</span>
+2: <span class="nv">__pthread_total</span> <span class="o">=</span> 1
+1: runtime_sched.mcount <span class="o">=</span> 1
+<span class="o">(</span>gdb<span class="o">)</span> display runtime_sched.gcount
+3: runtime_sched.gcount <span class="o">=</span> 0</code></pre></div>
+
+<p>That too is ok, because a new goroutine is registered with the scheduler during the call to
+<code>__go_go</code>. Now I am gonna fast forward a bit, to a more interesting point.</p>
+
+<div class="highlight"><pre><code class="sh">...
+<span class="o">[</span>DEBUG<span class="o">]</span> <span class="o">(</span>in runtime_gogo<span class="o">)</span> new goroutine<span class="s1">&#39;s status is 2</span>
+<span class="s1">[DEBUG] (in runtime_gogo) number of goroutines now is 2</span>
+<span class="s1">[New Thread 629.30]</span>
+
+<span class="s1">Program received SIGTRAP, Trace/breakpoint trap.</span>
+<span class="s1">0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3</span>
+<span class="s1">3: runtime_sched.gcount = 2</span>
+<span class="s1">2: __pthread_total = 2</span>
+<span class="s1">1: runtime_sched.mcount = 2</span>
+<span class="s1">(gdb) info threads</span>
+<span class="s1"> Id   Target  Id       Frame</span>
+<span class="s1"> 6    Thread  629.30   0x08048eb7 in main.main () at goroutine.go:12</span>
+<span class="s1"> 5    Thread  629.29   0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3</span>
+<span class="s1">*4    Thread  629.28   0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3</span>
+<span class="s1">```</span>
+<span class="s1">This is getting weird. I mean, libpthread is reporting that 2 threads are active,</span>
+<span class="s1">but gdb reports that 3 are active. Anyway, let&#39;</span>s <span class="k">continue</span>:
+
+<span class="sb">```</span>
+<span class="o">[</span>DEBUG<span class="o">]</span> <span class="o">(</span>in runtime_stoptheworld<span class="o">)</span> stopped the garbage collector
+<span class="o">[</span>DEBUG<span class="o">]</span> <span class="o">(</span>in runtime_starttheworld<span class="o">)</span> starting the garbage collector
+<span class="o">[</span>DEBUG<span class="o">]</span> <span class="o">(</span>in runtime_starttheworld<span class="o">)</span> number of m<span class="s1">&#39;s now is: 2</span>
+<span class="s1">[DEBUG] (in runtime_starttheworld) [note] there is already one gc thread</span>
+<span class="s1">[!!] right before a go statement</span>
+
+<span class="s1">Program received signal SIGTRAP, Trace/breakpoint trap.</span>
+<span class="s1">0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3</span>
+<span class="s1">3: runtime_sched.gcount = 2</span>
+<span class="s1">2: __pthread_total = 2</span>
+<span class="s1">1: runtime_sched.mcount = 2</span>
+<span class="s1">(gdb) continue</span>
+<span class="s1">... (output omitted by me for brevity)</span>
+
+<span class="s1">[DEBUG] (in runtime_newm) Right before the call to pthread_create.</span>
+<span class="s1">a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&gt;kernel_thread == ktid;</span>
+<span class="s1">__mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })&#39;</span> failed.
+<span class="o">[</span>New Thread 629.31<span class="o">]</span>
+
+Program received signal SIGABRT, Aborted.
+0x01da48ec in ?? <span class="o">()</span> from /lib/i386-gnu/libc.so.0.3
+3: runtime_sched.gcount <span class="o">=</span> 3
+2: <span class="nv">__pthread_total</span> <span class="o">=</span> 2
+1: runtime_sched.mcount <span class="o">=</span> 3</code></pre></div>
+
+<p>Oh my goodness. From a first glance, this seems to be a very serious inconsistency between libpthread and the goruntime.
+At this point, the go scheduler reports 3 threads (3 registered threads, that means 
+that flow of execution has passed <code>mcommoninit</code>, the kernel thread initialisation function
+which also registers the kernel thread with the runtime_scheduler) whereas libpthread reports 2 threads.</p>
+
+<p><strong>But WAIT! Where are you going? Things are about to get even more interesting!</strong></p>
+
+<div class="highlight"><pre><code class="sh"><span class="o">(</span>gdb<span class="o">)</span> info threads
+ Id   Target  Id       Frame
+ 7    Thread  629.31   0x01f4da00 in entry_point <span class="o">()</span> from /lib/i386-gnu/libpthread.so.0.3
+ 6    Thread  629.30   0x01da48ec in ?? <span class="o">()</span> from /lib/i386-gnu/libc.so.0.3
+ 5    Thread  629.29   0x01da48ec in ?? <span class="o">()</span> from /lib/i386-gnu/libc.so.0.3
+*4    Thread  629.28   0x01da48ec in ?? <span class="o">()</span> from /lib/i386-gnu/libc.so.0.3</code></pre></div>
+
+<p>GDB reports 4 threads. Yes, 4 threads ladies and gentlemen. Now take a look closely.
+3 threads are in the same frame, with the one with id 4 being the one currently executed.
+And there is also a pattern. <code>0x01da48ec</code> is the value of the <code>eip</code> register for all 3 of them.</p>
+
+<p>That’s one thing that is for certain. Now I already have an idea. Why not change
+the current thread to the one with id 7? I’m sold to the idea, let’s do this:</p>
+
+<div class="highlight"><pre><code class="sh"><span class="o">(</span>gdb<span class="o">)</span> thread 7
+<span class="o">[</span>Switching to thread 7 <span class="o">(</span>Thread 629.31<span class="o">)]</span>
+<span class="c">#0  0x01f4da00 in entry_point () from /lib/i386-gnu/libpthread.so.0.3</span>
+<span class="o">(</span>gdb<span class="o">)</span> <span class="k">continue</span>
+Continuing.
+
+Program received signal SIGABRT, Aborted.
+<span class="o">[</span>Switching to Thread 629.28<span class="o">]</span>
+0x01da48ec in ?? <span class="o">()</span> from /lib/i386-gnu/libc.so.0.3
+3: runtime_sched.gcount <span class="o">=</span> 3
+2: <span class="nv">__pthread_total</span> <span class="o">=</span> 2
+1: runtime_sched.mcount <span class="o">=</span> 3
+<span class="o">(</span>gdb<span class="o">)</span> info threads
+ Id   Target  Id       Frame
+ 7    Thread  629.31   0x01dc08b0 in ?? <span class="o">()</span> from /lib/i386-gnu/libc.so.0.3
+ 6    Thread  629.30   0x01da48ec in ?? <span class="o">()</span> from /lib/i386-gnu/libc.so.0.3
+ 5    Thread  629.29   0x01da48ec in ?? <span class="o">()</span> from /lib/i386-gnu/libc.so.0.3
+*4    Thread  629.28   0x01da48ec in ?? <span class="o">()</span> from /lib/i386-gnu/libc.so.0.3</code></pre></div>
+
+<p>Damn. But I am curious. What’s the next value to be executed?</p>
+
+<div class="highlight"><pre><code class="sh"><span class="o">(</span>gdb<span class="o">)</span> x/i <span class="nv">$eip</span>
+<span class="o">=</span>&gt; 0x1da48ec: ret</code></pre></div>
+
+<p>And what is the next value to be executed for the thread with id 7?</p>
+
+<div class="highlight"><pre><code class="sh"><span class="o">(</span>gdb<span class="o">)</span> x/i <span class="nv">$eip</span>
+<span class="o">=</span>&gt; 0x1dc08b0: call *%edx</code></pre></div>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>Apparently, there is still much debugging left to checkout what is really happening.
+But we have got some leads in the right direction, that hopefully will lead us to 
+finally finding out where the problem lies, and correct it.</p>
+
+<p>Most importantly, in my immediate plans, before iI start playing around with libpthread
+is to attempt the same debugging run on the same code, under linux (x86). Seeing as
+go is clean on linux, it would provide some clues as to what the expected results 
+should be, and where the execution differentiates substantially, a clue
+that might be vital to finding the problem.</p>
+
+      <footer class="entry-meta">
+        <span class="entry-tags"></span>
+        <span><a href="http://localhost:4000/gcc/golang/gsoc/gsoc-week-11-report/" rel="bookmark" title="GSOC Week 11 report">GSOC Week 11 report</a> was published on <span class="entry-date date published updated"><time datetime="2013-09-02T09:25:00+03:00">September 02, 2013</time></span></span>
+        
+        <span class="author vcard"><span class="fn"><a href="http://localhost:4000/about/" title="About Fotis Koutoulakis">Fotis Koutoulakis</a></span></span>
+        
+      </footer>
+    </div><!-- /.entry-content -->
+    
+    
+    <div class="read-more">
+      
+        <div class="read-more-header">
+          <a href="http://localhost:4000/gsoc/gcc/golang/gsoc-week-10-report/" class="read-more-btn">Read More</a>
+        </div><!-- /.read-more-header -->
+        <div class="read-more-content">
+          <h3><a href="http://localhost:4000/distro-forking-101/" title="Distro forking 101: How do you fork a Linux distro?">Distro forking 101: How do you fork a Linux distro?</a></h3>
+          <p>Defining the GNU/Linux distribution============If you are here, we can safely assume that you already know what a **GNU/Linux softwaredis...&hellip; <a href="http://localhost:4000/distro-forking-101/">Continue reading</a></p>
+        </div><!-- /.read-more-content -->
+      
+      <div class="read-more-list">
+        
+          <div class="list-item">
+            <h4><a href="http://localhost:4000/how-the-compiler/" title="How the Compiler, the Library and the Kernel work - Part 3">How the Compiler, the Library and the Kernel work - Part 3</a></h4>
+            <span>Published on June 20, 2014</span>
+          </div><!-- /.list-item -->
+        
+          <div class="list-item">
+            <h4><a href="http://localhost:4000/introduction-to-xv6-adding-a-new-system-call/" title="Introduction to xv6: Adding a new system call.">Introduction to xv6: Adding a new system call.</a></h4>
+            <span>Published on April 28, 2014</span>
+          </div><!-- /.list-item -->
+        
+      </div><!-- /.read-more-list -->
+      
+    </div><!-- /.read-more -->
+  </article>
+</div><!-- /#main -->
+
+<div class="footer-wrapper">
+  <footer role="contentinfo">
+    <span>&copy; 2014 Fotis Koutoulakis. Powered by <a href="http://jekyllrb.com">Jekyll</a> using the <a href="http://mademistakes.com/hpstr/">HPSTR Theme</a>.</span>
+  </footer>
+</div><!-- /.footer-wrapper -->
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="http://localhost:4000/assets/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+<script src="http://localhost:4000/assets/js/scripts.min.js"></script>
+
+	        
+
+</body>
+</html>
