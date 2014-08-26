@@ -2,26 +2,26 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
 <title type="text">Fotis Koutoulakis</title>
 <generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
-<link rel="self" type="application/atom+xml" href="http://localhost:4000/feed.xml" />
-<link rel="alternate" type="text/html" href="http://localhost:4000" />
-<updated>2014-08-25T15:26:47+03:00</updated>
-<id>http://localhost:4000/</id>
+<link rel="self" type="application/atom+xml" href="/feed.xml" />
+<link rel="alternate" type="text/html" href="" />
+<updated>2014-08-26T10:40:33+03:00</updated>
+<id>/</id>
 <author>
   <name>Fotis Koutoulakis</name>
-  <uri>http://localhost:4000/</uri>
+  <uri>/</uri>
   <email>fotis.koutoulakis@gmail.com</email>
 </author>
 
 
 <entry>
   <title type="html"><![CDATA[Distro forking 101: How do you fork a Linux distro?]]></title>
- <link rel="alternate" type="text/html" href="http://localhost:4000/distro-forking-101/" />
-  <id>http://localhost:4000/distro-forking-101</id>
+ <link rel="alternate" type="text/html" href="/distro-forking-101/" />
+  <id>/distro-forking-101</id>
   <published>2014-07-09T15:04:00+03:00</published>
   <updated>2014-07-09T15:04:00+03:00</updated>
   <author>
     <name>Fotis Koutoulakis</name>
-    <uri>http://localhost:4000</uri>
+    <uri></uri>
     <email>fotis.koutoulakis@gmail.com</email>
   </author>
   <content type="html">&lt;h1 id=&quot;defining-the-gnulinux-distribution&quot;&gt;Defining the GNU/Linux distribution&lt;/h1&gt;
@@ -248,19 +248,19 @@ distro; by all means go ahead.&lt;/p&gt;
 &lt;p&gt;If you want to do a large scale, public fork, then take your time to calculate the effort, if it’s worth it,
 and if you could just help the upstream distribution implement the features you want. &lt;/p&gt;
 
-  &lt;p&gt;&lt;a href=&quot;http://localhost:4000/distro-forking-101/&quot;&gt;Distro forking 101: How do you fork a Linux distro?&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;http://localhost:4000&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on July 09, 2014.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/distro-forking-101/&quot;&gt;Distro forking 101: How do you fork a Linux distro?&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on July 09, 2014.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[How the Compiler, the Library and the Kernel work - Part 3]]></title>
- <link rel="alternate" type="text/html" href="http://localhost:4000/how-the-compiler/" />
-  <id>http://localhost:4000/how-the-compiler</id>
+ <link rel="alternate" type="text/html" href="/how-the-compiler/" />
+  <id>/how-the-compiler</id>
   <published>2014-06-20T20:49:00+03:00</published>
   <updated>2014-06-20T20:49:00+03:00</updated>
   <author>
     <name>Fotis Koutoulakis</name>
-    <uri>http://localhost:4000</uri>
+    <uri></uri>
     <email>fotis.koutoulakis@gmail.com</email>
   </author>
   <content type="html">&lt;p&gt;In the last part of this series, we talked about the compiler’s composition, including the assembler
@@ -326,19 +326,19 @@ to provide the required services needed by the userspace applications.&lt;/p&gt;
 &lt;p&gt;If you want to take a look at the System Call interface in the Linux Operating System, you could
 always see the &lt;a href=&quot;http://man7.org/linux/man-pages/man2/syscalls.2.html&quot;&gt;man page for the Linux system calls&lt;/a&gt;&lt;/p&gt;
 
-  &lt;p&gt;&lt;a href=&quot;http://localhost:4000/how-the-compiler/&quot;&gt;How the Compiler, the Library and the Kernel work - Part 3&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;http://localhost:4000&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on June 20, 2014.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/how-the-compiler/&quot;&gt;How the Compiler, the Library and the Kernel work - Part 3&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on June 20, 2014.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[Introduction to xv6: Adding a new system call.]]></title>
- <link rel="alternate" type="text/html" href="http://localhost:4000/introduction-to-xv6-adding-a-new-system-call/" />
-  <id>http://localhost:4000/introduction-to-xv6-adding-a-new-system-call</id>
+ <link rel="alternate" type="text/html" href="/introduction-to-xv6-adding-a-new-system-call/" />
+  <id>/introduction-to-xv6-adding-a-new-system-call</id>
   <published>2014-04-28T18:24:00+03:00</published>
   <updated>2014-04-28T18:24:00+03:00</updated>
   <author>
     <name>Fotis Koutoulakis</name>
-    <uri>http://localhost:4000</uri>
+    <uri></uri>
     <email>fotis.koutoulakis@gmail.com</email>
   </author>
   <content type="html">&lt;h1 id=&quot;xv6-an-introduction&quot;&gt;xv6: An introduction&lt;/h1&gt;
@@ -577,19 +577,19 @@ work, take a look at the &lt;code&gt;syscall&lt;/code&gt; branch.&lt;/p&gt;
   &lt;li&gt;&lt;a href=&quot;http://pdos.csail.mit.edu/6.828/2012/xv6/book-rev7.pdf&quot;&gt;xv6 Documentation, MIT csail&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-  &lt;p&gt;&lt;a href=&quot;http://localhost:4000/introduction-to-xv6-adding-a-new-system-call/&quot;&gt;Introduction to xv6: Adding a new system call.&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;http://localhost:4000&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on April 28, 2014.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/introduction-to-xv6-adding-a-new-system-call/&quot;&gt;Introduction to xv6: Adding a new system call.&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on April 28, 2014.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[How the compiler, the Library and the Kernel work - Part 2 ]]></title>
- <link rel="alternate" type="text/html" href="http://localhost:4000/how-the-compiler/" />
-  <id>http://localhost:4000/how-the-compiler</id>
+ <link rel="alternate" type="text/html" href="/how-the-compiler/" />
+  <id>/how-the-compiler</id>
   <published>2014-04-25T18:27:00+03:00</published>
   <updated>2014-04-25T18:27:00+03:00</updated>
   <author>
     <name>Fotis Koutoulakis</name>
-    <uri>http://localhost:4000</uri>
+    <uri></uri>
     <email>fotis.koutoulakis@gmail.com</email>
   </author>
   <content type="html">&lt;p&gt;In the previous part of this little series, we talked about the compiler, and what it does 
@@ -734,19 +734,19 @@ in greater length, the C library, and the kernel.&lt;/p&gt;
   &lt;li&gt;&lt;a href=&quot;https://sourceware.org/binutils/docs-2.20/ld/&quot;&gt; ld: Binutils documentation&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-  &lt;p&gt;&lt;a href=&quot;http://localhost:4000/how-the-compiler/&quot;&gt;How the compiler, the Library and the Kernel work - Part 2 &lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;http://localhost:4000&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on April 25, 2014.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/how-the-compiler/&quot;&gt;How the compiler, the Library and the Kernel work - Part 2 &lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on April 25, 2014.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[My Linux from Scratch Experience]]></title>
- <link rel="alternate" type="text/html" href="http://localhost:4000/my-linux-from-scratch-experience/" />
-  <id>http://localhost:4000/my-linux-from-scratch-experience</id>
+ <link rel="alternate" type="text/html" href="/my-linux-from-scratch-experience/" />
+  <id>/my-linux-from-scratch-experience</id>
   <published>2014-02-23T20:59:00+02:00</published>
   <updated>2014-02-23T20:59:00+02:00</updated>
   <author>
     <name>Fotis Koutoulakis</name>
-    <uri>http://localhost:4000</uri>
+    <uri></uri>
     <email>fotis.koutoulakis@gmail.com</email>
   </author>
   <content type="html">&lt;p&gt;The past two to three days, I have been busy with creating my very own Linux distribution
@@ -907,19 +907,19 @@ around the &lt;code&gt;configure &amp;amp;&amp;amp; make &amp;amp;&amp;amp; make
 Do you want the bragging rights? Are you crazy enough to want to maintain it?&lt;/strong&gt; 
 &lt;em&gt;These are all questions that you get as many answers to them as the people you ask.&lt;/em&gt;&lt;/p&gt;
 
-  &lt;p&gt;&lt;a href=&quot;http://localhost:4000/my-linux-from-scratch-experience/&quot;&gt;My Linux from Scratch Experience&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;http://localhost:4000&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on February 23, 2014.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/my-linux-from-scratch-experience/&quot;&gt;My Linux from Scratch Experience&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on February 23, 2014.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[How the compiler, the Library and the kernel work - Part 1]]></title>
- <link rel="alternate" type="text/html" href="http://localhost:4000/how-the-compiler/" />
-  <id>http://localhost:4000/how-the-compiler</id>
+ <link rel="alternate" type="text/html" href="/how-the-compiler/" />
+  <id>/how-the-compiler</id>
   <published>2013-12-12T16:13:00+02:00</published>
   <updated>2013-12-12T16:13:00+02:00</updated>
   <author>
     <name>Fotis Koutoulakis</name>
-    <uri>http://localhost:4000</uri>
+    <uri></uri>
     <email>fotis.koutoulakis@gmail.com</email>
   </author>
   <content type="html">&lt;p&gt;Before we get any further, it might be good if we provided some context.&lt;/p&gt;
@@ -1053,19 +1053,19 @@ after x86 assembly is produced) parameter, likewise &lt;code&gt;gcc -S hello.c&l
 so called library calls. In the next part, we are going to study the assembler and the linker, and for the final
 part the loader and the kernel.&lt;/p&gt;
 
-  &lt;p&gt;&lt;a href=&quot;http://localhost:4000/how-the-compiler/&quot;&gt;How the compiler, the Library and the kernel work - Part 1&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;http://localhost:4000&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on December 12, 2013.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/how-the-compiler/&quot;&gt;How the compiler, the Library and the kernel work - Part 1&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on December 12, 2013.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[GSOC Week 11 report]]></title>
- <link rel="alternate" type="text/html" href="http://localhost:4000/gcc/golang/gsoc/gsoc-week-11-report/" />
-  <id>http://localhost:4000/gcc/golang/gsoc/gsoc-week-11-report</id>
+ <link rel="alternate" type="text/html" href="/gcc/golang/gsoc/gsoc-week-11-report/" />
+  <id>/gcc/golang/gsoc/gsoc-week-11-report</id>
   <published>2013-09-02T09:25:00+03:00</published>
   <updated>2013-09-02T09:25:00+03:00</updated>
   <author>
     <name>Fotis Koutoulakis</name>
-    <uri>http://localhost:4000</uri>
+    <uri></uri>
     <email>fotis.koutoulakis@gmail.com</email>
   </author>
   <content type="html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
@@ -1296,19 +1296,19 @@ go is clean on linux, it would provide some clues as to what the expected result
 should be, and where the execution differentiates substantially, a clue
 that might be vital to finding the problem.&lt;/p&gt;
 
-  &lt;p&gt;&lt;a href=&quot;http://localhost:4000/gcc/golang/gsoc/gsoc-week-11-report/&quot;&gt;GSOC Week 11 report&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;http://localhost:4000&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on September 02, 2013.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/gcc/golang/gsoc/gsoc-week-11-report/&quot;&gt;GSOC Week 11 report&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on September 02, 2013.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[GSOC week 10 report]]></title>
- <link rel="alternate" type="text/html" href="http://localhost:4000/gsoc/gcc/golang/gsoc-week-10-report/" />
-  <id>http://localhost:4000/gsoc/gcc/golang/gsoc-week-10-report</id>
+ <link rel="alternate" type="text/html" href="/gsoc/gcc/golang/gsoc-week-10-report/" />
+  <id>/gsoc/gcc/golang/gsoc-week-10-report</id>
   <published>2013-08-26T09:00:00+03:00</published>
   <updated>2013-08-26T09:00:00+03:00</updated>
   <author>
     <name>Fotis Koutoulakis</name>
-    <uri>http://localhost:4000</uri>
+    <uri></uri>
     <email>fotis.koutoulakis@gmail.com</email>
   </author>
   <content type="html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
@@ -1425,19 +1425,19 @@ to find something interesting in libpthread (like how many threads does libpthre
 many the goruntime reports)&lt;/p&gt;
 
 
-  &lt;p&gt;&lt;a href=&quot;http://localhost:4000/gsoc/gcc/golang/gsoc-week-10-report/&quot;&gt;GSOC week 10 report&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;http://localhost:4000&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on August 26, 2013.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/gsoc/gcc/golang/gsoc-week-10-report/&quot;&gt;GSOC week 10 report&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on August 26, 2013.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[GSOC Week 9 (Partial) report]]></title>
- <link rel="alternate" type="text/html" href="http://localhost:4000/gcc/golang/gsoc/gsoc-week-9-partial-report/" />
-  <id>http://localhost:4000/gcc/golang/gsoc/gsoc-week-9-partial-report</id>
+ <link rel="alternate" type="text/html" href="/gcc/golang/gsoc/gsoc-week-9-partial-report/" />
+  <id>/gcc/golang/gsoc/gsoc-week-9-partial-report</id>
   <published>2013-08-19T11:35:00+03:00</published>
   <updated>2013-08-19T11:35:00+03:00</updated>
   <author>
     <name>Fotis Koutoulakis</name>
-    <uri>http://localhost:4000</uri>
+    <uri></uri>
     <email>fotis.koutoulakis@gmail.com</email>
   </author>
   <content type="html">&lt;p&gt;This week was revolving around the print debugging in the gccgo runtime in search
@@ -1587,19 +1587,19 @@ to create another one.&lt;/li&gt;
 some of my findings, and hope to soon be able to write an exhaustive
 report on what exactly it is that causes the bug.&lt;/p&gt;
 
-  &lt;p&gt;&lt;a href=&quot;http://localhost:4000/gcc/golang/gsoc/gsoc-week-9-partial-report/&quot;&gt;GSOC Week 9 (Partial) report&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;http://localhost:4000&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on August 19, 2013.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/gcc/golang/gsoc/gsoc-week-9-partial-report/&quot;&gt;GSOC Week 9 (Partial) report&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on August 19, 2013.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[GSOC Week 8 (Partial) report]]></title>
- <link rel="alternate" type="text/html" href="http://localhost:4000/gsoc/golang/gcc/gsoc-week-8-partial-report/" />
-  <id>http://localhost:4000/gsoc/golang/gcc/gsoc-week-8-partial-report</id>
+ <link rel="alternate" type="text/html" href="/gsoc/golang/gcc/gsoc-week-8-partial-report/" />
+  <id>/gsoc/golang/gcc/gsoc-week-8-partial-report</id>
   <published>2013-08-12T10:27:00+03:00</published>
   <updated>2013-08-12T10:27:00+03:00</updated>
   <author>
     <name>Fotis Koutoulakis</name>
-    <uri>http://localhost:4000</uri>
+    <uri></uri>
     <email>fotis.koutoulakis@gmail.com</email>
   </author>
   <content type="html">&lt;p&gt;This week was spent studying the go language’s runtime and studying the behaviour of various go programs when executed under the Hurd. I learnt a variety of new things, and got some 
@@ -1737,19 +1737,19 @@ root@debian:~/Software/Experiments/go#&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;I will continue reading through the go runtime for some clues. On the more active size, I am writing a custom test case for goroutine testing under the Hurd, while also doing some analysis
 on the programs that run there (currently studying the assembly generated for these programs) to see how they differ and why we get this particular behavior.&lt;/p&gt;
 
-  &lt;p&gt;&lt;a href=&quot;http://localhost:4000/gsoc/golang/gcc/gsoc-week-8-partial-report/&quot;&gt;GSOC Week 8 (Partial) report&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;http://localhost:4000&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on August 12, 2013.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/gsoc/golang/gcc/gsoc-week-8-partial-report/&quot;&gt;GSOC Week 8 (Partial) report&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on August 12, 2013.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[GSOC (Partial) Week 7 report]]></title>
- <link rel="alternate" type="text/html" href="http://localhost:4000/gsoc/golang/gcc/gsoc-partial-week-7-report/" />
-  <id>http://localhost:4000/gsoc/golang/gcc/gsoc-partial-week-7-report</id>
+ <link rel="alternate" type="text/html" href="/gsoc/golang/gcc/gsoc-partial-week-7-report/" />
+  <id>/gsoc/golang/gcc/gsoc-partial-week-7-report</id>
   <published>2013-08-05T01:36:00+03:00</published>
   <updated>2013-08-05T01:36:00+03:00</updated>
   <author>
     <name>Fotis Koutoulakis</name>
-    <uri>http://localhost:4000</uri>
+    <uri></uri>
     <email>fotis.koutoulakis@gmail.com</email>
   </author>
   <content type="html">&lt;h1 id=&quot;an-exciting-week&quot;&gt;An exciting week.&lt;/h1&gt;
@@ -1929,19 +1929,19 @@ matter of fact I could not find any code that destroyed M’s (I am still resear
 I will try to provide with an interpretation: Either I am fairly wrong and M’s (or G’s or both) actually do get destroyed somewhere (possible and very much probable)
 or I looking for clues regarding the issue in the wrong place (might be possible but I don’t see it being very probable).&lt;/p&gt;
 
-  &lt;p&gt;&lt;a href=&quot;http://localhost:4000/gsoc/golang/gcc/gsoc-partial-week-7-report/&quot;&gt;GSOC (Partial) Week 7 report&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;http://localhost:4000&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on August 05, 2013.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/gsoc/golang/gcc/gsoc-partial-week-7-report/&quot;&gt;GSOC (Partial) Week 7 report&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on August 05, 2013.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[GSOC: Week 6 report]]></title>
- <link rel="alternate" type="text/html" href="http://localhost:4000/gsoc/gcc/golang/gsoc-week-6-report/" />
-  <id>http://localhost:4000/gsoc/gcc/golang/gsoc-week-6-report</id>
+ <link rel="alternate" type="text/html" href="/gsoc/gcc/golang/gsoc-week-6-report/" />
+  <id>/gsoc/gcc/golang/gsoc-week-6-report</id>
   <published>2013-07-31T12:36:00+03:00</published>
   <updated>2013-07-31T12:36:00+03:00</updated>
   <author>
     <name>Fotis Koutoulakis</name>
-    <uri>http://localhost:4000</uri>
+    <uri></uri>
     <email>fotis.koutoulakis@gmail.com</email>
   </author>
   <content type="html">&lt;p&gt;First of all, I would like to apologize for this report being late. But unfortunately this happened:
@@ -2125,19 +2125,19 @@ func (srv *Server) ListenAndServe() error {
 Apart from that my mentor Thomas Schwinge suggested to make thread destruction in go’s runtime a no-op to see if that makes any difference. 
 If it does that should mean that there is nothing wrong in the go runtime itself, rather, the offending code is in libpthread. This is also my very next course of action, which I shall report on very soon.&lt;/p&gt;
 
-  &lt;p&gt;&lt;a href=&quot;http://localhost:4000/gsoc/gcc/golang/gsoc-week-6-report/&quot;&gt;GSOC: Week 6 report&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;http://localhost:4000&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on July 31, 2013.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/gsoc/gcc/golang/gsoc-week-6-report/&quot;&gt;GSOC: Week 6 report&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on July 31, 2013.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[GSOC: Week 5 report]]></title>
- <link rel="alternate" type="text/html" href="http://localhost:4000/gsoc/gcc/golang/gsoc-week-5-report/" />
-  <id>http://localhost:4000/gsoc/gcc/golang/gsoc-week-5-report</id>
+ <link rel="alternate" type="text/html" href="/gsoc/gcc/golang/gsoc-week-5-report/" />
+  <id>/gsoc/gcc/golang/gsoc-week-5-report</id>
   <published>2013-07-24T12:36:00+03:00</published>
   <updated>2013-07-24T12:36:00+03:00</updated>
   <author>
     <name>Fotis Koutoulakis</name>
-    <uri>http://localhost:4000</uri>
+    <uri></uri>
     <email>fotis.koutoulakis@gmail.com</email>
   </author>
   <content type="html">&lt;h1 id=&quot;a-clue&quot;&gt;A clue!&lt;/h1&gt;
@@ -2398,19 +2398,19 @@ runtest completed at Fri Jul 12 18:09:07 UTC 2013
 
 &lt;p&gt;It was also suggested by Samuel Thibault (youpi) that I should run the libgo tests by hand and see if I get some more clues, like stack traces. It sounds like a good idea to me, so that’s something that I will look into too.&lt;/p&gt;
 
-  &lt;p&gt;&lt;a href=&quot;http://localhost:4000/gsoc/gcc/golang/gsoc-week-5-report/&quot;&gt;GSOC: Week 5 report&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;http://localhost:4000&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on July 24, 2013.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/gsoc/gcc/golang/gsoc-week-5-report/&quot;&gt;GSOC: Week 5 report&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on July 24, 2013.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[GSOC: Week 4 report]]></title>
- <link rel="alternate" type="text/html" href="http://localhost:4000/gsoc/gcc/golang/gsoc-week-4-report/" />
-  <id>http://localhost:4000/gsoc/gcc/golang/gsoc-week-4-report</id>
+ <link rel="alternate" type="text/html" href="/gsoc/gcc/golang/gsoc-week-4-report/" />
+  <id>/gsoc/gcc/golang/gsoc-week-4-report</id>
   <published>2013-07-15T11:43:00+03:00</published>
   <updated>2013-07-15T11:43:00+03:00</updated>
   <author>
     <name>Fotis Koutoulakis</name>
-    <uri>http://localhost:4000</uri>
+    <uri></uri>
     <email>fotis.koutoulakis@gmail.com</email>
   </author>
   <content type="html">&lt;h1 id=&quot;yeah-baby-it-builds&quot;&gt;Yeah baby! It builds!&lt;/h1&gt;
@@ -2775,19 +2775,19 @@ project proposal (and the most exciting one too)&lt;/strong&gt;, that is proper 
 of what is &lt;em&gt;blocking effective context switching, which
 in its part is blocking goroutines, without which, the go library will not work properly.&lt;/em&gt;&lt;/p&gt;
 
-  &lt;p&gt;&lt;a href=&quot;http://localhost:4000/gsoc/gcc/golang/gsoc-week-4-report/&quot;&gt;GSOC: Week 4 report&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;http://localhost:4000&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on July 15, 2013.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/gsoc/gcc/golang/gsoc-week-4-report/&quot;&gt;GSOC: Week 4 report&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on July 15, 2013.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[Hello World]]></title>
- <link rel="alternate" type="text/html" href="http://localhost:4000/hello-world/" />
-  <id>http://localhost:4000/hello-world</id>
+ <link rel="alternate" type="text/html" href="/hello-world/" />
+  <id>/hello-world</id>
   <published>2013-07-14T12:24:00+03:00</published>
   <updated>2013-07-14T12:24:00+03:00</updated>
   <author>
     <name>Fotis Koutoulakis</name>
-    <uri>http://localhost:4000</uri>
+    <uri></uri>
     <email>fotis.koutoulakis@gmail.com</email>
   </author>
   <content type="html">&lt;h1 id=&quot;a-new-beginning&quot;&gt;A new beginning&lt;/h1&gt;
@@ -2815,7 +2815,7 @@ and may actually learn in the future, just for the sake of being able to customi
 &lt;p&gt;Hope it starts out nice. I guess that is left to be seen.&lt;/p&gt;
 
 
-  &lt;p&gt;&lt;a href=&quot;http://localhost:4000/hello-world/&quot;&gt;Hello World&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;http://localhost:4000&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on July 14, 2013.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/hello-world/&quot;&gt;Hello World&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on July 14, 2013.&lt;/p&gt;</content>
 </entry>
 
 </feed>

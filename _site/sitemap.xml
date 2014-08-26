@@ -1,114 +1,114 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>http://localhost:4000</loc>
+        <loc></loc>
     </url>
     
     
     <url>
-        <loc>http://localhost:4000/404.html</loc>
+        <loc>/404.html</loc>
     </url>
     
     <url>
-        <loc>http://localhost:4000/about/</loc>
+        <loc>/about/</loc>
     </url>
     
     <url>
-        <loc>http://localhost:4000/Books/</loc>
+        <loc>/Books/</loc>
     </url>
     
     <url>
-        <loc>http://localhost:4000/feed.xml</loc>
+        <loc>/feed.xml</loc>
     </url>
     
     <url>
-        <loc>http://localhost:4000/index.html</loc>
+        <loc>/index.html</loc>
     </url>
     
     <url>
-        <loc>http://localhost:4000/posts/</loc>
+        <loc>/posts/</loc>
     </url>
     
     <url>
-        <loc>http://localhost:4000/sitemap.xml</loc>
+        <loc>/sitemap.xml</loc>
     </url>
     
     <url>
-        <loc>http://localhost:4000/tags/</loc>
+        <loc>/tags/</loc>
     </url>
     
     <url>
-        <loc>http://localhost:4000/theme-setup/</loc>
+        <loc>/theme-setup/</loc>
     </url>
     
     <url>
-        <loc>http://localhost:4000/page2/index.html</loc>
+        <loc>/page2/index.html</loc>
     </url>
     
     <url>
-        <loc>http://localhost:4000/page3/index.html</loc>
+        <loc>/page3/index.html</loc>
     </url>
     
 
     
     <url>
-        <loc>http://localhost:4000/distro-forking-101/</loc>
+        <loc>/distro-forking-101/</loc>
     </url>
     
     <url>
-        <loc>http://localhost:4000/how-the-compiler/</loc>
+        <loc>/how-the-compiler/</loc>
     </url>
     
     <url>
-        <loc>http://localhost:4000/introduction-to-xv6-adding-a-new-system-call/</loc>
+        <loc>/introduction-to-xv6-adding-a-new-system-call/</loc>
     </url>
     
     <url>
-        <loc>http://localhost:4000/how-the-compiler/</loc>
+        <loc>/how-the-compiler/</loc>
     </url>
     
     <url>
-        <loc>http://localhost:4000/my-linux-from-scratch-experience/</loc>
+        <loc>/my-linux-from-scratch-experience/</loc>
     </url>
     
     <url>
-        <loc>http://localhost:4000/how-the-compiler/</loc>
+        <loc>/how-the-compiler/</loc>
     </url>
     
     <url>
-        <loc>http://localhost:4000/gcc/golang/gsoc/gsoc-week-11-report/</loc>
+        <loc>/gcc/golang/gsoc/gsoc-week-11-report/</loc>
     </url>
     
     <url>
-        <loc>http://localhost:4000/gsoc/gcc/golang/gsoc-week-10-report/</loc>
+        <loc>/gsoc/gcc/golang/gsoc-week-10-report/</loc>
     </url>
     
     <url>
-        <loc>http://localhost:4000/gcc/golang/gsoc/gsoc-week-9-partial-report/</loc>
+        <loc>/gcc/golang/gsoc/gsoc-week-9-partial-report/</loc>
     </url>
     
     <url>
-        <loc>http://localhost:4000/gsoc/golang/gcc/gsoc-week-8-partial-report/</loc>
+        <loc>/gsoc/golang/gcc/gsoc-week-8-partial-report/</loc>
     </url>
     
     <url>
-        <loc>http://localhost:4000/gsoc/golang/gcc/gsoc-partial-week-7-report/</loc>
+        <loc>/gsoc/golang/gcc/gsoc-partial-week-7-report/</loc>
     </url>
     
     <url>
-        <loc>http://localhost:4000/gsoc/gcc/golang/gsoc-week-6-report/</loc>
+        <loc>/gsoc/gcc/golang/gsoc-week-6-report/</loc>
     </url>
     
     <url>
-        <loc>http://localhost:4000/gsoc/gcc/golang/gsoc-week-5-report/</loc>
+        <loc>/gsoc/gcc/golang/gsoc-week-5-report/</loc>
     </url>
     
     <url>
-        <loc>http://localhost:4000/gsoc/gcc/golang/gsoc-week-4-report/</loc>
+        <loc>/gsoc/gcc/golang/gsoc-week-4-report/</loc>
     </url>
     
     <url>
-        <loc>http://localhost:4000/hello-world/</loc>
+        <loc>/hello-world/</loc>
     </url>
     
 </urlset>
