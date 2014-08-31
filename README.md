@@ -1,5 +1,5 @@
 My personal blog.
-~~~~~~~~~~~~~~~~~
+################
 
 This repository hosts my personal blog. It's powered by [jekyll](http://jekyllrb.com/) on [Github Pages](https://pages.github.com/)
 and the theme is [hpstr jekyll](https://github.com/mmistakes/hpstr-jekyll-theme) by [mmistakes](https://github.com/mmistakes).
@@ -8,7 +8,7 @@ If you find any issue with the blog at all (be it a grammar error, or a programm
 please [report it](https://github.com/NlightNFotis/nlightnfotis.github.io/issues).
 
 License
-~~~~~~~
+#######
 
 The software used is a copyright of its respective owners.
 
