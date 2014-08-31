@@ -3,7 +3,7 @@ layout: post
 title: "GSOC Week 8 (Partial) report"
 date: 2013-08-12 10:27
 comments: false
-categories: gsoc golang gcc
+tags: [gsoc, golang, gcc]
 ---
 
 

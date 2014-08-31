@@ -3,7 +3,7 @@ layout: post
 title: "GSOC (Partial) Week 7 report"
 date: 2013-08-05 01:36
 comments: false
-categories: gsoc golang gcc
+categories: [gsoc, golang, gcc]
 ---
 
 
@@ -21,7 +21,7 @@ time well spent. What I got from it were some nice pieces of insight, but also s
 
 The first interesting thing in my findings was this:
 
-``` go runtime.h
+{% highlight C %}
 
 struct	G
 {
@@ -69,12 +69,12 @@ struct	G
 	ucontext_t	context;
 	void*		stack_context[10];
 };
-```
+{% endhighlight %}
 
 Yep. This is the code that resembles a (yeah, you guessed it, a **goroutine**). I was pretty surprised at first to see that a thread is resembled as a struct. But then again,
 taking a closer look at it, it makes perfect sense. The next one though was a *lot trickier*:
 
-```go runtime.h
+{% highlight C %}
 
 struct	M
 {
@@ -114,7 +114,7 @@ struct	M
 
 	uintptr	end[];
 };
-```
+{% endhighlight %}
 
 This was a source of endless confusion at the beginning. It does have some hints reassuring the fact that G's are indeed goroutines, but nothing that really helps to describe what an M is.
 It's structure is identical to that of the G however, which means that it might have something to do with a thread. And indeed it is. Further study of the source code
@@ -122,14 +122,14 @@ made me speculate that **M's must be the real operating system scheduled (kernel
 
 I was more than happy to find comments that reassured that position of mine.
 
-```
+~~~
 // The go scheduler's job is to match ready-to-run goroutines (`g's)
 // with waiting-for-work schedulers (`m's)
-```
+~~~
 
 Another cool finding was the go (runtime) scheduler - from which the above comment originates:
 
-```go proc.c
+{% highlight C %}
 
 struct Sched {
 	Lock;
@@ -156,12 +156,12 @@ struct Sched {
 
 	Note	stopped;	// one g can set waitstop and wait here for m's to stop
 };
-```
+{% endhighlight %}
 
 From that particular piece of code, without a doubt the most interesting line is: `G *gfree`. That is a pool of the go routines that are available to be used.
 There are also helper schedulling functions, from which, the most interesting (for my purposes), was the `static void gfput(G*);` which realeases a go routine (puts it to the gfree list)
 
-```go proc.c
+{% highlight C %}
 
 // Put on gfree list.  Sched must be locked.
 static void
@@ -170,7 +170,8 @@ gfput(G *gp)
 	gp->schedlink = runtime_sched.gfree;
 	runtime_sched.gfree = gp;
 }
-```
+{% endhighlight %}
+
 There are loads of other extremely interesting functions there, but for the sake of space I will not expand here more. However I will expand on what it is that is confusing me:
 
 ## The source of confusion

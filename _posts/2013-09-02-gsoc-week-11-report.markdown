@@ -3,7 +3,7 @@ layout: post
 title: "GSOC Week 11 report"
 date: 2013-09-02 09:25
 comments: false
-categories: gcc golang gsoc
+tags: [gcc, golang, gsoc]
 ---
 
 Introduction

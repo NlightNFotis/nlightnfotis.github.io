@@ -3,7 +3,7 @@ layout: post
 title: "GSOC Week 9 (Partial) report"
 date: 2013-08-19 11:35
 comments: false
-categories: gcc golang gsoc
+tags: [gcc, golang, gsoc]
 ---
 
 This week was revolving around the print debugging in the gccgo runtime in search

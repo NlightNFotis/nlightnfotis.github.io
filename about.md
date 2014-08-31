@@ -12,23 +12,23 @@ share: false
 # Who am I?
 
 My name is **Fotis Koutoulakis**. You may also know me as **NlightNFotis** or **nlightnfotis**.
-I am a young (currently 21 years old) Computer Scientist from Greece.
+I am a young (currently 22 years old) Computer Scientist from Greece.
 
-Regarding my computer science adventures, I am mostly interested in anything that has to do with computer 
-infrastructure, such as **Compilers, Operating Systems, Virtual Machines, Programming languages,
-and the like**. 
+My primary computer science interest lies in systems software and its engineering, 
+such as **Compilers, Operating Systems, Virtual Machines, Programming languages, Debuggers, etc**, but of them all
+I am mostly interested in programming languages and their implementations.
 
-I am also a User and Developer of Free Software. I am contributing to [cPython](http://www.python.org),
-and I am also working towards understanding and contributing to a compiler infrastructure project such as [GCC](http://gcc.gnu.org) (The GNU Compiler Collection)
-or [LLVM](http://www.llvm.org).
+Secondary interests are algorithms and computer security (with an emphasis on reverse engineering).
 
-Regarding my career plans, I am hoping to work as either a **kernel hacker** or a **compiler engineer** (or both. That sounds better :) )
+I am also a User and Developer of Free Software. In my "free" time I am working towards understanding
+and contributing to programming language implementations and compilers, with llvm occupying most of that time.
+
+Regarding my career plans, I would like to work as either a **research computer scientist on programming languages** 
+or a **compiler engineer**. I would also be happy with working on an operating system.
 
 # CV
 
-I maintain an online CV at stack overflow careers which you may find [here](http://careers.stackoverflow.com/FotisKoutoulakis). 
-
-My Stack Overflow profile can be found here: [NlightNFotis at Stack Overflow, Q&amp;A for professional and enthusiast programmers](http://stackoverflow.com/users/1426969/nlightnfotis)
+I maintain an online CV at stack overflow careers which you may find [here](http://careers.stackoverflow.com/FotisKoutoulakis).
 
 # Current Occupation
 

@@ -3,7 +3,7 @@ layout: post
 title: "GSOC: Week 6 report"
 date: 2013-07-31 12:36
 comments: false
-categories: gsoc gcc golang
+tags: [gsoc, gcc, golang]
 ---
 
 First of all, I would like to apologize for this report being late. But unfortunately this happened:
@@ -34,7 +34,7 @@ they were compiling successfully, and also ran successfully without any issues a
 So we started playing with a simple hello world like goroutine example (the one available under the [tour of go on the golang.org website.](http://tour.golang.org/#62))
 
 
-```go
+{% highlight C %}
 
 package main
 
@@ -54,11 +54,12 @@ func main() {
     go say("world")
     say("hello")
 }
-```
+
+{% endhighlight %}
 
 This gets compiled without any issues at all, but when we try to run it...
 
-```
+{% highlight C %}
 a.out: ./pthread/../sysdeps/generic/sem-timedwait.c:50: __sem_timedwait_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread->kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self_ + 0), ktid); ok; })' failed.
 Aborted
 
@@ -70,13 +71,13 @@ time.Sleep
 goroutine 3 [sleep]:
 time.Sleep
 	../../../gcc_source/libgo/runtime/time.goc:26
-```
+{% endhighlight %}
 
 Bam! It exploded right infront of our face. Let's see if this might become friendlier if we alter it a little bit. To do this we removed the `go` from `say` to avoid running it as a goroutine, and we also removed `time.Sleep` (along with the `time` import), [whose job is to pause a go routine](https://github.com/NlightNFotis/gcc/blob/master/libgo/go/time/sleep.go#L8).
 
 When you do this, the code seems to be a hello world like for loop sample, that prints:
 
-```
+~~~
 root@debian:~/Software/Experiments/go# ./a.out
 world
 world
@@ -88,11 +89,11 @@ hello
 hello
 hello
 hello
-```
+~~~
 
 Hmm. Let's play with it some more. Changing our code a little bit to make `say("world")` run as a goroutine gives us the following code:
 
-```go
+{% highlight C %}
 package main
 
 import "fmt"
@@ -107,22 +108,21 @@ func main() {
     go say("world")
     say("hello")
 }
-```
+{% endhighlight %}
 
 Which, when executed results in this:
 
-```
+~~~
 root@debian:~/Software/Experiments/go# ./a.out
 a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread->kernel_thread == ktid;
 __mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })' failed.
 Aborted
-
-```
+~~~
 
 So we can see that the simplest go programs that run with goroutines do not run. Let's still try some programs that invoke goroutines to see if our assumptions are correct.
 Below is the code of a very simple web server in go ([found in the golang website](http://tour.golang.org/#56)).
 
-```go webserver.go
+{% highlight C %}
 
 package main
 
@@ -143,21 +143,21 @@ func main() {
     var h Hello
     http.ListenAndServe("localhost:4000", h)
 }
-```
+{% endhighlight %}
 
 The (non surprising) result is the following:
 
-```
+~~~
 a.out: ./pthread/../sysdeps/generic/sem-timedwait.c:50: __sem_timedwait_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread->kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self_ + 0), ktid); ok; })' failed.
 Aborted
 
 goroutine 1 [syscall]:
 no stack trace available
-```
+~~~
 
 Hmm. This failure was last caused by `time.Sleep`. So let's take a closer look into the code of the `ListenAndServe` function. The code for this function in the go runtime is this:
 
-```go gcc/libgo/go/net/http/server.go
+{% highlight C %}
 
 // ListenAndServe listens on the TCP network address srv.Addr and then
 // calls Serve to handle requests on incoming connections.  If
@@ -173,15 +173,15 @@ func (srv *Server) ListenAndServe() error {
 	}
 	return srv.Serve(l)
 }
-```
+{% endhighlight %}
 
 This calls the function [`Serve`](https://github.com/NlightNFotis/gcc/blob/master/libgo/go/net/http/server.go#L1255). The interesting part in this one is line 1271:
 
-```go 
+~~~
 
  time.Sleep(tempDelay)
 
-```
+~~~
 
 It calls `time.Sleep` on accept failure. Which is known to pause go routines, and as a result be the ultimate cause for the result we are seeing.
 

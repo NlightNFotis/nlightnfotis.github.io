@@ -4,7 +4,7 @@
 <generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="/feed.xml" />
 <link rel="alternate" type="text/html" href="" />
-<updated>2014-08-26T10:40:33+03:00</updated>
+<updated>2014-08-31T22:45:44+03:00</updated>
 <id>/</id>
 <author>
   <name>Fotis Koutoulakis</name>
@@ -1059,8 +1059,8 @@ part the loader and the kernel.&lt;/p&gt;
 
 <entry>
   <title type="html"><![CDATA[GSOC Week 11 report]]></title>
- <link rel="alternate" type="text/html" href="/gcc/golang/gsoc/gsoc-week-11-report/" />
-  <id>/gcc/golang/gsoc/gsoc-week-11-report</id>
+ <link rel="alternate" type="text/html" href="/gsoc-week-11-report/" />
+  <id>/gsoc-week-11-report</id>
   <published>2013-09-02T09:25:00+03:00</published>
   <updated>2013-09-02T09:25:00+03:00</updated>
   <author>
@@ -1296,14 +1296,14 @@ go is clean on linux, it would provide some clues as to what the expected result
 should be, and where the execution differentiates substantially, a clue
 that might be vital to finding the problem.&lt;/p&gt;
 
-  &lt;p&gt;&lt;a href=&quot;/gcc/golang/gsoc/gsoc-week-11-report/&quot;&gt;GSOC Week 11 report&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on September 02, 2013.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/gsoc-week-11-report/&quot;&gt;GSOC Week 11 report&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on September 02, 2013.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[GSOC week 10 report]]></title>
- <link rel="alternate" type="text/html" href="/gsoc/gcc/golang/gsoc-week-10-report/" />
-  <id>/gsoc/gcc/golang/gsoc-week-10-report</id>
+ <link rel="alternate" type="text/html" href="/gsoc-week-10-report/" />
+  <id>/gsoc-week-10-report</id>
   <published>2013-08-26T09:00:00+03:00</published>
   <updated>2013-08-26T09:00:00+03:00</updated>
   <author>
@@ -1425,14 +1425,14 @@ to find something interesting in libpthread (like how many threads does libpthre
 many the goruntime reports)&lt;/p&gt;
 
 
-  &lt;p&gt;&lt;a href=&quot;/gsoc/gcc/golang/gsoc-week-10-report/&quot;&gt;GSOC week 10 report&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on August 26, 2013.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/gsoc-week-10-report/&quot;&gt;GSOC week 10 report&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on August 26, 2013.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[GSOC Week 9 (Partial) report]]></title>
- <link rel="alternate" type="text/html" href="/gcc/golang/gsoc/gsoc-week-9-partial-report/" />
-  <id>/gcc/golang/gsoc/gsoc-week-9-partial-report</id>
+ <link rel="alternate" type="text/html" href="/gsoc-week-9-partial-report/" />
+  <id>/gsoc-week-9-partial-report</id>
   <published>2013-08-19T11:35:00+03:00</published>
   <updated>2013-08-19T11:35:00+03:00</updated>
   <author>
@@ -1587,14 +1587,14 @@ to create another one.&lt;/li&gt;
 some of my findings, and hope to soon be able to write an exhaustive
 report on what exactly it is that causes the bug.&lt;/p&gt;
 
-  &lt;p&gt;&lt;a href=&quot;/gcc/golang/gsoc/gsoc-week-9-partial-report/&quot;&gt;GSOC Week 9 (Partial) report&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on August 19, 2013.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/gsoc-week-9-partial-report/&quot;&gt;GSOC Week 9 (Partial) report&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on August 19, 2013.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[GSOC Week 8 (Partial) report]]></title>
- <link rel="alternate" type="text/html" href="/gsoc/golang/gcc/gsoc-week-8-partial-report/" />
-  <id>/gsoc/golang/gcc/gsoc-week-8-partial-report</id>
+ <link rel="alternate" type="text/html" href="/gsoc-week-8-partial-report/" />
+  <id>/gsoc-week-8-partial-report</id>
   <published>2013-08-12T10:27:00+03:00</published>
   <updated>2013-08-12T10:27:00+03:00</updated>
   <author>
@@ -1737,7 +1737,7 @@ root@debian:~/Software/Experiments/go#&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;I will continue reading through the go runtime for some clues. On the more active size, I am writing a custom test case for goroutine testing under the Hurd, while also doing some analysis
 on the programs that run there (currently studying the assembly generated for these programs) to see how they differ and why we get this particular behavior.&lt;/p&gt;
 
-  &lt;p&gt;&lt;a href=&quot;/gsoc/golang/gcc/gsoc-week-8-partial-report/&quot;&gt;GSOC Week 8 (Partial) report&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on August 12, 2013.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/gsoc-week-8-partial-report/&quot;&gt;GSOC Week 8 (Partial) report&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on August 12, 2013.&lt;/p&gt;</content>
 </entry>
 
 
@@ -1766,98 +1766,94 @@ time well spent. What I got from it were some nice pieces of insight, but also s
 
 &lt;p&gt;The first interesting thing in my findings was this:&lt;/p&gt;
 
-&lt;p&gt;``` go runtime.h&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;c&quot;&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;G&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;Defer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;defer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;Panic&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;panic&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;exception&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;	&lt;span class=&quot;c1&quot;&gt;// current exception being thrown&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;is_foreign&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;	&lt;span class=&quot;c1&quot;&gt;// whether current exception from other language&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;	&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gcstack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;	&lt;span class=&quot;c1&quot;&gt;// if status==Gsyscall, gcstack = stackbase to use during gc&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;uintptr&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;gcstack_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;gcnext_segment&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;gcnext_sp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;gcinitial_sp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;ucontext_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gcregs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;entry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;		&lt;span class=&quot;c1&quot;&gt;// initial function&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;G&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;alllink&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;	&lt;span class=&quot;c1&quot;&gt;// on allg&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;param&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;		&lt;span class=&quot;c1&quot;&gt;// passed parameter on wakeup&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;fromgogo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;	&lt;span class=&quot;c1&quot;&gt;// reached from gogo&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;int16&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;int64&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;goid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;uint32&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;selgen&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;		&lt;span class=&quot;c1&quot;&gt;// valid sudog pointer&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;waitreason&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;	&lt;span class=&quot;c1&quot;&gt;// if status==Gwaiting&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;G&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;schedlink&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;readyonstop&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;ispanic&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;issystem&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;int8&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;raceignore&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// ignore race detection events&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;M&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;		&lt;span class=&quot;c1&quot;&gt;// for debuggers, but offset not hard-coded&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;M&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;lockedm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;M&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;idlem&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;int32&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;sig&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;int32&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;writenbuf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;writebuf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;c1&quot;&gt;// DeferChunk	*dchunk;&lt;/span&gt;
+	&lt;span class=&quot;c1&quot;&gt;// DeferChunk	*dchunknext;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;uintptr&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;sigcode0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;uintptr&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;sigcode1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;c1&quot;&gt;// uintptr	sigpc;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;uintptr&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;gopc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;	&lt;span class=&quot;c1&quot;&gt;// pc of go statement that created this goroutine&lt;/span&gt;
 
-&lt;p&gt;struct	G
-{
-	Defer*	defer;
-	Panic*	panic;
-	void*	exception;	// current exception being thrown
-	bool	is_foreign;	// whether current exception from other language
-	void	&lt;em&gt;gcstack;	// if status==Gsyscall, gcstack = stackbase to use during gc
-	uintptr	gcstack_size;
-	void&lt;/em&gt;	gcnext_segment;
-	void*	gcnext_sp;
-	void*	gcinitial_sp;
-	ucontext_t gcregs;
-	byte*	entry;		// initial function
-	G*	alllink;	// on allg
-	void*	param;		// passed parameter on wakeup
-	bool	fromgogo;	// reached from gogo
-	int16	status;
-	int64	goid;
-	uint32	selgen;		// valid sudog pointer
-	const char*	waitreason;	// if status==Gwaiting
-	G*	schedlink;
-	bool	readyonstop;
-	bool	ispanic;
-	bool	issystem;
-	int8	raceignore; // ignore race detection events
-	M*	m;		// for debuggers, but offset not hard-coded
-	M*	lockedm;
-	M*	idlem;
-	int32	sig;
-	int32	writenbuf;
-	byte*	writebuf;
-	// DeferChunk	*dchunk;
-	// DeferChunk	*dchunknext;
-	uintptr	sigcode0;
-	uintptr	sigcode1;
-	// uintptr	sigpc;
-	uintptr	gopc;	// pc of go statement that created this goroutine&lt;/p&gt;
+	&lt;span class=&quot;n&quot;&gt;int32&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;ncgo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;CgoMal&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;cgomal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 
-&lt;pre&gt;&lt;code&gt;int32	ncgo;
-CgoMal*	cgomal;
+	&lt;span class=&quot;n&quot;&gt;Traceback&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;traceback&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 
-Traceback* traceback;
-
-ucontext_t	context;
-void*		stack_context[10]; }; ```
-&lt;/code&gt;&lt;/pre&gt;
+	&lt;span class=&quot;kt&quot;&gt;ucontext_t&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;		&lt;span class=&quot;n&quot;&gt;stack_context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Yep. This is the code that resembles a (yeah, you guessed it, a &lt;strong&gt;goroutine&lt;/strong&gt;). I was pretty surprised at first to see that a thread is resembled as a struct. But then again,
 taking a closer look at it, it makes perfect sense. The next one though was a &lt;em&gt;lot trickier&lt;/em&gt;:&lt;/p&gt;
 
-&lt;p&gt;```go runtime.h&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;c&quot;&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;M&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;G&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;g0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;		&lt;span class=&quot;c1&quot;&gt;// goroutine with scheduling stack&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;G&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;gsignal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;	&lt;span class=&quot;c1&quot;&gt;// signal-handling G&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;G&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;curg&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;		&lt;span class=&quot;c1&quot;&gt;// current running goroutine&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;int32&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;int32&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;mallocing&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;int32&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;throwing&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;int32&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;gcing&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;int32&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;locks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;int32&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;nomemprof&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;int32&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;waitnextg&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;int32&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;dying&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;int32&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;profilehz&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;int32&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;helpgc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;uint32&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;fastrand&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;uint64&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;ncgocall&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;	&lt;span class=&quot;c1&quot;&gt;// number of cgo calls in total&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;Note&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;havenextg&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;G&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;nextg&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;M&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;alllink&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;	&lt;span class=&quot;c1&quot;&gt;// on allm&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;M&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;schedlink&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;MCache&lt;/span&gt;	&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mcache&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;G&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;lockedg&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;G&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;idleg&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;Location&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;createstack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;32&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;	&lt;span class=&quot;c1&quot;&gt;// Stack that created this thread.&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;M&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;nextwaitm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;	&lt;span class=&quot;c1&quot;&gt;// next M waiting for lock&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;uintptr&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;waitsema&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;	&lt;span class=&quot;c1&quot;&gt;// semaphore for parking on locks&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;uint32&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;waitsemacount&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;uint32&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;waitsemalock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;GCStats&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;gcstats&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;racecall&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;racepc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 
-&lt;p&gt;struct	M
-{
-	G*	g0;		// goroutine with scheduling stack
-	G*	gsignal;	// signal-handling G
-	G*	curg;		// current running goroutine
-	int32	id;
-	int32	mallocing;
-	int32	throwing;
-	int32	gcing;
-	int32	locks;
-	int32	nomemprof;
-	int32	waitnextg;
-	int32	dying;
-	int32	profilehz;
-	int32	helpgc;
-	uint32	fastrand;
-	uint64	ncgocall;	// number of cgo calls in total
-	Note	havenextg;
-	G*	nextg;
-	M*	alllink;	// on allm
-	M*	schedlink;
-	MCache	&lt;em&gt;mcache;
-	G&lt;/em&gt;	lockedg;
-	G*	idleg;
-	Location createstack[32];	// Stack that created this thread.
-	M*	nextwaitm;	// next M waiting for lock
-	uintptr	waitsema;	// semaphore for parking on locks
-	uint32	waitsemacount;
-	uint32	waitsemalock;
-	GCStats	gcstats;
-	bool	racecall;
-	void*	racepc;&lt;/p&gt;
+	&lt;span class=&quot;n&quot;&gt;uintptr&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;settype_buf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1024&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;uintptr&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;settype_bufsize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 
-&lt;pre&gt;&lt;code&gt;uintptr	settype_buf[1024];
-uintptr	settype_bufsize;
-
-uintptr	end[]; }; ```
-&lt;/code&gt;&lt;/pre&gt;
+	&lt;span class=&quot;n&quot;&gt;uintptr&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;end&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[];&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;This was a source of endless confusion at the beginning. It does have some hints reassuring the fact that G’s are indeed goroutines, but nothing that really helps to describe what an M is.
 It’s structure is identical to that of the G however, which means that it might have something to do with a thread. And indeed it is. Further study of the source code
@@ -1865,55 +1861,50 @@ made me speculate that &lt;strong&gt;M’s must be the real operating system sch
 
 &lt;p&gt;I was more than happy to find comments that reassured that position of mine.&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;
-// The go scheduler&#39;s job is to match ready-to-run goroutines (`g&#39;s)
+&lt;pre&gt;&lt;code&gt;// The go scheduler&#39;s job is to match ready-to-run goroutines (`g&#39;s)
 // with waiting-for-work schedulers (`m&#39;s)
-&lt;/code&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Another cool finding was the go (runtime) scheduler - from which the above comment originates:&lt;/p&gt;
 
-&lt;p&gt;```go proc.c&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;c&quot;&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Sched&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;Lock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 
-&lt;p&gt;struct Sched {
-	Lock;&lt;/p&gt;
+	&lt;span class=&quot;n&quot;&gt;G&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gfree&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;	&lt;span class=&quot;c1&quot;&gt;// available g&amp;#39;s (status == Gdead)&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;int64&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;goidgen&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 
-&lt;pre&gt;&lt;code&gt;G *gfree;	// available g&#39;s (status == Gdead)
-int64 goidgen;
+	&lt;span class=&quot;n&quot;&gt;G&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ghead&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;	&lt;span class=&quot;c1&quot;&gt;// g&amp;#39;s waiting to run&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;G&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gtail&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;int32&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gwait&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;	&lt;span class=&quot;c1&quot;&gt;// number of g&amp;#39;s waiting to run&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;int32&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gcount&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;	&lt;span class=&quot;c1&quot;&gt;// number of g&amp;#39;s that are alive&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;int32&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;grunning&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;	&lt;span class=&quot;c1&quot;&gt;// number of g&amp;#39;s running on cpu or in syscall&lt;/span&gt;
 
-G *ghead;	// g&#39;s waiting to run
-G *gtail;
-int32 gwait;	// number of g&#39;s waiting to run
-int32 gcount;	// number of g&#39;s that are alive
-int32 grunning;	// number of g&#39;s running on cpu or in syscall
+	&lt;span class=&quot;n&quot;&gt;M&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mhead&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;	&lt;span class=&quot;c1&quot;&gt;// m&amp;#39;s waiting for work&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;int32&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mwait&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;	&lt;span class=&quot;c1&quot;&gt;// number of m&amp;#39;s waiting for work&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;int32&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mcount&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;	&lt;span class=&quot;c1&quot;&gt;// number of m&amp;#39;s that have been created&lt;/span&gt;
 
-M *mhead;	// m&#39;s waiting for work
-int32 mwait;	// number of m&#39;s waiting for work
-int32 mcount;	// number of m&#39;s that have been created
+	&lt;span class=&quot;k&quot;&gt;volatile&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;uint32&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;atomic&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;	&lt;span class=&quot;c1&quot;&gt;// atomic scheduling word (see below)&lt;/span&gt;
 
-volatile uint32 atomic;	// atomic scheduling word (see below)
+	&lt;span class=&quot;n&quot;&gt;int32&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;profilehz&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;	&lt;span class=&quot;c1&quot;&gt;// cpu profiling rate&lt;/span&gt;
 
-int32 profilehz;	// cpu profiling rate
+	&lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;// running initialization&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lockmain&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;// init called runtime.LockOSThread&lt;/span&gt;
 
-bool init;  // running initialization
-bool lockmain;  // init called runtime.LockOSThread
-
-Note	stopped;	// one g can set waitstop and wait here for m&#39;s to stop }; ```
-&lt;/code&gt;&lt;/pre&gt;
+	&lt;span class=&quot;n&quot;&gt;Note&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;stopped&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;	&lt;span class=&quot;c1&quot;&gt;// one g can set waitstop and wait here for m&amp;#39;s to stop&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;From that particular piece of code, without a doubt the most interesting line is: &lt;code&gt;G *gfree&lt;/code&gt;. That is a pool of the go routines that are available to be used.
 There are also helper schedulling functions, from which, the most interesting (for my purposes), was the &lt;code&gt;static void gfput(G*);&lt;/code&gt; which realeases a go routine (puts it to the gfree list)&lt;/p&gt;
 
-&lt;p&gt;```go proc.c&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;c&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// Put on gfree list.  Sched must be locked.&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;
+&lt;span class=&quot;nf&quot;&gt;gfput&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;G&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;gp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;schedlink&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;runtime_sched&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gfree&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;runtime_sched&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gfree&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;// Put on gfree list.  Sched must be locked.
-static void
-gfput(G *gp)
-{
-	gp-&amp;gt;schedlink = runtime_sched.gfree;
-	runtime_sched.gfree = gp;
-}
-```
-There are loads of other extremely interesting functions there, but for the sake of space I will not expand here more. However I will expand on what it is that is confusing me:&lt;/p&gt;
+&lt;p&gt;There are loads of other extremely interesting functions there, but for the sake of space I will not expand here more. However I will expand on what it is that is confusing me:&lt;/p&gt;
 
 &lt;h2 id=&quot;the-source-of-confusion&quot;&gt;The source of confusion&lt;/h2&gt;
 
@@ -1935,8 +1926,8 @@ or I looking for clues regarding the issue in the wrong place (might be possible
 
 <entry>
   <title type="html"><![CDATA[GSOC: Week 6 report]]></title>
- <link rel="alternate" type="text/html" href="/gsoc/gcc/golang/gsoc-week-6-report/" />
-  <id>/gsoc/gcc/golang/gsoc-week-6-report</id>
+ <link rel="alternate" type="text/html" href="/gsoc-week-6-report/" />
+  <id>/gsoc-week-6-report</id>
   <published>2013-07-31T12:36:00+03:00</published>
   <updated>2013-07-31T12:36:00+03:00</updated>
   <author>
@@ -1969,49 +1960,44 @@ they were compiling successfully, and also ran successfully without any issues a
 
 &lt;p&gt;So we started playing with a simple hello world like goroutine example (the one available under the &lt;a href=&quot;http://tour.golang.org/#62&quot;&gt;tour of go on the golang.org website.&lt;/a&gt;)&lt;/p&gt;
 
-&lt;p&gt;```go&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;c&quot;&gt;&lt;span class=&quot;n&quot;&gt;package&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;
 
-&lt;p&gt;package main&lt;/p&gt;
+&lt;span class=&quot;nf&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&amp;quot;fmt&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&amp;quot;time&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 
-&lt;p&gt;import (
-    “fmt”
-    “time”
-)&lt;/p&gt;
+&lt;span class=&quot;n&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;say&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Sleep&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;100&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Millisecond&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Println&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 
-&lt;p&gt;func say(s string) {
-    for i := 0; i &amp;lt; 5; i++ {
-        time.Sleep(100 * time.Millisecond)
-        fmt.Println(s)
-    }
-}&lt;/p&gt;
-
-&lt;p&gt;func main() {
-    go say(“world”)
-    say(“hello”)
-}
-```&lt;/p&gt;
+&lt;span class=&quot;n&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;go&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;say&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;world&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;say&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;hello&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;This gets compiled without any issues at all, but when we try to run it…&lt;/p&gt;
 
-&lt;p&gt;```
-a.out: ./pthread/../sysdeps/generic/sem-timedwait.c:50: &lt;em&gt;_sem_timedwait_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self&lt;/em&gt; + 0), ktid); ok; })’ failed.
-Aborted&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;c&quot;&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pthread&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;..&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sysdeps&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;generic&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sem&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;timedwait&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;50&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__sem_timedwait_internal&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Assertion&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;mach_port_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ktid&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__mach_thread_self&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ok&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;thread&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kernel_thread&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ktid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__mach_port_deallocate&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__mach_task_self_&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ktid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ok&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;&amp;#39;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;failed&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;Aborted&lt;/span&gt;
 
-&lt;p&gt;goroutine 1 [sleep]:
-time.Sleep
-	../../../gcc_source/libgo/runtime/time.goc:26&lt;/p&gt;
 
-&lt;p&gt;goroutine 3 [sleep]:
-time.Sleep
-	../../../gcc_source/libgo/runtime/time.goc:26
-```&lt;/p&gt;
+&lt;span class=&quot;n&quot;&gt;goroutine&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sleep&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Sleep&lt;/span&gt;
+	&lt;span class=&quot;p&quot;&gt;..&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;..&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;..&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gcc_source&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libgo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;runtime&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;goc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;26&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;goroutine&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sleep&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Sleep&lt;/span&gt;
+	&lt;span class=&quot;p&quot;&gt;..&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;..&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;..&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gcc_source&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libgo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;runtime&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;goc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;26&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Bam! It exploded right infront of our face. Let’s see if this might become friendlier if we alter it a little bit. To do this we removed the &lt;code&gt;go&lt;/code&gt; from &lt;code&gt;say&lt;/code&gt; to avoid running it as a goroutine, and we also removed &lt;code&gt;time.Sleep&lt;/code&gt; (along with the &lt;code&gt;time&lt;/code&gt; import), &lt;a href=&quot;https://github.com/NlightNFotis/gcc/blob/master/libgo/go/time/sleep.go#L8&quot;&gt;whose job is to pause a go routine&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;When you do this, the code seems to be a hello world like for loop sample, that prints:&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;
-root@debian:~/Software/Experiments/go# ./a.out
+&lt;pre&gt;&lt;code&gt;root@debian:~/Software/Experiments/go# ./a.out
 world
 world
 world
@@ -2022,100 +2008,88 @@ hello
 hello
 hello
 hello
-&lt;/code&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Hmm. Let’s play with it some more. Changing our code a little bit to make &lt;code&gt;say(&quot;world&quot;)&lt;/code&gt; run as a goroutine gives us the following code:&lt;/p&gt;
 
-&lt;p&gt;```go
-package main&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;c&quot;&gt;&lt;span class=&quot;n&quot;&gt;package&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;
 
-&lt;p&gt;import “fmt”&lt;/p&gt;
+&lt;span class=&quot;n&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;fmt&amp;quot;&lt;/span&gt;
 
-&lt;p&gt;func say(s string) {
-    for i := 0; i &amp;lt; 5; i++ {
-        fmt.Println(s)
-    }
-}&lt;/p&gt;
+&lt;span class=&quot;n&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;say&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Println&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 
-&lt;p&gt;func main() {
-    go say(“world”)
-    say(“hello”)
-}
-```&lt;/p&gt;
+&lt;span class=&quot;n&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;go&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;say&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;world&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;say&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;hello&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Which, when executed results in this:&lt;/p&gt;
 
-&lt;p&gt;```
-root@debian:~/Software/Experiments/go# ./a.out
+&lt;pre&gt;&lt;code&gt;root@debian:~/Software/Experiments/go# ./a.out
 a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid;
-__mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })’ failed.
-Aborted&lt;/p&gt;
-
-&lt;p&gt;```&lt;/p&gt;
+__mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })&#39; failed.
+Aborted
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;So we can see that the simplest go programs that run with goroutines do not run. Let’s still try some programs that invoke goroutines to see if our assumptions are correct.
 Below is the code of a very simple web server in go (&lt;a href=&quot;http://tour.golang.org/#56&quot;&gt;found in the golang website&lt;/a&gt;).&lt;/p&gt;
 
-&lt;p&gt;```go webserver.go&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;c&quot;&gt;&lt;span class=&quot;n&quot;&gt;package&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;
 
-&lt;p&gt;package main&lt;/p&gt;
+&lt;span class=&quot;nf&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&amp;quot;fmt&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&amp;quot;net/http&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 
-&lt;p&gt;import (
-    “fmt”
-    “net/http”
-)&lt;/p&gt;
+&lt;span class=&quot;n&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Hello&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;
 
-&lt;p&gt;type Hello struct{}&lt;/p&gt;
+&lt;span class=&quot;n&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;h&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Hello&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ServeHTTP&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;w&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;http&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ResponseWriter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;http&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Fprint&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Hello!&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 
-&lt;p&gt;func (h Hello) ServeHTTP(
-    w http.ResponseWriter,
-    r *http.Request) {
-    fmt.Fprint(w, “Hello!”)
-}&lt;/p&gt;
-
-&lt;p&gt;func main() {
-    var h Hello
-    http.ListenAndServe(“localhost:4000”, h)
-}
-```&lt;/p&gt;
+&lt;span class=&quot;n&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;h&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Hello&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;http&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ListenAndServe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;localhost:4000&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;h&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;The (non surprising) result is the following:&lt;/p&gt;
 
-&lt;p&gt;```
-a.out: ./pthread/../sysdeps/generic/sem-timedwait.c:50: &lt;em&gt;_sem_timedwait_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self&lt;/em&gt; + 0), ktid); ok; })’ failed.
-Aborted&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;a.out: ./pthread/../sysdeps/generic/sem-timedwait.c:50: __sem_timedwait_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self_ + 0), ktid); ok; })&#39; failed.
+Aborted
 
-&lt;p&gt;goroutine 1 [syscall]:
+goroutine 1 [syscall]:
 no stack trace available
-```&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Hmm. This failure was last caused by &lt;code&gt;time.Sleep&lt;/code&gt;. So let’s take a closer look into the code of the &lt;code&gt;ListenAndServe&lt;/code&gt; function. The code for this function in the go runtime is this:&lt;/p&gt;
 
-&lt;p&gt;```go gcc/libgo/go/net/http/server.go&lt;/p&gt;
-
-&lt;p&gt;// ListenAndServe listens on the TCP network address srv.Addr and then
-// calls Serve to handle requests on incoming connections.  If
-// srv.Addr is blank, “:http” is used.
-func (srv *Server) ListenAndServe() error {
-	addr := srv.Addr
-	if addr == “” {
-		addr = “:http”
-	}
-	l, e := net.Listen(“tcp”, addr)
-	if e != nil {
-		return e
-	}
-	return srv.Serve(l)
-}
-```&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;c&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// ListenAndServe listens on the TCP network address srv.Addr and then&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// calls Serve to handle requests on incoming connections.  If&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// srv.Addr is blank, &amp;quot;:http&amp;quot; is used.&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;srv&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Server&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ListenAndServe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;error&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;addr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;srv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Addr&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;addr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;addr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;:http&amp;quot;&lt;/span&gt;
+	&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;net&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Listen&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;tcp&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;addr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nil&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;
+	&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;srv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Serve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;This calls the function &lt;a href=&quot;https://github.com/NlightNFotis/gcc/blob/master/libgo/go/net/http/server.go#L1255&quot;&gt;&lt;code&gt;Serve&lt;/code&gt;&lt;/a&gt;. The interesting part in this one is line 1271:&lt;/p&gt;
 
-&lt;p&gt;```go &lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+ time.Sleep(tempDelay)
 
-&lt;p&gt;time.Sleep(tempDelay)&lt;/p&gt;
-
-&lt;p&gt;```&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;It calls &lt;code&gt;time.Sleep&lt;/code&gt; on accept failure. Which is known to pause go routines, and as a result be the ultimate cause for the result we are seeing.&lt;/p&gt;
 
@@ -2125,14 +2099,14 @@ func (srv *Server) ListenAndServe() error {
 Apart from that my mentor Thomas Schwinge suggested to make thread destruction in go’s runtime a no-op to see if that makes any difference. 
 If it does that should mean that there is nothing wrong in the go runtime itself, rather, the offending code is in libpthread. This is also my very next course of action, which I shall report on very soon.&lt;/p&gt;
 
-  &lt;p&gt;&lt;a href=&quot;/gsoc/gcc/golang/gsoc-week-6-report/&quot;&gt;GSOC: Week 6 report&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on July 31, 2013.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/gsoc-week-6-report/&quot;&gt;GSOC: Week 6 report&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on July 31, 2013.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[GSOC: Week 5 report]]></title>
- <link rel="alternate" type="text/html" href="/gsoc/gcc/golang/gsoc-week-5-report/" />
-  <id>/gsoc/gcc/golang/gsoc-week-5-report</id>
+ <link rel="alternate" type="text/html" href="/gsoc-week-5-report/" />
+  <id>/gsoc-week-5-report</id>
   <published>2013-07-24T12:36:00+03:00</published>
   <updated>2013-07-24T12:36:00+03:00</updated>
   <author>
@@ -2398,14 +2372,14 @@ runtest completed at Fri Jul 12 18:09:07 UTC 2013
 
 &lt;p&gt;It was also suggested by Samuel Thibault (youpi) that I should run the libgo tests by hand and see if I get some more clues, like stack traces. It sounds like a good idea to me, so that’s something that I will look into too.&lt;/p&gt;
 
-  &lt;p&gt;&lt;a href=&quot;/gsoc/gcc/golang/gsoc-week-5-report/&quot;&gt;GSOC: Week 5 report&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on July 24, 2013.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/gsoc-week-5-report/&quot;&gt;GSOC: Week 5 report&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on July 24, 2013.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[GSOC: Week 4 report]]></title>
- <link rel="alternate" type="text/html" href="/gsoc/gcc/golang/gsoc-week-4-report/" />
-  <id>/gsoc/gcc/golang/gsoc-week-4-report</id>
+ <link rel="alternate" type="text/html" href="/gsoc-week-4-report/" />
+  <id>/gsoc-week-4-report</id>
   <published>2013-07-15T11:43:00+03:00</published>
   <updated>2013-07-15T11:43:00+03:00</updated>
   <author>
@@ -2775,7 +2749,7 @@ project proposal (and the most exciting one too)&lt;/strong&gt;, that is proper 
 of what is &lt;em&gt;blocking effective context switching, which
 in its part is blocking goroutines, without which, the go library will not work properly.&lt;/em&gt;&lt;/p&gt;
 
-  &lt;p&gt;&lt;a href=&quot;/gsoc/gcc/golang/gsoc-week-4-report/&quot;&gt;GSOC: Week 4 report&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on July 15, 2013.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/gsoc-week-4-report/&quot;&gt;GSOC: Week 4 report&lt;/a&gt; was originally published by Fotis Koutoulakis at &lt;a href=&quot;&quot;&gt;Fotis Koutoulakis&lt;/a&gt; on July 15, 2013.&lt;/p&gt;</content>
 </entry>
 
 

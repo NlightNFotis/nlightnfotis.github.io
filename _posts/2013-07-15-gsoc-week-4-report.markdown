@@ -3,7 +3,7 @@ layout: post
 title: "GSOC: Week 4 report"
 date: 2013-07-15 11:43
 comments: false
-categories: gsoc gcc golang
+tags: [gsoc, gcc, golang]
 ---
 
 # Yeah baby! It builds!
