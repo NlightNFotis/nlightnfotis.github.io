@@ -122,9 +122,8 @@ At this point, if all has gone well, and you reset, you should boot into your ne
 
 Building lfs was a very time consuming process for me. It must have taken about 7-8
 hours at the very least. Not so much because of the compilation and testing (I was compiling
-with `MAKEFLAGS='-j 4'` on a Core i5), but because I was didn't complete some steps
-correctly, and later needed to go back and redo them, along with everything that followed,
-along with the time it took to research some issues, programs or various other things
+with `MAKEFLAGS='-j 4'` on a Core i5), but because I didn't complete some steps
+correctly, and later needed to go back and redo them, along with everything that followed and the time it took to research some issues, programs or various other things
 before I did issue a command at the shell.
 
 Now if I were to answer the question "What did I gain from that", my answer would be
