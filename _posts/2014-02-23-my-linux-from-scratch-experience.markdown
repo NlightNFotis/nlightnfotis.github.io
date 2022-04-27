@@ -1,0 +1,163 @@
+---
+layout: post
+title: "My Linux from Scratch Experience"
+date: 2014-02-23 20:59
+comments: true
+tags: [linux, lfs, distribution]
+share: true
+---
+
+The past two to three days, I have been busy with creating my very own Linux distribution
+using the well known [Linux from Scratch](http://www.linuxfromscratch.org). This post is 
+an accounting of my experience with the process, what I liked, what I did learn from that,
+what was surprising to me and more.
+
+# Linux from Scratch: An introduction
+
+If you are here, then you most likely already know what [linux from scratch](http://www.linuxfromscratch.com/)
+is, but for the sake of completeness (or in the case that you don't know what it is, but are
+so keen on learning)  I will provide an introduction about it here.
+
+Linux from scratch is a book (from now on, *lfs*), providing a series of steps that guide you to the creation of
+a fully function GNU/Linux distribution. Although the original book creates a "barebones"
+distribution, with only fundamental tools in it, the distribution created provides a fine
+enviroment for further experimentation or customization. 
+
+Apart from the basic book, the lfs project also has 3-4 books to read if you want to extend
+the basic system (such as blfs, Beyond Linux from Scratch) or if you want to automate the process,
+create a distribution that is more secure, or how to cross-compile an lfs system for different machines.
+
+# My experience with building LFS
+
+## A small introduction about my background
+
+I have been a UNIX (-like) systems (full-time) user for about 2.5 years now. During that time
+I had seen myself from being what you would call a Linux newbie, not knowing how to use
+a system without a GUI installed (have I mentioned that Ubuntu was my favourite distribution) to being an arguably experienced UNIX programmer, trying to learn more about the
+various aspects of UNIX systems, and delving deeper and deeper into them every day
+(while also feeling pain if using something other than a UNIX like system).
+
+During that time, I have learned about the Unix way of working with the system, using the shell and the system's toolchain to write software and other wise manipulate the system. I
+ditched my old knowledge about IDEs and GUIs, and set out to master the command line and the associated tools (Anecdote: I remember, when I first came from to Unix from Windows, to searching the net for a C/C++ IDE to do development.) I remember reading about
+how people worked another way in Unix land, using an editor, and the shell to work, and I 
+decided to force myself to learn to work that way. I still remember trying to use vim and gcc, 
+and ending up liking this way better because it seemed a more natural way to interact with
+the software development process, than using a ide and pressing the equivalent of a "play"
+button, so that magic ensues for the next few seconds until I have a result. 
+
+Time has passed since then, and going through hours and hours of reading and working with
+the system, I did learn quite a lot about it. My Google Summer of Code experience in 2013
+expanded my system knowledge even further (that's what you get when you have to work
+with the system kernel, the C library and a compiler). 
+
+But in all that time, of using Unix like systems, I never had the chance to create one myself.
+And although my background did allow me to know quite a few things of the inner workings
+of a system like that, I never actually saw all these software systems combining in front
+of my very eyes to create that beauty we know as a GNU/Linux distribution. And that left
+me a bad taste, because I knew what was happening, but I wanted to see it happen right 
+in front of my eyes. 
+
+Knowing about the existence of lfs, and not actually going through it also made matters worse
+for me, as I knew that I could actually "patch" that knowledge gap of mine, but I never really
+tried to do that. I felt that I was missing on a lot, and that lfs would be instrumental to my
+understanding of a Linux system. Having gone through that some years ago, and getting
+stuck at the very beginning had also created an innate fear in me, that it was something
+that would be above my own powers.
+
+Until two days ago, when I said to myself: "You know what? I have seen and done a lot 
+of things in a UNIX system. I am now much more experienced than I was when I last did it.
+And I know I want to at least try it, even if it will only give me nothing but infinite confusion 
+Because if I do manage to get it, I will learn so many more things, or at least get assured
+that my preexisting knowledge was correct" And that thought was the greatest motive I had
+to do that in a fairly long time.
+
+So, I sat at my desk, grabbed a cup of coffee and off I went!
+
+## The process
+
+### Preparation and the temporary toolchain
+
+The book is itself several chapters long, each of which perform another "big step" in the
+creation of the distribution. 
+
+The first few chapters are preparatory chapters, where you ensure the integrity of the 
+building environment, and download any building dependencies you may be lacking,
+create a new partition that will host the lfs system, and create the user account that
+will do the building of the temporary toolchain.
+
+The temporary toolchain building is a more exciting process. In essence
+you compile and collect several pieces of software that will later be used
+to compile the distribution's toolchain and other software.
+
+You start of with building binutils, and that is to get a working assembler and linker. 
+After having a working assembler and linker, you proceed with compiling `gcc`.
+Next on is unpacking the linux headers, so that you can compile (and link against them)
+the glibc. 
+
+Having the basic parts of the toolchain compiled, you then proceed with installing other
+software that is needed in the temporary toolchain, like `gawk`, `file`, `patch`, `perl`
+etc.
+
+### Building the main system
+
+After getting done with the temporary toolchain, you then `chroot` into the lfs partition.
+You start of with creating the needed directories (like `/bin`, `/boot`, `/etc`, `/home` etc)
+and then continue with building the distribution software, utilising the temporary toolchain.
+For instance, you construct a new `gcc`, you compile `sed`, `grep`, `bzip`, the `shadow`
+utility that manages the handling of passwords etc, all while making sure that things don't
+break, and running countless tests (that sometimes take longer than what the package
+took to compile) to ensure that what you build is functional and reliable.
+
+### Final configuration
+
+Next one on the list, is the various configuration files that reside in `/etc`, and the setup
+of `sysvinit`, the distribution's `init` system.
+
+Last, but not least, you are compiling the linux kernel and setting up grub so that the
+system is bootable.
+
+At this point, if all has gone well, and you reset, you should boot into your new lfs system.
+
+# What did I gain from that?
+
+Building lfs was a very time consuming process for me. It must have taken about 7-8
+hours at the very least. Not so much because of the compilation and testing (I was compiling
+with `MAKEFLAGS='-j 4'` on a Core i5), but because I didn't complete some steps
+correctly, and later needed to go back and redo them, along with everything that followed and the time it took to research some issues, programs or various other things
+before I did issue a command at the shell.
+
+Now if I were to answer the question "What did I gain from that", my answer would be
+along the lines of "Infinite confusion, and some great insight at some points".
+
+To elaborate on that,  
+ 
+-   lfs mostly served as a reassurance that indeed, what I did know
+about the system was mostly correct. 
+-   I did have the chance to see the distribution
+get built right before my eyes, which was something I longed for a great amount of time.
+-   It did make me somewhat more familiar with the `configure && make && make install`
+cycle
+-   It made me realise that the directories in the system are the simple result of a `mkdir` command, and that configuration files in the `/etc/folder` are handwritten plain files. (*yeah, I feel stupid about that one - I don't know what I was expecting.* This was probably the result of the "magic involved" that the distro making process entailed for me)
+-   I got to see the specific software that is needed to create a distribution, and demonstrate to me how I can build it, customize that build, or even change that software to my liking 
+-   And last but not least, something that nearly every lfs user says after a successful try:
+I knew that package managers did a great many things in order to maintain the system, and that much
+of the work I would normally have to do was done nearly automatically 
+but boy, was I underestimating them. After lfs, I developed a new appreciation for a
+good package manager.
+
+# Epilogue
+
+*Lfs was, for the most part, a great experience.* **As a knowledge expander, it works great.**
+**As a system that you keep and continue to maintain? I don't know.** I know that people have
+done that in the past, but I decided against maintaining my build, as I figured it would be
+very time consuming, and that if I ever wanted to gain the experience of maintaining a distro,
+I would probably fork something like [Crux](http://www.crux.nu).
+
+In the end if you ask me if I can recommend that to you, I will say that I'm not so sure.
+**It will provide you with some insight into the internals of a GNU/Linux distribution, but it 
+won't make you a better programmer as some people claim** (most of the process revolves
+around the `configure && make && make install` cycle, and some conf files handwriting).
+
+**In the end, it is yourself who you should ask. Do you want that knowledge? Is it worth the hassle for you?
+Do you want the bragging rights? Are you crazy enough to want to maintain it?** 
+*These are all questions that you get as many answers to them as the people you ask.*
