@@ -43,7 +43,7 @@ programming approach that encourages writing tests for the feature code **before
 the actual feature code is written, so that the tests guide the design of the code
 itself.
 
-*Behaviour-Drive Development* (BDD for short), is a sister approach to TDD, but for
+*Behaviour-Driven Development* (BDD for short), is a sister approach to TDD, but for
 the purposes of this article, BDD is the approach of *writing the tests in a way
 that they reflect prose specification of the behaviour of the module* under test.
 
@@ -265,9 +265,9 @@ the test cases we want.
 
 We want at least a representative sample of each of the following:
 
-1) Positive cases,
-2) Negative cases,
-3) Degenerate cases.
+* Positive cases,
+* Negative cases,
+* Degenerate cases.
 
 *Positive cases* are cases in which we exercise the *happy path* - the code path we
 were most anticipating when we were designing our code.
@@ -315,7 +315,7 @@ ArgumentError expected but nothing was raised.
 
 😱
 
-Yikes! We were expecting an exception to be raised, but we didn't raise one.
+Yikes! We were expecting an exception to be raised, but none was raised.
 That means that our code had no issue handling the invalid string. Let's fix that.
 
 Let's fix that the simplest way we can: by defining a list of illegal characters
@@ -346,16 +346,6 @@ Run options: --seed 25460
 ..
 
 Finished in 0.000348s, 5747.1265 runs/s, 5747.1265 assertions/s.
-
-2 runs, 2 assertions, 0 failures, 0 errors, 0 skips
-fotiskoutoulakis@192 counting_nucleotides % ruby counting_nucleotides.rb
-Run options: --seed 36136
-
-# Running:
-
-..
-
-Finished in 0.000480s, 4166.6667 runs/s, 4166.6667 assertions/s.
 
 2 runs, 2 assertions, 0 failures, 0 errors, 0 skips
 ```
@@ -518,7 +508,7 @@ it 'throws an exception if a strand is more than 1000nt long' do
     strand = 'A' * 1005
 
     assert_raises(ArgumentError) { count_nucleotides(strand) }
-  end
+end
 ```
 
 ```sh
