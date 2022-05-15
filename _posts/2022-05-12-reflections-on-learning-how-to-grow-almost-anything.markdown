@@ -18,7 +18,7 @@ When I started the course, sometime in the end of January, I had no idea what a 
 this would be (nor did I have any idea of how much pressure this would apply on me, but
 hey, I survived this, and then some 😁 ).
 
-I credit this class with taking me from rudimentary biology knowledge, to a fairly solid
+I credit this class with taking me from rudimentary biology knowledge to a fairly solid
 understanding of molecular biology and immunology, all in about 3-4 months.
 
 As you can probably imagine, this was... intense.
@@ -58,16 +58,15 @@ The course was setup in a set of two classes per week:
   from last week, and the next two hours had different presenters give presentations
   on various topics in synthetic biology, and
 * a two-hour class the next day, that included a recitation session - which was
-  previewing the homework, for next week - along with a homework review for
-  us online listeners.
+  previewing next week's homework - along with a homework review for online listeners.
 
 To my surprise, there was a relatively high number of online students participating
 (~ 45, IIRC - about 3 times the number of MIT students physically attending), but
 only about a third of the online students made it through to the end.
 
-Attendance was taken every lecture, for both us (online listeners) and the
-students physically present at MIT. We were also expected to do all the exercises
-for the week - with the TAs making sure that this was the case.
+Attendance was taken every lecture, for both online listeners and the students
+physically present at MIT. We were also expected to do all the exercises for
+the week - with the TAs ensuring that this was the case.
 
 In the middle of the course's duration, we also had a handful of hands-on workshops
 (of which we had to attend some), aptly named the *Festival of Growing*.
@@ -75,8 +74,9 @@ In the middle of the course's duration, we also had a handful of hands-on worksh
 ## The Lectures
 
 The course was setup around a number of themes (therapeutics, biofabrication/biomaterials,
-DNA/RNA editing, microfluidics, etc), and every week we had two-three different presenters
-(which ranged from university professors to company CEOs) present on the topic at hand.
+DNA/RNA editing, microfluidics, etc), and every week we had two (sometimes three)
+different presenters (which ranged from university professors to company CEOs) present
+on the topic at hand.
 
 The first couple of weeks were focused on teaching the foundations of molecular biology
 (but in a very, *very* accelerated timeframe), and then the following weeks assumed
@@ -112,7 +112,8 @@ For both online and MIT/Harvard students, we had to attend at least 1 of the wor
 (attendance was taken), with no upper limit on how many you could attend.
 
 I think the Festival of Growing was a nice little fragment of the course's structure,
-and it also contributed in making the course feel a lot more dynamic in nature.
+and it also contributed in making the course feel a lot more dynamic in nature
+(compared to an alternative, hypothetical course consisting only of lectures).
 
 ## The Final Project
 
@@ -122,12 +123,13 @@ start that this was an integral part of the course, and that everyone who stuck
 to the end (either online listener or on-premise student) would have to
 present one.
 
-We had a lot of leeway in terms of the project that we would choose to do.
-For the on-premise students, the idea is that the project would include a
-lab component but for online students this was considered optional (given
-that only some people had access to a lab), but we still had to present on
-a topic that was considered feasible (if speculative), and the expectation
-was that the project would be fairly well-researched.
+We had a lot of leeway in terms of the project that we would choose to do -
+though you were *strongly encouraged* to pick a project topic that fell within
+the experience/knowledge range of available TAs. For the on-premise students,
+the idea is that the project would include a lab component but for online students
+this was considered optional (given that only some people had access to a lab),
+but we still had to present on a topic that was considered feasible (if speculative),
+and the expectation was that the project would be fairly well-researched.
 
 For each one of us doing a final project, we would be assigned a mentor (a
 TA or industry professional) who would end up as an endpoint for answering
@@ -185,8 +187,8 @@ Special thanks from my end to the following people as well:
   one of the lectures.
 * **Karolina Sulich**, for providing some early assistance during my project,
   and for introducing me to Amy Holt,
-* **Amy Holt,** who provided me with specific answers to some immunology related
-  questions I had, with regard to the final project.
+* **Amy Holt**, who provided me with specific answers to some immunology related
+  questions I had, with regard to my final project.
 
 You can find my course notes, exercises, and final project at my course notes
 [Notion page](https://www.notion.so/HTGAA-2022-a43e0f0b56a444f29aea3a94a388c7bf).
