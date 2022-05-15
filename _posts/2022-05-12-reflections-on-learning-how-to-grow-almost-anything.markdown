@@ -1,0 +1,192 @@
+---
+layout: post
+title: "Reflections on learning \"How To Grow (Almost) Anything\""
+date: 2022-05-12
+comments: true
+tags: synbio course mooc
+share: true
+---
+
+Wow, what a journey this has been!
+
+Yesterday, Wednesday 11th of May, was the final project presentations for committed
+listeners in MIT's synthetic biology course,
+[How To Grow (Almost) Anything](https://htgaa2022.notion.site/htgaa2022/HTGAA-2022-d39e5560ad83483ab87d415f085b60c6),
+class of 2022.
+
+When I started the course, sometime in the end of January, I had no idea what a blast
+this would be (nor did I have any idea of how much pressure this would apply on me, but
+hey, I survived this, and then some 😁 ).
+
+I credit this class with taking me from rudimentary biology knowledge, to a fairly solid
+understanding of molecular biology and immunology, all in about 3-4 months.
+
+As you can probably imagine, this was... intense.
+
+But before I dive more into the experience and what I learnt in this course, let me
+give some background into the course and the context of my participation.
+
+## Some background
+
+Anyone who knows me is aware of my awe at the potential of synthetic biology. There's
+no doubt in my mind that it's going to be the next exponential growth sector after
+the computer industry. The field itself is fairly nascent, but it's going to pick
+up the pace in the next 5-10 years. And although I believe that all its subdomains
+hold massive potential, I'm especially keen on synthetic biology applications in
+human therapeutics.
+
+Now, I keep it no secret that I want to found a synthetic biology company in the
+(hopefully, not so distant) future.
+
+Given that, you may guess that in general I was observant of any opportunities
+to dig a bit deeper into the field.
+
+With that in mind (along with a hefty bit of luck - fate? 😁 ), I came across a
+tweet by the organiser of the course, [David Kong](https://twitter.com/davidsunkong),
+advertising the course, along with the fact that this year it would admit a small
+cohort of students who want to attend remotely.
+
+Wasting no time, I shot an email towards David, and was surprised when I got an
+email a couple days later admitting me to the course, and sharing zoom links for
+the course's first lecture.
+
+## The Attendance Experience
+
+The course was setup in a set of two classes per week:
+
+* one three-hour lecture, in which the first hour was spent reviewing homework
+  from last week, and the next two hours had different presenters give presentations
+  on various topics in synthetic biology, and
+* a two-hour class the next day, that included a recitation session - which was
+  previewing the homework, for next week - along with a homework review for
+  us online listeners.
+
+To my surprise, there was a relatively high number of online students participating
+(~ 45, IIRC - about 3 times the number of MIT students physically attending), but
+only about a third of the online students made it through to the end.
+
+Attendance was taken every lecture, for both us (online listeners) and the
+students physically present at MIT. We were also expected to do all the exercises
+for the week - with the TAs making sure that this was the case.
+
+In the middle of the course's duration, we also had a handful of hands-on workshops
+(of which we had to attend some), aptly named the *Festival of Growing*.
+
+## The Lectures
+
+The course was setup around a number of themes (therapeutics, biofabrication/biomaterials,
+DNA/RNA editing, microfluidics, etc), and every week we had two-three different presenters
+(which ranged from university professors to company CEOs) present on the topic at hand.
+
+The first couple of weeks were focused on teaching the foundations of molecular biology
+(but in a very, *very* accelerated timeframe), and then the following weeks assumed
+competence in molecular biology and built on top of that in terms of presenting the
+state of the art in applications in various domains.
+
+It's probably worth noting that the course attracted people from a wide variety
+of backgrounds - you could find architects, designers, computer scientists, chemists,
+etc. As you can imagine, a lot of these people didn't have a background in biology
+(or had a very shallow one, myself included), and the intensity of the ramp up of
+the first few weeks might have contributed to the dropouts.
+
+For the MIT/Harvard students, most of these lectures were also followed by a lab
+component. For online listeners, we would partially follow along those processes
+(given the lack of wet lab access for some of us), or, at other times, we would
+be given substitute exercises that involved using online tools (such as [Benchling](https://www.benchling.com/)
+to simulate the in-vitro experiments in-silico.
+
+## The *Festival of Growing*
+
+Sometime around the half of the semester, we had a pause in the online lectures
+for a couple of weeks in favour of attending various workshops. Those workshops
+were structured around a number of different themes. Examples of those were growing
+mycelium at home, or performing DNA sequencing using a nanopore device.
+
+From these workshops, some of them were on-premise and some of them were online.
+We did manage to watch one of the on-premise workshops (the nanopore sequencing one)
+via a TA streaming the workshop, which was nice. In retrospect, this would be
+a good idea for all of the on-premise workshops - maybe that will happen from
+next year onwards?
+
+For both online and MIT/Harvard students, we had to attend at least 1 of the workshops
+(attendance was taken), with no upper limit on how many you could attend.
+
+I think the Festival of Growing was a nice little fragment of the course's structure,
+and it also contributed in making the course feel a lot more dynamic in nature.
+
+## The Final Project
+
+A relatively big part of the course (and the main focus of the last two weeks)
+was the the preparation of the final project. It had been made clear from the
+start that this was an integral part of the course, and that everyone who stuck
+to the end (either online listener or on-premise student) would have to
+present one.
+
+We had a lot of leeway in terms of the project that we would choose to do.
+For the on-premise students, the idea is that the project would include a
+lab component but for online students this was considered optional (given
+that only some people had access to a lab), but we still had to present on
+a topic that was considered feasible (if speculative), and the expectation
+was that the project would be fairly well-researched.
+
+For each one of us doing a final project, we would be assigned a mentor (a
+TA or industry professional) who would end up as an endpoint for answering
+questions/providing guidance on our project.
+
+## My Own Experience
+
+I have to start with the fact that I enjoyed all of the course, and that
+I'm grateful to MIT/the organisers for admitting us online listeners to the
+course.
+
+Having said that, the first couple of weeks were very hard - it required
+**a lot** of outside studying (we're talking several textbooks worth of
+reading) to catch up to the required knowledge. If you have to juggle a
+job as well, and you're not a full-time student, that can definitely feel
+pretty overwhelming at times.
+
+(By the way, this is coming from someone who already commits 3-4 hours of
+study on a daily basis, if that helps underline the above paragraph - though
+to be fair, I think that a lot of the pressure was coming from the tight
+weekly deadlines for exercises.)
+
+I recall that at one point during the first two weeks I felt the presenters
+were speaking something other than English. 😓 The nice thing is that persistence
+does pay of, however, and by the end, you are also capable of fluently conversing
+with everyone else in this weird little dialect of English.
+
+The festival of growing was also very nice, but, personally, I was a little bit
+miffed by the fact that the workshop I was most looking forward to (metabolic
+simulation in Python) got cancelled without any explanation a day before it
+was to be presented.
+
+For me the most enjoyable part of the course was the final project because
+by that point I already knew enough to be able to do some competent background
+research on the project.
+
+## In Conclusion
+
+In this final bit, I want to say that I wholeheartedly recommend this course
+to anyone who is keen on synthetic biology, if only to see some of the people
+on the forefront of the domain discuss the possibilities and what they are
+currently exploring.
+
+I also have a feeling that David and his course are going to be a future kingmaker
+of synthetic biology 😉 You would hear very often during the presentations (person
+X, CEO of Y, and alumni of HTGAA few years ago). I think this trend is going to
+continue for many more years to come.
+
+Again many thanks to the organisers (**David** in particular), the lecturers, TAs,
+and everyone else who contributed to this course.
+
+Special thanks from my end to the following people as well:
+
+* **Jessica Weber**, for entertaining a barrage of questions I posed during
+  one of the lectures.
+* **Karolina Sulich**, for providing some early assistance during my project,
+  and for introducing me to Amy Holt,
+* **Amy Holt,** who provided me with specific answers to some immunology related
+  questions I had, with regard to the final project.
+
+You can find my course notes, exercises, and final project at my course notes
+[Notion page](https://www.notion.so/HTGAA-2022-a43e0f0b56a444f29aea3a94a388c7bf).
