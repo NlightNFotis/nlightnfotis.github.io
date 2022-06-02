@@ -13,7 +13,7 @@ the function on my own](https://gist.github.com/NlightNFotis/b662a0368b5eea68ebf
 As a quick explainer, `map` is a function that takes two arguments, a function `fn`
 and a list `lat`, and produces a new list with the elements being the result of
 the application of the function `fn` to the elements of `lat` (in mathematical writing,
-this would be `∀x ∈ lat, (fx)` - that is, for all `x` that belong to `l` we take the
+this would be `∀x ∈ lat, fn(x)` - that is, for all `x` that belong to `l` we take the
 result of `fn` applied to `x`, `fn(x)`).
 
 I always knew of the (*classic*?) way to define that in Scheme (or more generally,
@@ -218,5 +218,22 @@ This is using the [`do` notation to define a sequence of actions](https://en.wik
 but the actions themselves have a near 1-1 correspondence to our original map implementation:
 
 * First we assign the name `y` to the result of `f x`, then
-* We assign the name `ys` to the result of the recursive call on the tail of the list (`mapM f xs)`
+* We assign the name `ys` to the result of the recursive call on the tail of the list (`mapM f xs`)
 * And the return the `cons` of the two values `(y : ys)`
+
+## Conclusion
+
+I enjoyed writing this post quite a bit.
+
+It's a very humbling experience to be visiting books and seeing that ideas that you considered
+to be elementary and rather surface-level are a lot more nuanced once you start digging deeper
+into them.
+
+It's something I need to keep top of mind as I go forward as well.
+
+This post also highlights one of the nice things of going for breadth of knowledge: exposure
+to a wider set of ideas. Had I only stayed in the Racket/OCaml realm, I probably wouldn't have
+been exposed to this range of `map` implementations, for the reason that these languages don't
+offer some of the language features that enable them, like list comprehensions.
+
+All in all, happy I went down this path, and looking forward to what's next.
