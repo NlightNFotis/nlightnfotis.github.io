@@ -5,20 +5,25 @@ date: 2022-06-02
 tags: fp haskell
 ---
 
-`map` is one of the most famous (and pivotal) higher-order functions. It's also
-the function that I hold dearest in my heart, as it marked a very pleasant memory
-in mind of when [I first understood the concept enough to be able to write
-the function on my own](https://gist.github.com/NlightNFotis/b662a0368b5eea68ebfde1e4e4fb9787).
+If you are here, then `map` requires no introduction. You have seen it.
+You have used it. Many times. You have even implemented it before. But did you
+know that there are more than one ways to implement the function `map`?
 
-As a quick explainer, `map` is a function that takes two arguments, a function `fn`
-and a list `lat`, and produces a new list with the elements being the result of
-the application of the function `fn` to the elements of `lat` (in mathematical writing,
-this would be `∀x ∈ lat, fn(x)` - that is, for all `x` that belong to `l` we take the
-result of `fn` applied to `x`, `fn(x)`).
+---
+
+Of all the archetypal higher-order functions that I know, `map` is the function
+that I hold dearest in my heart. That's because it marked a very pleasant memory
+when I finished *The Little Schemer* (for the first time, back in 2016) and I found
+out that [I grokked the concept enough to be able to write it on my own](https://gist.github.com/NlightNFotis/b662a0368b5eea68ebfde1e4e4fb9787).
+
+As a quick explainer, for the sake of completeness, `map` is a function that takes
+two arguments, a function `fn` and a list `lat`, and produces a new list with the
+elements being the result of the application of the function `fn` to the elements
+of `lat` (in mathematical writing, this would be `∀x ∈ lat, fn(x)` - that is, for
+all `x` that belong to `lat` we take the result of `fn` applied to `x`, `fn(x)`).
 
 I always knew of the (*classic*?) way to define that in `Scheme` (or more generally,
-in `Lisp`), which I had seen also being used in `OCaml`/`SML`, and that would look
-something like the following:
+in `Lisp`), which I had seen also being used in `OCaml`/`SML`, which looks like this:
 
 ```lisp
 (define (map fn lat)
@@ -28,7 +33,7 @@ something like the following:
      (cons (fn (car lat)) (map fn (cdr lat))))))
 ```
 
-That is, a recursive definition, that does the following:
+That is, a recursive function definition, that does the following:
 
 * If the input list `lat` is empty, it returns the empty list `()` (we use that as the
   base for `cons`structing a list of values), otherwise
@@ -43,7 +48,7 @@ the pattern is the same:
 let rec map fn lat =
   match lat with
   | [] -> []
-  | h::t -> (f h)::(map f t)
+  | h::t -> (fn h)::(map fn t)
 ```
 
 Recently though, I started reading Graham Hutton's excellent [Programming in Haskell](https://www.cs.nott.ac.uk/~pszgmh/pih.html),
@@ -181,7 +186,7 @@ With that in mind, what the `foldr` function does is that replaces the `cons` (`
 operator with the function argument supplied to it, and *reduces* it all (*folds the
 list*) into a single value.
 
-(It also replaces the base case empty-list value `[]` with the value of the last
+(It also replaces the base case empty list value `[]` with the value of the last
 argument supplied to it. In our case, we are passing the empty list (`[]`) again,
 which we are going to use as a base to build a new list of values on top of.)
 
