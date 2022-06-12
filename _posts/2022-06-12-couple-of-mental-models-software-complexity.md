@@ -23,8 +23,12 @@ topics. On a daily basis, we use mental models for everything: how we understand
 events that happen around us, how we expect a certain object or the environment to respond
 in our interactions with it, and a lot of other things.
 
+They were first introduced by Charlie Munger (of Berkshire Hathaway) fame in a talk he
+gave named [A Lesson on Elementary Worldly Wisdom](https://fs.blog/great-talks/a-lesson-on-worldly-wisdom/).
+
 For more reading on Mental Models, I refer you to the excellent guide by [Farnam Street](https://fs.blog/mental-models/#what_are_mental_models),
-which played a large part in popularising the idea of mental models.
+which played a large part in popularising the idea of mental models (and familiarising me
+with many of the ideas).
 
 ### Mental models and programming
 
@@ -40,11 +44,11 @@ Now, I can already picture you recoiling in disbelief. "How is that possible?",
 you ask. There's something in your head that allows you to write programs
 in Python, so my claim looks ridiculous upon surface examination.
 
-Not so fast - I didn't finish 😁 .
+Not so fast - I didn't finish 😁
 
 You don't *know* Python - but what you do have in your head are two (partially?)
-complete mental models of Python: a mental model for its syntax, and a mental
-model for its semantics. You may also have mental models of the behaviour of
+complete mental models of Python: a mental model of its syntax, and a mental
+model of its semantics. You may also have mental models of the behaviour of
 certain Python tools. You might also be very familiar with a number of different
 libraries (e.g. `requests`), at which point you may have a very robust mental
 model of its behaviour or the internal mechanisms that drive that behaviour.
@@ -117,7 +121,8 @@ some cognitive limitations, such as:
 * the interplay between other cognitive biases, etc,
 
 negatively affecting our decision making process. The way the do that is by shifting
-our decision making priority to be that of *satisficing* instead of *optimising*.
+our decision making priority to be that of *satisficing* (aiming for just an adequate
+outcome) instead of *optimising* (aiming for an optimal outcome).
 
 This means that instead of going for the best solution in the current context,
 we just go with the first one that seemingly satisfies the constraints that are
