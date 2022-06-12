@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Three (plus one) different versions of map in Haskell"
+title: "Three (plus one) Different Versions of map in Haskell"
 date: 2022-06-02
 tags: fp haskell
 ---

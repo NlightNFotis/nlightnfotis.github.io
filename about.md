@@ -24,9 +24,19 @@ I also spend time playing various assortments of musical instruments (Piano, Gui
 and Vocals) at various levels of expertise, and I'm also keen on quantified-self and
 personal-development (across all facets of my life).
 
+You can connect with me by:
+
+* [Email](mailto:fotis@hey.com)
+* [Twitter](https://twitter.com/NlightNFotis)
+* [Goodreads](https://www.goodreads.com/nlightnfotis)
+
 ## The Blog
 
-This blog is for me to share interesting things I've learnt, implemented or thought.
+The blog was created with the following ends in mind:
+
+1. Document and share my knowledge and opinions.
+2. Improve my writing and communication skills.
+3. Reach and connect with people who share my interests.
 
 It's not strictly related to computers (even though that will probably be most of what
 I'm sharing here), and you may on occassions find some rudimentary philosophical essays,

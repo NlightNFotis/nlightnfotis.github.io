@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Reflections on learning \"How To Grow (Almost) Anything\""
+title: "Reflections on Learning \"How to Grow (Almost) Anything\""
 date: 2022-05-12
 comments: true
 tags: synbio course mooc
