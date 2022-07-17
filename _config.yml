@@ -1,16 +1,41 @@
-# Site settings
-name: Lambda reflections
-email: fotis@hey.com
+# Site settings (modified to fit Whiteglass expectations for site.vars)
+title: Lambda reflections
+author: Fotis Koutoulakis
 description: >- # this means to ignore newlines until "baseurl:"
   Functional Programming, Proofs, Bioinformatics and more.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
-twitter_username: NlightNFotis
-github_username:  NlightNFotis
+lang: en-GB
+timezone: UTC
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - readme.md
+  - .gitignore
 
-# Build settings
+# Social media (for Whiteglass)
+twitter_username: NlightNFotis
+comments: false
+
+# Whiteglass theme configuration
+theme: jekyll-whiteglass
 plugins:
-  - jekyll-feed
+  - jekyll-archives
+  - jekyll-paginate
+  - jekyll-sitemap
+
+permalink: /:year/:month/:day/:title/
+paginate_path: /posts/:num/
+paginate: 5
+
+jekyll-archives:
+  enabled:
+    - categories
+    - tags
+  layout: category_archives
+  permalinks:
+    category: /categories/:name/
+    tag: /tags/:name/
 
 # Conversion (these form part of the default configuration, but it helps me
 # to have them listed here explicitly)
@@ -18,24 +43,10 @@ markdown: kramdown
 highlighter: rouge
 kramdown:
   input: GFM  # Github-Flavoured Markdown
-
-
-# Exclude from processing.
-# The following items will not be processed, by default.
-# Any item listed under the `exclude:` key here will be automatically added to
-# the internal "default list".
-#
-# Excluded items can be processed by explicitly listing the directories or
-# their entries' file path in the `include:` list.
-#
-# exclude:
-#   - .sass-cache/
-#   - .jekyll-cache/
-#   - gemfiles/
-#   - Gemfile
-#   - Gemfile.lock
-#   - node_modules/
-#   - vendor/bundle/
-#   - vendor/cache/
-#   - vendor/gems/
-#   - vendor/ruby/
+  auto_ids: false
+  enable_coderay: false
+  entity_output: as_char
+  footnote_nr: 1
+  smart_quotes: lsquo,rsquo,ldquo,rdquo
+  toc_levels: 1..6
+excerpt_separator: "<!-- more -->"

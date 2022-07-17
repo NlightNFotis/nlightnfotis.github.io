@@ -33,3 +33,6 @@ gem "http_parser.rb", "~> 0.6.0", :platforms => [:jruby]
 gem "webrick", "~> 1.7"
 
 gem "rouge", "~> 3.28"
+
+# Add whiteglass theme
+gem "jekyll-whiteglass", "~> 1.11.1"
