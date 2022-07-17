@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  
+  
+  <title>GSOC Week 8 (Partial) report</title>
+  <meta name="description" content="This week was spent studying the go language’s runtime and studying the behaviour of various go programs when executed under the Hurd. I learnt a variety of new things, and got some new clues about the problem. The new libgo clues I already know that M’s are the “real” kernel schedulable threads and G’s are the go runtime managed ones (goroutines). Last time I had gone through the go runtime’s code I had noticed that neither of them get created, so there must be an issue with thread creation. But since there is at least one of each created during the program’s initialization, how come most programs are able to run, and issues present themselves when we manually attempt to run a goroutine? I will admit that the situation looks strange. So I decided to look more into it. Before we go any further, I have to embed the issues I had when I run goroutine powered programs under the Hurd. root@debian:~/Software/Experiments/go# ./a.out a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })&#39; failed. Aborted __pthread_create_internal is a libpthread function that gets called when a new posix thread is instanciated. So we know that when we call a goroutine, apart from the goroutine, there is at least one kernel thread created, otherwise, if a new goroutine was created, and not a new kernel thread (M) why wasn’t it matched with an existing kernel thread (remember there is at least one). That made me look into the go runtime some more. I found a lot of things, that I can not enumerate here, but amongst the most interesting ones, was the following piece of code: // Create a new m. It will start off with a call to runtime_mstart. M* runtime_newm(void) { M *mp; pthread_attr_t attr; pthread_t tid; size_t stacksize; sigset_t clear; sigset_t old; int ret; #if 0 static const Type *mtype; // The Go type M if(mtype == nil) { Eface e; runtime_gc_m_ptr(&amp;amp;e); mtype = ((const PtrType*)e.__type_descriptor)-&amp;gt;__element_type; } #endif mp = runtime_mal(sizeof *mp); mcommoninit(mp); mp-&amp;gt;g0 = runtime_malg(-1, nil, nil); if(pthread_attr_init(&amp;amp;attr) != 0) runtime_throw(&quot;pthread_attr_init&quot;); if(pthread_attr_setdetachstate(&amp;amp;attr, PTHREAD_CREATE_DETACHED) != 0) runtime_throw(&quot;pthread_attr_setdetachstate&quot;); stacksize = PTHREAD_STACK_MIN; // With glibc before version 2.16 the static TLS size is taken // out of the stack size, and we get an error or a crash if // there is not enough stack space left. Add it back in if we // can, in case the program uses a lot of TLS space. FIXME: // This can be disabled in glibc 2.16 and later, if the bug is // indeed fixed then. stacksize += tlssize; if(pthread_attr_setstacksize(&amp;amp;attr, stacksize) != 0) runtime_throw(&quot;pthread_attr_setstacksize&quot;); // Block signals during pthread_create so that the new thread // starts with signals disabled. It will enable them in minit. sigfillset(&amp;amp;clear); #ifdef SIGTRAP // Blocking SIGTRAP reportedly breaks gdb on Alpha GNU/Linux. sigdelset(&amp;amp;clear, SIGTRAP); #endif sigemptyset(&amp;amp;old); sigprocmask(SIG_BLOCK, &amp;amp;clear, &amp;amp;old); ret = pthread_create(&amp;amp;tid, &amp;amp;attr, runtime_mstart, mp); sigprocmask(SIG_SETMASK, &amp;amp;old, nil); if (ret != 0) runtime_throw(&quot;pthread_create&quot;); return mp; } This is the code that creates a new kernel thread. Notice the line ret = pthread_create(&amp;amp;tid, &amp;amp;attr, runtime_mstart, mp);. It’s obvious that it creates a new kernel thread, so that explains why we get the specific error. But what is not explained is that since we do have at least one in program startup, why is this specific error only triggered when we manually create a go routine? Go programs under the Hurd Apart from studying Go’s runtime source code, I also run some experiments under the Hurd. I got some very weird results that I am investigating, but I would like to share nonetheless. Consider the following piece of code: package main import &quot;fmt&quot; func say(s string) { for i := 0; i &amp;lt; 5; i++ { fmt.Println(s) } } func main() { say(&quot;world&quot;) say(&quot;hello&quot;) } A very basic example that can demonstrate goroutines. Now, if we change one of the say functions inside main to a goroutine, this happens: root@debian:~/Software/Experiments/go# ./a.out a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })&#39; failed. Aborted BUT if we change BOTH of these functions to goroutines (go say(&quot;world&quot;), go say(&quot;hello&quot;)), this happens: root@debian:~/Software/Experiments/go# ./a.out root@debian:~/Software/Experiments/go# Wait a minute. It can’t be! Did it execute correctly? Where is the output? root@debian:~/Software/Experiments/go# echo $? 0 root@debian:~/Software/Experiments/go# It reports that it has executed correctly. But there is no output. What I am doing next I will continue reading through the go runtime for some clues. On the more active size, I am writing a custom test case for goroutine testing under the Hurd, while also doing some analysis on the programs that run there (currently studying the assembly generated for these programs) to see how they differ and why we get this particular behavior.">
+  
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://nlightnfotis.github.io/2013/08/12/gsoc-week-8-partial-report/">
+  
+  
+  <link rel="alternate" type="application/rss+xml" title="Lambda reflections" href="https://nlightnfotis.github.io/feed.xml">
+
+  
+
+  
+  <meta property="og:title" content="GSOC Week 8 (Partial) report">
+  <meta property="og:site_name" content="Lambda reflections">
+  <meta property="og:url" content="https://nlightnfotis.github.io/2013/08/12/gsoc-week-8-partial-report/">
+  <meta property="og:description" content="This week was spent studying the go language’s runtime and studying the behaviour of various go programs when executed under the Hurd. I learnt a variety of new things, and got some new clues about the problem. The new libgo clues I already know that M’s are the “real” kernel schedulable threads and G’s are the go runtime managed ones (goroutines). Last time I had gone through the go runtime’s code I had noticed that neither of them get created, so there must be an issue with thread creation. But since there is at least one of each created during the program’s initialization, how come most programs are able to run, and issues present themselves when we manually attempt to run a goroutine? I will admit that the situation looks strange. So I decided to look more into it. Before we go any further, I have to embed the issues I had when I run goroutine powered programs under the Hurd. root@debian:~/Software/Experiments/go# ./a.out a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })&#39; failed. Aborted __pthread_create_internal is a libpthread function that gets called when a new posix thread is instanciated. So we know that when we call a goroutine, apart from the goroutine, there is at least one kernel thread created, otherwise, if a new goroutine was created, and not a new kernel thread (M) why wasn’t it matched with an existing kernel thread (remember there is at least one). That made me look into the go runtime some more. I found a lot of things, that I can not enumerate here, but amongst the most interesting ones, was the following piece of code: // Create a new m. It will start off with a call to runtime_mstart. M* runtime_newm(void) { M *mp; pthread_attr_t attr; pthread_t tid; size_t stacksize; sigset_t clear; sigset_t old; int ret; #if 0 static const Type *mtype; // The Go type M if(mtype == nil) { Eface e; runtime_gc_m_ptr(&amp;amp;e); mtype = ((const PtrType*)e.__type_descriptor)-&amp;gt;__element_type; } #endif mp = runtime_mal(sizeof *mp); mcommoninit(mp); mp-&amp;gt;g0 = runtime_malg(-1, nil, nil); if(pthread_attr_init(&amp;amp;attr) != 0) runtime_throw(&quot;pthread_attr_init&quot;); if(pthread_attr_setdetachstate(&amp;amp;attr, PTHREAD_CREATE_DETACHED) != 0) runtime_throw(&quot;pthread_attr_setdetachstate&quot;); stacksize = PTHREAD_STACK_MIN; // With glibc before version 2.16 the static TLS size is taken // out of the stack size, and we get an error or a crash if // there is not enough stack space left. Add it back in if we // can, in case the program uses a lot of TLS space. FIXME: // This can be disabled in glibc 2.16 and later, if the bug is // indeed fixed then. stacksize += tlssize; if(pthread_attr_setstacksize(&amp;amp;attr, stacksize) != 0) runtime_throw(&quot;pthread_attr_setstacksize&quot;); // Block signals during pthread_create so that the new thread // starts with signals disabled. It will enable them in minit. sigfillset(&amp;amp;clear); #ifdef SIGTRAP // Blocking SIGTRAP reportedly breaks gdb on Alpha GNU/Linux. sigdelset(&amp;amp;clear, SIGTRAP); #endif sigemptyset(&amp;amp;old); sigprocmask(SIG_BLOCK, &amp;amp;clear, &amp;amp;old); ret = pthread_create(&amp;amp;tid, &amp;amp;attr, runtime_mstart, mp); sigprocmask(SIG_SETMASK, &amp;amp;old, nil); if (ret != 0) runtime_throw(&quot;pthread_create&quot;); return mp; } This is the code that creates a new kernel thread. Notice the line ret = pthread_create(&amp;amp;tid, &amp;amp;attr, runtime_mstart, mp);. It’s obvious that it creates a new kernel thread, so that explains why we get the specific error. But what is not explained is that since we do have at least one in program startup, why is this specific error only triggered when we manually create a go routine? Go programs under the Hurd Apart from studying Go’s runtime source code, I also run some experiments under the Hurd. I got some very weird results that I am investigating, but I would like to share nonetheless. Consider the following piece of code: package main import &quot;fmt&quot; func say(s string) { for i := 0; i &amp;lt; 5; i++ { fmt.Println(s) } } func main() { say(&quot;world&quot;) say(&quot;hello&quot;) } A very basic example that can demonstrate goroutines. Now, if we change one of the say functions inside main to a goroutine, this happens: root@debian:~/Software/Experiments/go# ./a.out a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })&#39; failed. Aborted BUT if we change BOTH of these functions to goroutines (go say(&quot;world&quot;), go say(&quot;hello&quot;)), this happens: root@debian:~/Software/Experiments/go# ./a.out root@debian:~/Software/Experiments/go# Wait a minute. It can’t be! Did it execute correctly? Where is the output? root@debian:~/Software/Experiments/go# echo $? 0 root@debian:~/Software/Experiments/go# It reports that it has executed correctly. But there is no output. What I am doing next I will continue reading through the go runtime for some clues. On the more active size, I am writing a custom test case for goroutine testing under the Hurd, while also doing some analysis on the programs that run there (currently studying the assembly generated for these programs) to see how they differ and why we get this particular behavior.">
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="NlightNFotis">
+  <meta name="twitter:title" content="GSOC Week 8 (Partial) report">
+  <meta name="twitter:description" content="This week was spent studying the go language’s runtime and studying the behaviour of various go programs when executed under the Hurd. I learnt a variety of new things, and got some new clues about...">
+  
+    <meta name="twitter:creator" content="NlightNFotis">
+  
+  
+
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet">
+
+  
+
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">Lambda reflections</a>
+
+    <nav class="site-nav">
+      
+        
+        <a class="page-link" href="/about/">About</a>
+      
+        
+        <a class="page-link" href="/archives/">Archives</a>
+      
+        
+        <a class="page-link" href="https://github.com/NlightNFotis">GitHub</a>
+      
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    
+      <h1 class="post-title" itemprop="name headline">GSOC Week 8 (Partial) report</h1>
+    
+    <p class="post-meta"><time datetime="2013-08-12T10:27:00+00:00" itemprop="datePublished">Aug 12, 2013</time>
+
+ •
+  
+    
+    
+      
+        <a href="/tags/gsoc/">gsoc</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+        <a href="/tags/golang/">golang</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+        <a href="/tags/gcc/">gcc</a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+</p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>This week was spent studying the go language’s runtime and studying the behaviour of various go programs when executed under the Hurd. I learnt a variety of new things, and got some 
+new clues about the problem.</p>
+
+<h2>The new libgo clues</h2>
+
+<p>I already know that <em>M’s are the “real” kernel schedulable threads</em> and <em>G’s are the go runtime managed ones (goroutines)</em>. Last time I had gone through the go runtime’s code I had noticed that neither of them get created, so there must be an issue with thread creation. <strong>But since there is at least one of each created during the program’s initialization, how come
+most programs are able to run, and issues present themselves when we manually attempt to run a goroutine?</strong></p>
+
+<p>I will admit that the situation looks strange. So I decided to look more into it. Before we go any further, I have to embed the issues I had when I run goroutine powered programs under the Hurd.</p>
+
+<div lang="shell" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@debian:~/Software/Experiments/go# ./a.out
+a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&gt;kernel_thread == ktid;
+__mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })' failed.
+Aborted
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">__pthread_create_internal</code> is a libpthread function that gets called when a new posix thread is instanciated. So we know that when we call a goroutine, apart from the goroutine,
+there is at least one kernel thread created, otherwise, if a new goroutine was created, and not a new kernel thread (M) why wasn’t it matched with an existing kernel thread
+(remember there is at least one).</p>
+
+<p>That made me look into the go runtime some more. I found a lot of things, that I can not enumerate here, but amongst the most interesting ones, was the following piece of code:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="c1">// Create a new m.  It will start off with a call to runtime_mstart.</span>
+<span class="n">M</span><span class="o">*</span>
+<span class="nf">runtime_newm</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">M</span> <span class="o">*</span><span class="n">mp</span><span class="p">;</span>
+	<span class="n">pthread_attr_t</span> <span class="n">attr</span><span class="p">;</span>
+	<span class="n">pthread_t</span> <span class="n">tid</span><span class="p">;</span>
+	<span class="kt">size_t</span> <span class="n">stacksize</span><span class="p">;</span>
+	<span class="n">sigset_t</span> <span class="n">clear</span><span class="p">;</span>
+	<span class="n">sigset_t</span> <span class="n">old</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="n">ret</span><span class="p">;</span>
+
+<span class="c">#if 0
+	static const Type *mtype;  // The Go type M
+	if(mtype == nil) {
+		Eface e;
+		runtime_gc_m_ptr(&amp;e);
+		mtype = ((const PtrType*)e.__type_descriptor)-&gt;__element_type;
+	}
+#endif
+</span>
+	<span class="n">mp</span> <span class="o">=</span> <span class="n">runtime_mal</span><span class="p">(</span><span class="k">sizeof</span> <span class="o">*</span><span class="n">mp</span><span class="p">);</span>
+	<span class="n">mcommoninit</span><span class="p">(</span><span class="n">mp</span><span class="p">);</span>
+	<span class="n">mp</span><span class="o">-&gt;</span><span class="n">g0</span> <span class="o">=</span> <span class="n">runtime_malg</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">nil</span><span class="p">,</span> <span class="n">nil</span><span class="p">);</span>
+
+	<span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_attr_init"</span><span class="p">);</span>
+	<span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_setdetachstate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">PTHREAD_CREATE_DETACHED</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_attr_setdetachstate"</span><span class="p">);</span>
+
+	<span class="n">stacksize</span> <span class="o">=</span> <span class="n">PTHREAD_STACK_MIN</span><span class="p">;</span>
+
+	<span class="c1">// With glibc before version 2.16 the static TLS size is taken</span>
+	<span class="c1">// out of the stack size, and we get an error or a crash if</span>
+	<span class="c1">// there is not enough stack space left.  Add it back in if we</span>
+	<span class="c1">// can, in case the program uses a lot of TLS space.  FIXME:</span>
+	<span class="c1">// This can be disabled in glibc 2.16 and later, if the bug is</span>
+	<span class="c1">// indeed fixed then.</span>
+	<span class="n">stacksize</span> <span class="o">+=</span> <span class="n">tlssize</span><span class="p">;</span>
+
+	<span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_setstacksize</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">stacksize</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_attr_setstacksize"</span><span class="p">);</span>
+
+	<span class="c1">// Block signals during pthread_create so that the new thread</span>
+	<span class="c1">// starts with signals disabled.  It will enable them in minit.</span>
+	<span class="n">sigfillset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">clear</span><span class="p">);</span>
+
+<span class="cp">#ifdef SIGTRAP
+</span>	<span class="c1">// Blocking SIGTRAP reportedly breaks gdb on Alpha GNU/Linux.</span>
+	<span class="n">sigdelset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">clear</span><span class="p">,</span> <span class="n">SIGTRAP</span><span class="p">);</span>
+<span class="cp">#endif
+</span>
+	<span class="n">sigemptyset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">old</span><span class="p">);</span>
+	<span class="n">sigprocmask</span><span class="p">(</span><span class="n">SIG_BLOCK</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">clear</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">old</span><span class="p">);</span>
+	<span class="n">ret</span> <span class="o">=</span> <span class="n">pthread_create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tid</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">runtime_mstart</span><span class="p">,</span> <span class="n">mp</span><span class="p">);</span>
+	<span class="n">sigprocmask</span><span class="p">(</span><span class="n">SIG_SETMASK</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">old</span><span class="p">,</span> <span class="n">nil</span><span class="p">);</span>
+
+	<span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_create"</span><span class="p">);</span>
+
+	<span class="k">return</span> <span class="n">mp</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>This is the code that creates a new kernel thread. Notice the line <code class="language-plaintext highlighter-rouge">ret = pthread_create(&amp;tid, &amp;attr, runtime_mstart, mp);</code>. It’s obvious that it creates a new kernel thread,
+so that explains why we get the specific error. But what is not explained is that since we do have at least one in program startup, why is this specific error only triggered when
+we manually create a go routine?</p>
+
+<h2>Go programs under the Hurd</h2>
+
+<p>Apart from studying Go’s runtime source code, I also run some experiments under the Hurd. I got some very weird results that I am investigating, but I would like to share nonetheless.
+Consider the following piece of code:</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="k">package</span> <span class="n">main</span>
+
+<span class="k">import</span> <span class="s">"fmt"</span>
+
+<span class="k">func</span> <span class="n">say</span><span class="p">(</span><span class="n">s</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="m">5</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">say</span><span class="p">(</span><span class="s">"world"</span><span class="p">)</span>
+    <span class="n">say</span><span class="p">(</span><span class="s">"hello"</span><span class="p">)</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>A very basic example that can demonstrate goroutines. Now, if we change <strong>one</strong> of the say functions inside main to a goroutine, this happens:</p>
+
+<div lang="shell" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@debian:~/Software/Experiments/go# ./a.out
+a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&gt;kernel_thread == ktid;
+__mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })' failed.
+Aborted
+</code></pre></div></div>
+
+<p><strong>BUT</strong> if we change <strong>BOTH</strong> of these functions to goroutines (<code class="language-plaintext highlighter-rouge">go say("world")</code>, <code class="language-plaintext highlighter-rouge">go say("hello")</code>), this happens:</p>
+
+<figure class="highlight"><pre><code class="language-sh" data-lang="sh">root@debian:~/Software/Experiments/go# ./a.out
+root@debian:~/Software/Experiments/go# </code></pre></figure>
+
+<p>Wait a minute. It can’t be! Did it execute correctly? Where is the output?</p>
+
+<figure class="highlight"><pre><code class="language-sh" data-lang="sh">root@debian:~/Software/Experiments/go# <span class="nb">echo</span> <span class="nv">$?</span>
+0
+root@debian:~/Software/Experiments/go#</code></pre></figure>
+
+<p>It reports that it has executed correctly. But there is no output.</p>
+
+<h2>What I am doing next</h2>
+
+<p>I will continue reading through the go runtime for some clues. On the more active size, I am writing a custom test case for goroutine testing under the Hurd, while also doing some analysis
+on the programs that run there (currently studying the assembly generated for these programs) to see how they differ and why we get this particular behavior.</p>
+
+  </div>
+
+  
+
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <p>
+      
+
+&copy; Fotis Koutoulakis - Powered by <a href="https://jekyllrb.com">Jekyll</a> &amp; <a href="https://github.com/yous/whiteglass">whiteglass</a> - Subscribe via <a href="https://nlightnfotis.github.io/feed.xml">RSS</a>
+
+    </p>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

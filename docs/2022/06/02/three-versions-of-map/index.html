@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  
+  
+  <title>Three (plus one) Different Versions of map in Haskell</title>
+  <meta name="description" content="If you are here, then map requires no introduction. You have seen it. You have used it. Many times. You have even implemented it before. But did you know that there are more than one ways to implement the function map? Of all the archetypal higher-order functions that I know, map is the function that I hold dearest in my heart. That’s because it marked a very pleasant memory when I finished The Little Schemer (for the first time, back in 2016) and I found out that I grokked the concept enough to be able to write it on my own. As a quick explainer, for the sake of completeness, map is a function that takes two arguments, a function fn and a list lat, and produces a new list with the elements being the result of the application of the function fn to the elements of lat (in mathematical writing, this would be ∀x ∈ lat, fn(x) - that is, for all x that belong to lat we take the result of fn applied to x, fn(x)). I always knew of the (classic?) way to define that in Scheme (or more generally, in Lisp), which I had seen also being used in OCaml/SML, which looks like this: (define (map fn lat) (cond ((null? lat) &#39;()) (else (cons (fn (car lat)) (map fn (cdr lat)))))) That is, a recursive function definition, that does the following: If the input list lat is empty, it returns the empty list () (we use that as the base for consstructing a list of values), otherwise It returns the list constructed from the application of the function to the first element of the list (fn (car lat)) and the result of the recursive call on the remaining list (map fn (cdr lat)). In OCaml, the same function would probably be defined using pattern matching, but the pattern is the same: let rec map fn lat = match lat with | [] -&amp;gt; [] | h::t -&amp;gt; (fn h)::(map fn t) Recently though, I started reading Graham Hutton’s excellent Programming in Haskell, as a preparation for some more advanced material I wanted to read that required Haskell knowledge. In that book, I was delighted to find not one, not two, but three different ways of defining the function map in Haskell. Let’s have a look at the first two ways of defining map in Haskell, both defined in chapter 7 of the book. The classical recursive definition of map map :: (a -&amp;gt; b) -&amp;gt; [a] -&amp;gt; [b] map f [] = [] map f (x:xs) = f x : map f xs The first definition is the one that is closest to what we described above for both Scheme and OCaml. It’s the (structural) recursive definition using pattern matching against two patterns: The empty list in the first pattern [], which as before returns the empty list, and A pattern of a list with at least one element, which we immediately de-structure into a head and tail component in (x:xs). When matched, it will build a cons (:) of the result of the function application f x and the result of the recursive call of the remaining list (map f xs). This definition is basically the exact equivalent of the OCaml definition above, with the only notable difference being the explicit function signature given: map :: (a -&amp;gt; b) -&amp;gt; [a] -&amp;gt; [b] This tells us that the map function takes two arguments: A polymorphic function that maps elements of type a to type b (a -&amp;gt; b), A list of elements of type a ([a]) and as a result produces a list of elements of type b ([b]). (The a and b above are called type variables, and are implicitly universally quantified, i.e. they read as “for all elements of type a”). So far, so classic. Nothing out of the ordinary here. Let the show start: The list comprehension definition of map Later on in the book, we come across this definition: map :: (a -&amp;gt; b) -&amp;gt; [a] -&amp;gt; [b] map f xs = [f x | x &amp;lt;- xs] Wow! This one packs a punch in terms of conciseness, but I find it very elegant and very expressive at the same time. This definition is based in the syntax for list comprehensions in Haskell. List comprehensions are a concise and convenient way to define new lists by manipulating elements of other lists. As an example, consider the following: &amp;gt; [x^2 | x &amp;lt;- [1, 2, 3, 4, 5]] [1, 4, 9, 16, 25] This is read as make a list of “x squared, with x drawn from (|) the list [1, 2, 3, 4, 5]. Taking this into account, and back to our map function definition, our comprehension there: map f xs = [f x | x &amp;lt;- xs] reads as “make a list of the results of f x, where x is drawn from the list xs”. Beautiful. Roll the carpet for Mr. Fold: The foldr definition of map One of the coolest things the book opened my eyes to was the fact that we can use a fold in a generative fashion. I was well aware of fold from both Racket and OCaml before, but I always thought of that in terms of a generalisation of reduce - it never occured to me that I can use the accumulating function to yield a value in a generative recursion fashion, like a new list 🤯 (Embarassingly, it now looks kind of obvious, and related to ideas I’ve been exposed to in the past - this one is related to the collector functions idea that the Little Schemer uses in chapter 8). Back to our definition. This one is not given by the book - in fact, it’s left for the reader to define as one of the exercises. This is what I came up with: map :: (a -&amp;gt; b) -&amp;gt; [a] -&amp;gt; [b] map f = foldr (\ x xs -&amp;gt; f x : xs) [] This definition is the one that left me most stunned and amazed with the generalising power of a fold. What this definition tells us is that we define map as a right fold (foldr) of a lambda that takes two arguments, x and xs, and returns the cons of f x and xs. The last value we pass to the foldr is the empty list [], which is the value that is used as the base case. In order to understand what the foldr does, I find the following visual from Wikipedia to be very helpful: To understand the above visualisation, you need to understand that a list in Haskell (and most functional programming languages for that matter), is a cons of various values and the empty list. I.e. you can think of [1, 2, 3, 4, 5] as 1 : (2 : (3 : (4 : (5 : [])))). With that in mind, what the foldr function does is that replaces the cons (:) operator with the function argument supplied to it, and reduces it all (folds the list) into a single value. (It also replaces the base case empty list value [] with the value of the last argument supplied to it. In our case, we are passing the empty list ([]) again, which we are going to use as a base to build a new list of values on top of.) And here’s the trick - because the (anonymous) function we passed to it is building a new list (by applying the cons operator again), what we end up is a new list instead of just a single value! In our case, this means that if we had the list: 1 : (2 : (3 : (4 : (5 : [])))) after the application of the anonymous function we would have a new list, equivalent to f 1 : (f 2 : (f 3 : (f 4 : (f 5 : [])))) 🤯 Bonus round: a monadic definition of map Okay, this is a bit of a cheat because this is basically our first definition, except that the function and the return type are monadic: mapM :: Monad m =&amp;gt; (a -&amp;gt; m b) -&amp;gt; [a] -&amp;gt; m [b] mapM f [] = return [] mapM f (x:xs) = do y &amp;lt;- f x ys &amp;lt;- mapM f xs return (y : ys) This is using the do notation to define a sequence of actions, but the actions themselves have a near 1-1 correspondence to our original map implementation: First we assign the name y to the result of f x, then We assign the name ys to the result of the recursive call on the of the list (mapM f xs) And the return the cons of the two values (y : ys) How is this definition useful? You may have observed that the return type is m [b] - a monadic list of type b. Consider the following: we want a function that converts a string into a list only if all of the string characters correspond to a digit, or fail gracefully otherwise. One way to do that is to write a function to convert a single character into a Maybe Int: conv :: Char -&amp;gt; Maybe Int conv c | isDigit c = Just (digitToInt c) | otherwise = Nothing With this definition, we can now use our function mapM like this: &amp;gt; mapM conv &quot;1234&quot; Just [1, 2, 3, 4] &amp;gt; mapM conv &quot;123a&quot; Nothing Conclusion I enjoyed writing this post quite a bit. It’s a very humbling experience to be visiting books and seeing that ideas that you considered to be elementary and rather surface-level are a lot more nuanced once you start digging deeper into them. It’s something I need to keep top of mind as I go forward as well. This post also highlights one of the nice things of going for breadth of knowledge: exposure to a wider set of ideas. Had I only stayed in the Racket/OCaml realm, I probably wouldn’t have been exposed to this range of map implementations, for the reason that these languages don’t offer some of the language features that enable them, like list comprehensions. All in all, happy I went down this path, and looking forward to what’s next.">
+  
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://nlightnfotis.github.io/2022/06/02/three-versions-of-map/">
+  
+  
+  <link rel="alternate" type="application/rss+xml" title="Lambda reflections" href="https://nlightnfotis.github.io/feed.xml">
+
+  
+
+  
+  <meta property="og:title" content="Three (plus one) Different Versions of map in Haskell">
+  <meta property="og:site_name" content="Lambda reflections">
+  <meta property="og:url" content="https://nlightnfotis.github.io/2022/06/02/three-versions-of-map/">
+  <meta property="og:description" content="If you are here, then map requires no introduction. You have seen it. You have used it. Many times. You have even implemented it before. But did you know that there are more than one ways to implement the function map? Of all the archetypal higher-order functions that I know, map is the function that I hold dearest in my heart. That’s because it marked a very pleasant memory when I finished The Little Schemer (for the first time, back in 2016) and I found out that I grokked the concept enough to be able to write it on my own. As a quick explainer, for the sake of completeness, map is a function that takes two arguments, a function fn and a list lat, and produces a new list with the elements being the result of the application of the function fn to the elements of lat (in mathematical writing, this would be ∀x ∈ lat, fn(x) - that is, for all x that belong to lat we take the result of fn applied to x, fn(x)). I always knew of the (classic?) way to define that in Scheme (or more generally, in Lisp), which I had seen also being used in OCaml/SML, which looks like this: (define (map fn lat) (cond ((null? lat) &#39;()) (else (cons (fn (car lat)) (map fn (cdr lat)))))) That is, a recursive function definition, that does the following: If the input list lat is empty, it returns the empty list () (we use that as the base for consstructing a list of values), otherwise It returns the list constructed from the application of the function to the first element of the list (fn (car lat)) and the result of the recursive call on the remaining list (map fn (cdr lat)). In OCaml, the same function would probably be defined using pattern matching, but the pattern is the same: let rec map fn lat = match lat with | [] -&amp;gt; [] | h::t -&amp;gt; (fn h)::(map fn t) Recently though, I started reading Graham Hutton’s excellent Programming in Haskell, as a preparation for some more advanced material I wanted to read that required Haskell knowledge. In that book, I was delighted to find not one, not two, but three different ways of defining the function map in Haskell. Let’s have a look at the first two ways of defining map in Haskell, both defined in chapter 7 of the book. The classical recursive definition of map map :: (a -&amp;gt; b) -&amp;gt; [a] -&amp;gt; [b] map f [] = [] map f (x:xs) = f x : map f xs The first definition is the one that is closest to what we described above for both Scheme and OCaml. It’s the (structural) recursive definition using pattern matching against two patterns: The empty list in the first pattern [], which as before returns the empty list, and A pattern of a list with at least one element, which we immediately de-structure into a head and tail component in (x:xs). When matched, it will build a cons (:) of the result of the function application f x and the result of the recursive call of the remaining list (map f xs). This definition is basically the exact equivalent of the OCaml definition above, with the only notable difference being the explicit function signature given: map :: (a -&amp;gt; b) -&amp;gt; [a] -&amp;gt; [b] This tells us that the map function takes two arguments: A polymorphic function that maps elements of type a to type b (a -&amp;gt; b), A list of elements of type a ([a]) and as a result produces a list of elements of type b ([b]). (The a and b above are called type variables, and are implicitly universally quantified, i.e. they read as “for all elements of type a”). So far, so classic. Nothing out of the ordinary here. Let the show start: The list comprehension definition of map Later on in the book, we come across this definition: map :: (a -&amp;gt; b) -&amp;gt; [a] -&amp;gt; [b] map f xs = [f x | x &amp;lt;- xs] Wow! This one packs a punch in terms of conciseness, but I find it very elegant and very expressive at the same time. This definition is based in the syntax for list comprehensions in Haskell. List comprehensions are a concise and convenient way to define new lists by manipulating elements of other lists. As an example, consider the following: &amp;gt; [x^2 | x &amp;lt;- [1, 2, 3, 4, 5]] [1, 4, 9, 16, 25] This is read as make a list of “x squared, with x drawn from (|) the list [1, 2, 3, 4, 5]. Taking this into account, and back to our map function definition, our comprehension there: map f xs = [f x | x &amp;lt;- xs] reads as “make a list of the results of f x, where x is drawn from the list xs”. Beautiful. Roll the carpet for Mr. Fold: The foldr definition of map One of the coolest things the book opened my eyes to was the fact that we can use a fold in a generative fashion. I was well aware of fold from both Racket and OCaml before, but I always thought of that in terms of a generalisation of reduce - it never occured to me that I can use the accumulating function to yield a value in a generative recursion fashion, like a new list 🤯 (Embarassingly, it now looks kind of obvious, and related to ideas I’ve been exposed to in the past - this one is related to the collector functions idea that the Little Schemer uses in chapter 8). Back to our definition. This one is not given by the book - in fact, it’s left for the reader to define as one of the exercises. This is what I came up with: map :: (a -&amp;gt; b) -&amp;gt; [a] -&amp;gt; [b] map f = foldr (\ x xs -&amp;gt; f x : xs) [] This definition is the one that left me most stunned and amazed with the generalising power of a fold. What this definition tells us is that we define map as a right fold (foldr) of a lambda that takes two arguments, x and xs, and returns the cons of f x and xs. The last value we pass to the foldr is the empty list [], which is the value that is used as the base case. In order to understand what the foldr does, I find the following visual from Wikipedia to be very helpful: To understand the above visualisation, you need to understand that a list in Haskell (and most functional programming languages for that matter), is a cons of various values and the empty list. I.e. you can think of [1, 2, 3, 4, 5] as 1 : (2 : (3 : (4 : (5 : [])))). With that in mind, what the foldr function does is that replaces the cons (:) operator with the function argument supplied to it, and reduces it all (folds the list) into a single value. (It also replaces the base case empty list value [] with the value of the last argument supplied to it. In our case, we are passing the empty list ([]) again, which we are going to use as a base to build a new list of values on top of.) And here’s the trick - because the (anonymous) function we passed to it is building a new list (by applying the cons operator again), what we end up is a new list instead of just a single value! In our case, this means that if we had the list: 1 : (2 : (3 : (4 : (5 : [])))) after the application of the anonymous function we would have a new list, equivalent to f 1 : (f 2 : (f 3 : (f 4 : (f 5 : [])))) 🤯 Bonus round: a monadic definition of map Okay, this is a bit of a cheat because this is basically our first definition, except that the function and the return type are monadic: mapM :: Monad m =&amp;gt; (a -&amp;gt; m b) -&amp;gt; [a] -&amp;gt; m [b] mapM f [] = return [] mapM f (x:xs) = do y &amp;lt;- f x ys &amp;lt;- mapM f xs return (y : ys) This is using the do notation to define a sequence of actions, but the actions themselves have a near 1-1 correspondence to our original map implementation: First we assign the name y to the result of f x, then We assign the name ys to the result of the recursive call on the of the list (mapM f xs) And the return the cons of the two values (y : ys) How is this definition useful? You may have observed that the return type is m [b] - a monadic list of type b. Consider the following: we want a function that converts a string into a list only if all of the string characters correspond to a digit, or fail gracefully otherwise. One way to do that is to write a function to convert a single character into a Maybe Int: conv :: Char -&amp;gt; Maybe Int conv c | isDigit c = Just (digitToInt c) | otherwise = Nothing With this definition, we can now use our function mapM like this: &amp;gt; mapM conv &quot;1234&quot; Just [1, 2, 3, 4] &amp;gt; mapM conv &quot;123a&quot; Nothing Conclusion I enjoyed writing this post quite a bit. It’s a very humbling experience to be visiting books and seeing that ideas that you considered to be elementary and rather surface-level are a lot more nuanced once you start digging deeper into them. It’s something I need to keep top of mind as I go forward as well. This post also highlights one of the nice things of going for breadth of knowledge: exposure to a wider set of ideas. Had I only stayed in the Racket/OCaml realm, I probably wouldn’t have been exposed to this range of map implementations, for the reason that these languages don’t offer some of the language features that enable them, like list comprehensions. All in all, happy I went down this path, and looking forward to what’s next.">
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="NlightNFotis">
+  <meta name="twitter:title" content="Three (plus one) Different Versions of map in Haskell">
+  <meta name="twitter:description" content="If you are here, then map requires no introduction. You have seen it. You have used it. Many times. You have even implemented it before. But did you know that there are more than one ways to implem...">
+  
+    <meta name="twitter:creator" content="NlightNFotis">
+  
+  
+
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet">
+
+  
+
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">Lambda reflections</a>
+
+    <nav class="site-nav">
+      
+        
+        <a class="page-link" href="/about/">About</a>
+      
+        
+        <a class="page-link" href="/archives/">Archives</a>
+      
+        
+        <a class="page-link" href="https://github.com/NlightNFotis">GitHub</a>
+      
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    
+      <h1 class="post-title" itemprop="name headline">Three (plus one) Different Versions of map in Haskell</h1>
+    
+    <p class="post-meta"><time datetime="2022-06-02T00:00:00+00:00" itemprop="datePublished">Jun 2, 2022</time>
+
+ •
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/fp/">fp</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/haskell/">haskell</a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+</p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>If you are here, then <code class="language-plaintext highlighter-rouge">map</code> requires no introduction. You have seen it.
+You have used it. Many times. You have even implemented it before. But did you
+know that there are more than one ways to implement the function <code class="language-plaintext highlighter-rouge">map</code>?</p>
+
+<hr />
+
+<p>Of all the archetypal higher-order functions that I know, <code class="language-plaintext highlighter-rouge">map</code> is the function
+that I hold dearest in my heart. That’s because it marked a very pleasant memory
+when I finished <em>The Little Schemer</em> (for the first time, back in 2016) and I found
+out that <a href="https://gist.github.com/NlightNFotis/b662a0368b5eea68ebfde1e4e4fb9787">I grokked the concept enough to be able to write it on my own</a>.</p>
+
+<p>As a quick explainer, for the sake of completeness, <code class="language-plaintext highlighter-rouge">map</code> is a function that takes
+two arguments, a function <code class="language-plaintext highlighter-rouge">fn</code> and a list <code class="language-plaintext highlighter-rouge">lat</code>, and produces a new list with the
+elements being the result of the application of the function <code class="language-plaintext highlighter-rouge">fn</code> to the elements
+of <code class="language-plaintext highlighter-rouge">lat</code> (in mathematical writing, this would be <code class="language-plaintext highlighter-rouge">∀x ∈ lat, fn(x)</code> - that is, for
+all <code class="language-plaintext highlighter-rouge">x</code> that belong to <code class="language-plaintext highlighter-rouge">lat</code> we take the result of <code class="language-plaintext highlighter-rouge">fn</code> applied to <code class="language-plaintext highlighter-rouge">x</code>, <code class="language-plaintext highlighter-rouge">fn(x)</code>).</p>
+
+<p>I always knew of the (<em>classic</em>?) way to define that in <code class="language-plaintext highlighter-rouge">Scheme</code> (or more generally,
+in <code class="language-plaintext highlighter-rouge">Lisp</code>), which I had seen also being used in <code class="language-plaintext highlighter-rouge">OCaml</code>/<code class="language-plaintext highlighter-rouge">SML</code>, which looks like this:</p>
+
+<div class="language-lisp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">(</span><span class="nv">define</span> <span class="p">(</span><span class="nb">map</span> <span class="nv">fn</span> <span class="nv">lat</span><span class="p">)</span>
+  <span class="p">(</span><span class="nb">cond</span>
+    <span class="p">((</span><span class="nv">null?</span> <span class="nv">lat</span><span class="p">)</span> <span class="o">'</span><span class="p">())</span>
+    <span class="p">(</span><span class="nv">else</span>
+     <span class="p">(</span><span class="nb">cons</span> <span class="p">(</span><span class="nv">fn</span> <span class="p">(</span><span class="nb">car</span> <span class="nv">lat</span><span class="p">))</span> <span class="p">(</span><span class="nb">map</span> <span class="nv">fn</span> <span class="p">(</span><span class="nb">cdr</span> <span class="nv">lat</span><span class="p">))))))</span>
+</code></pre></div></div>
+
+<p>That is, a recursive function definition, that does the following:</p>
+
+<ul>
+  <li>If the input list <code class="language-plaintext highlighter-rouge">lat</code> is empty, it returns the empty list <code class="language-plaintext highlighter-rouge">()</code> (we use that as the
+base for <code class="language-plaintext highlighter-rouge">cons</code>structing a list of values), otherwise</li>
+  <li>It returns the list <code class="language-plaintext highlighter-rouge">cons</code>tructed from the application of the function to the first
+element of the list <code class="language-plaintext highlighter-rouge">(fn (car lat))</code> and the result of the recursive call on
+the remaining list <code class="language-plaintext highlighter-rouge">(map fn (cdr lat))</code>.</li>
+</ul>
+
+<p>In OCaml, the same function would probably be defined using pattern matching, but
+the pattern is the same:</p>
+
+<div class="language-ocaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">let</span> <span class="k">rec</span> <span class="n">map</span> <span class="n">fn</span> <span class="n">lat</span> <span class="o">=</span>
+  <span class="k">match</span> <span class="n">lat</span> <span class="k">with</span>
+  <span class="o">|</span> <span class="bp">[]</span> <span class="o">-&gt;</span> <span class="bp">[]</span>
+  <span class="o">|</span> <span class="n">h</span><span class="o">::</span><span class="n">t</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">fn</span> <span class="n">h</span><span class="p">)</span><span class="o">::</span><span class="p">(</span><span class="n">map</span> <span class="n">fn</span> <span class="n">t</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Recently though, I started reading Graham Hutton’s excellent <a href="https://www.cs.nott.ac.uk/~pszgmh/pih.html">Programming in Haskell</a>,
+as a preparation for some more advanced material I wanted to read that required Haskell
+knowledge.</p>
+
+<p>In that book, I was delighted to find not one, not two, but <strong>three</strong> different ways of
+defining the function <code class="language-plaintext highlighter-rouge">map</code> in Haskell.</p>
+
+<p>Let’s have a look at the first two ways of defining <code class="language-plaintext highlighter-rouge">map</code> in Haskell, both defined in
+chapter 7 of the book.</p>
+
+<h2>The classical recursive definition of <code class="language-plaintext highlighter-rouge">map</code></h2>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">map</span> <span class="o">::</span> <span class="p">(</span><span class="n">a</span> <span class="o">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span>
+<span class="n">map</span> <span class="n">f</span> <span class="kt">[]</span>     <span class="o">=</span> <span class="kt">[]</span>
+<span class="n">map</span> <span class="n">f</span> <span class="p">(</span><span class="n">x</span><span class="o">:</span><span class="n">xs</span><span class="p">)</span> <span class="o">=</span> <span class="n">f</span> <span class="n">x</span> <span class="o">:</span> <span class="n">map</span> <span class="n">f</span> <span class="n">xs</span>
+</code></pre></div></div>
+
+<p>The first definition is the one that is closest to what we described above for
+both Scheme and OCaml. It’s the (structural) recursive definition using pattern
+matching against two patterns:</p>
+
+<ul>
+  <li>The empty list in the first pattern <code class="language-plaintext highlighter-rouge">[]</code>, which as before returns the empty list,
+and</li>
+  <li>A pattern of a list with at least one element, which we immediately de-structure
+into a <code class="language-plaintext highlighter-rouge">head</code> and <code class="language-plaintext highlighter-rouge">tail</code> component in <code class="language-plaintext highlighter-rouge">(x:xs)</code>. When matched, it will build a
+<code class="language-plaintext highlighter-rouge">cons</code> (<code class="language-plaintext highlighter-rouge">:</code>) of the result of the function application <code class="language-plaintext highlighter-rouge">f x</code> and the result
+of the recursive call of the remaining list (<code class="language-plaintext highlighter-rouge">map f xs</code>).</li>
+</ul>
+
+<p>This definition is basically the exact equivalent of the OCaml definition above,
+with the only notable difference being the explicit function signature given:</p>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">map</span> <span class="o">::</span> <span class="p">(</span><span class="n">a</span> <span class="o">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>This tells us that the <code class="language-plaintext highlighter-rouge">map</code> function takes two arguments:</p>
+
+<ul>
+  <li>A polymorphic function that maps elements of type <code class="language-plaintext highlighter-rouge">a</code> to type <code class="language-plaintext highlighter-rouge">b</code> <code class="language-plaintext highlighter-rouge">(a -&gt; b)</code>,</li>
+  <li>A list of elements of type <code class="language-plaintext highlighter-rouge">a</code> (<code class="language-plaintext highlighter-rouge">[a]</code>)</li>
+</ul>
+
+<p>and as a result produces a list of elements of type <code class="language-plaintext highlighter-rouge">b</code> (<code class="language-plaintext highlighter-rouge">[b]</code>).</p>
+
+<p>(The <code class="language-plaintext highlighter-rouge">a</code> and <code class="language-plaintext highlighter-rouge">b</code> above are called <em>type variables</em>, and are implicitly <em>universally
+quantified</em>, i.e. they read as “for all elements of type <code class="language-plaintext highlighter-rouge">a</code>”).</p>
+
+<p>So far, so classic.</p>
+
+<p>Nothing out of the ordinary here.</p>
+
+<h2>Let the show start: The list comprehension definition of <code class="language-plaintext highlighter-rouge">map</code></h2>
+
+<p>Later on in the book, we come across this definition:</p>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">map</span> <span class="o">::</span> <span class="p">(</span><span class="n">a</span> <span class="o">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span>
+<span class="n">map</span> <span class="n">f</span> <span class="n">xs</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="n">x</span> <span class="o">|</span> <span class="n">x</span> <span class="o">&lt;-</span> <span class="n">xs</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>Wow!</p>
+
+<p>This one packs a punch in terms of conciseness, but I find it very elegant
+and very expressive at the same time.</p>
+
+<p>This definition is based in the syntax for <em>list comprehensions</em> in Haskell.</p>
+
+<p>List comprehensions are a concise and convenient way to define new lists
+by manipulating elements of other lists. As an example, consider the following:</p>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="p">[</span><span class="n">x</span><span class="o">^</span><span class="mi">2</span> <span class="o">|</span> <span class="n">x</span> <span class="o">&lt;-</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]]</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">25</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>This is read as make a list of “<code class="language-plaintext highlighter-rouge">x</code> squared, with <code class="language-plaintext highlighter-rouge">x</code> drawn from (<code class="language-plaintext highlighter-rouge">|</code>) the list
+<code class="language-plaintext highlighter-rouge">[1, 2, 3, 4, 5]</code>.</p>
+
+<p>Taking this into account, and back to our <code class="language-plaintext highlighter-rouge">map</code> function definition, our comprehension
+there:</p>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">map</span> <span class="n">f</span> <span class="n">xs</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="n">x</span> <span class="o">|</span> <span class="n">x</span> <span class="o">&lt;-</span> <span class="n">xs</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>reads as “make a list of the results of <code class="language-plaintext highlighter-rouge">f x</code>, where <code class="language-plaintext highlighter-rouge">x</code> is drawn from the list <code class="language-plaintext highlighter-rouge">xs</code>”.</p>
+
+<p>Beautiful.</p>
+
+<h2>Roll the carpet for Mr. Fold: The <code class="language-plaintext highlighter-rouge">foldr</code> definition of <code class="language-plaintext highlighter-rouge">map</code></h2>
+
+<p>One of the coolest things the book opened my eyes to was the fact that we can
+use a <code class="language-plaintext highlighter-rouge">fold</code> in a generative fashion.</p>
+
+<p>I was well aware of <code class="language-plaintext highlighter-rouge">fold</code> from both Racket and OCaml before, but I always thought
+of that in terms of a generalisation of <code class="language-plaintext highlighter-rouge">reduce</code> - it never occured to me that
+I can use the accumulating function to yield a value in a generative recursion
+fashion, like a new list 🤯</p>
+
+<p>(Embarassingly, it now looks kind of obvious, and related to ideas I’ve been exposed
+to in the past - this one is related to the <code class="language-plaintext highlighter-rouge">collector functions</code> idea that the <a href="https://mitpress.mit.edu/books/little-schemer-fourth-edition">Little
+Schemer</a> uses in chapter 8).</p>
+
+<p>Back to our definition.</p>
+
+<p>This one is not given by the book - in fact, it’s left for the reader to define as one
+of the exercises. This is what I came up with:</p>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">map</span> <span class="o">::</span> <span class="p">(</span><span class="n">a</span> <span class="o">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span>
+<span class="n">map</span> <span class="n">f</span> <span class="o">=</span> <span class="n">foldr</span> <span class="p">(</span><span class="nf">\</span> <span class="n">x</span> <span class="n">xs</span> <span class="o">-&gt;</span> <span class="n">f</span> <span class="n">x</span> <span class="o">:</span> <span class="n">xs</span><span class="p">)</span> <span class="kt">[]</span>
+</code></pre></div></div>
+
+<p>This definition is the one that left me most stunned and amazed with the generalising
+power of a fold.</p>
+
+<p>What this definition tells us is that we define <code class="language-plaintext highlighter-rouge">map</code> as a right fold (<code class="language-plaintext highlighter-rouge">foldr</code>)
+of a lambda that takes two arguments, <code class="language-plaintext highlighter-rouge">x</code> and <code class="language-plaintext highlighter-rouge">xs</code>, and <code class="language-plaintext highlighter-rouge">returns</code> the cons of <code class="language-plaintext highlighter-rouge">f x</code>
+and <code class="language-plaintext highlighter-rouge">xs</code>. The last value we pass to the <code class="language-plaintext highlighter-rouge">foldr</code> is the empty list <code class="language-plaintext highlighter-rouge">[]</code>, which is the
+value that is used as the base case.</p>
+
+<p>In order to understand what the <code class="language-plaintext highlighter-rouge">foldr</code> does, I find the following visual from
+<a href="https://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia</a> to be
+very helpful:</p>
+
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Right-fold-transformation.png" alt="foldr visualisation" /></p>
+
+<p>To understand the above visualisation, you need to understand that a list in Haskell
+(and most functional programming languages for that matter), is a <code class="language-plaintext highlighter-rouge">cons</code> of various
+values and the empty list. I.e. you can think of <code class="language-plaintext highlighter-rouge">[1, 2, 3, 4, 5]</code> as
+<code class="language-plaintext highlighter-rouge">1 : (2 : (3 : (4 : (5 : []))))</code>.</p>
+
+<p>With that in mind, what the <code class="language-plaintext highlighter-rouge">foldr</code> function does is that replaces the <code class="language-plaintext highlighter-rouge">cons</code> (<code class="language-plaintext highlighter-rouge">:</code>)
+operator with the function argument supplied to it, and <em>reduces</em> it all (<em>folds the
+list</em>) into a single value.</p>
+
+<p>(It also replaces the base case empty list value <code class="language-plaintext highlighter-rouge">[]</code> with the value of the last
+argument supplied to it. In our case, we are passing the empty list (<code class="language-plaintext highlighter-rouge">[]</code>) again,
+which we are going to use as a base to build a new list of values on top of.)</p>
+
+<p>And here’s the trick - because the (anonymous) function we passed to it is building
+a new list (by applying the <code class="language-plaintext highlighter-rouge">cons</code> operator again), what we end up is a new list instead
+of just a single value!</p>
+
+<p>In our case, this means that if we had the list:</p>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="mi">1</span> <span class="o">:</span> <span class="p">(</span><span class="mi">2</span> <span class="o">:</span> <span class="p">(</span><span class="mi">3</span> <span class="o">:</span> <span class="p">(</span><span class="mi">4</span> <span class="o">:</span> <span class="p">(</span><span class="mi">5</span> <span class="o">:</span> <span class="kt">[]</span><span class="p">))))</span>
+</code></pre></div></div>
+
+<p>after the application of the anonymous function we would have a new list, equivalent to</p>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">f</span> <span class="mi">1</span> <span class="o">:</span> <span class="p">(</span><span class="n">f</span> <span class="mi">2</span> <span class="o">:</span> <span class="p">(</span><span class="n">f</span> <span class="mi">3</span> <span class="o">:</span> <span class="p">(</span><span class="n">f</span> <span class="mi">4</span> <span class="o">:</span> <span class="p">(</span><span class="n">f</span> <span class="mi">5</span> <span class="o">:</span> <span class="kt">[]</span><span class="p">))))</span>
+</code></pre></div></div>
+
+<p>🤯</p>
+
+<h3>Bonus round: a monadic definition of <code class="language-plaintext highlighter-rouge">map</code></h3>
+
+<p>Okay, this is a bit of a cheat because this is basically our first definition, except
+that the function and the return type are monadic:</p>
+
+<div class="language-hs highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mapM</span> <span class="o">::</span> <span class="kt">Monad</span> <span class="n">m</span> <span class="o">=&gt;</span> <span class="p">(</span><span class="n">a</span> <span class="o">-&gt;</span> <span class="n">m</span> <span class="n">b</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">-&gt;</span> <span class="n">m</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span>
+<span class="n">mapM</span> <span class="n">f</span> <span class="kt">[]</span>     <span class="o">=</span> <span class="n">return</span> <span class="kt">[]</span>
+<span class="n">mapM</span> <span class="n">f</span> <span class="p">(</span><span class="n">x</span><span class="o">:</span><span class="n">xs</span><span class="p">)</span> <span class="o">=</span> <span class="kr">do</span> <span class="n">y</span> <span class="o">&lt;-</span> <span class="n">f</span> <span class="n">x</span>
+                   <span class="n">ys</span> <span class="o">&lt;-</span> <span class="n">mapM</span> <span class="n">f</span> <span class="n">xs</span>
+                   <span class="n">return</span> <span class="p">(</span><span class="n">y</span> <span class="o">:</span> <span class="n">ys</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>This is using the <a href="https://en.wikibooks.org/wiki/Haskell/do_notation"><code class="language-plaintext highlighter-rouge">do</code> notation to define a sequence of actions</a>,
+but the actions themselves have a near 1-1 correspondence to our original map implementation:</p>
+
+<ul>
+  <li>First we assign the name <code class="language-plaintext highlighter-rouge">y</code> to the result of <code class="language-plaintext highlighter-rouge">f x</code>, then</li>
+  <li>We assign the name <code class="language-plaintext highlighter-rouge">ys</code> to the result of the recursive call on the
+of the list (<code class="language-plaintext highlighter-rouge">mapM f xs</code>)</li>
+  <li>And the return the <code class="language-plaintext highlighter-rouge">cons</code> of the two values <code class="language-plaintext highlighter-rouge">(y : ys)</code></li>
+</ul>
+
+<p>How is this definition useful?</p>
+
+<p>You may have observed that the return type is <code class="language-plaintext highlighter-rouge">m [b]</code> - a monadic list of type <code class="language-plaintext highlighter-rouge">b</code>.</p>
+
+<p>Consider the following: we want a function that converts a string into a list only
+if all of the string characters correspond to a digit, or fail gracefully otherwise.</p>
+
+<p>One way to do that is to write a function to convert a single character into a
+<code class="language-plaintext highlighter-rouge">Maybe Int</code>:</p>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">conv</span> <span class="o">::</span> <span class="kt">Char</span> <span class="o">-&gt;</span> <span class="kt">Maybe</span> <span class="kt">Int</span>
+<span class="n">conv</span> <span class="n">c</span> <span class="o">|</span> <span class="n">isDigit</span> <span class="n">c</span> <span class="o">=</span> <span class="kt">Just</span> <span class="p">(</span><span class="n">digitToInt</span> <span class="n">c</span><span class="p">)</span>
+       <span class="o">|</span> <span class="n">otherwise</span> <span class="o">=</span> <span class="kt">Nothing</span>
+</code></pre></div></div>
+
+<p>With this definition, we can now use our function <code class="language-plaintext highlighter-rouge">mapM</code> like this:</p>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="n">mapM</span> <span class="n">conv</span> <span class="s">"1234"</span>
+<span class="kt">Just</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+
+<span class="o">&gt;</span> <span class="n">mapM</span> <span class="n">conv</span> <span class="s">"123a"</span>
+<span class="kt">Nothing</span>
+</code></pre></div></div>
+
+<h2>Conclusion</h2>
+
+<p>I enjoyed writing this post quite a bit.</p>
+
+<p>It’s a very humbling experience to be visiting books and seeing that ideas that you considered
+to be elementary and rather surface-level are a lot more nuanced once you start digging deeper
+into them.</p>
+
+<p>It’s something I need to keep top of mind as I go forward as well.</p>
+
+<p>This post also highlights one of the nice things of going for breadth of knowledge: exposure
+to a wider set of ideas. Had I only stayed in the Racket/OCaml realm, I probably wouldn’t have
+been exposed to this range of <code class="language-plaintext highlighter-rouge">map</code> implementations, for the reason that these languages don’t
+offer some of the language features that enable them, like list comprehensions.</p>
+
+<p>All in all, happy I went down this path, and looking forward to what’s next.</p>
+
+  </div>
+
+  
+
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <p>
+      
+
+&copy; Fotis Koutoulakis - Powered by <a href="https://jekyllrb.com">Jekyll</a> &amp; <a href="https://github.com/yous/whiteglass">whiteglass</a> - Subscribe via <a href="https://nlightnfotis.github.io/feed.xml">RSS</a>
+
+    </p>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

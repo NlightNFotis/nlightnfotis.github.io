@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  
+  
+  <title>How the compiler, the Library and the kernel work - Part 1</title>
+  <meta name="description" content="Before we get any further, it might be good if we provided some context. Hello world. Again. #include &amp;lt;stdio.h&amp;gt; int main (int argc, char **argv) { printf (&quot;Hello world!\n&quot;); return 0; } Every user space (read: application) programmer, has written a hello world program. Only god knows how many times this program has been written. Yet, most programmers’ knowledge of the program is limited to something along the lines of: It sends the string passed as a parameter to the system to print. It takes the printf function from stdio.h and prints the string and various other things, which are anywhere between plain wrong, or partially correct. ** So why not demistify the process? ** Enter the C preprocessor. You may have heard of the C Preprocessor. It’s the first stage of a c or c++ file compilation, and it’s actually responsible for things such as: inclusion of header files (it does so by replacing #include &amp;lt;header.h&amp;gt; with the content of this file, and the file it includes recursively), macro expansion, such as the famous comparison of two numbers (a greater than b). In essence, if you define the following macro #define gt(a, b) ((a &amp;gt; b) ? 1 : 0), then in a statement such as this: if (gt (5, 3)) printf (&quot;The first parameter is greater than the second.\n&quot;); gt (5, 3) gets expanded to the macro definition, so after the preprocessor has run you end up with something like this: if (((5 &amp;gt; 3) ? 1 : 0)) printf (&quot;The first parameter is greater than the second.\n&quot;); conditional compilation (things such as: #ifdef WIN32 printf (&quot;We are on windows\n&quot;); #endif amongst others. You can see it for yourself. Write the hello world program, and pass it to cpp: cpp hello_world.c So now that we know what it does it’s time to demistify a common myth regarding it: Some people believe that the header files include the function to be called.. That’s wrong. What it does include is function prototypes (and some type definitions, etc) only. It doesn’t include the body of the function to be called. Some people find that fact quite surprising, though, it isn’t, if you get to understand what the compiler does with it. Say hello to the compiler. Here we are gonna unmask another pile of misconceptions. First of all, some people think that when they call gcc on the command line they are actually calling the compiler. They are not. In fact they are calling the software commonly called the compilation driver, whose job is to run all the software needed to fully turn source to binary, including preprocessors, the actual compiler, an assembler and finally the linker Having said that, the actual compiler that’s getting called when you call gcc is called cc1. You may have seen it some times when the driver reports errors. Wanna take a look at it, to make sure I’m not lying to you? (Hint: I’m not!) Fair enough. Why don’t you type this in the command line: gcc -print-prog-name=cc1. It should tell you where the actual compiler is located in your system. So now that we have this (misconception) out of our minds, we can continue with our analysis. Last time we talked about it, we said that the header files include prototypes and not the whole function. You may know that in C, you usually declare a function, before you use it. The primary reason for doing this is to provide the compiler with the ability to perform type checking, that is to check that the arguments passed are correct, both in number, and in type, and to verify that the returned value (assuming there is one) is being used correctly. Below is a program that demonstrates the function prototype: #include &amp;lt;stdio.h&amp;gt; int add_nums (int first, int second); int main (void) { printf (&quot;5 + 5 results in %d\n&quot;, add_nums (5, 5)); return 0; } int add_nums (int first, int second) { return first + second; } In this particular example, the prototype gives the compiler a wide variety of information. It tells it that function add_nums takes two int arguments and returns an integer to the calling function. Now the compiler can verify that I am passing correct arguments to it when I call it inside printf. If I don’t include the function prototype, and do something slightly evil such as calling add_nums with float arguments then this might happen: 5 + 4 results in 2054324224 Now that you know that the compiler (the real one) only needs the prototype and not the actual function code, you may be wondering how the compiler actually compiles it if it doesn’t know it’s code. Now is the time to bring down another missconception. The word compiler is just a fancy name for software otherwise known as translators. A translator’s job is to get input and turn it from one language (source language) to a second language (target language), whatever that may be. Most of the times, when you compile software, you compile it to run in your computer, which runs on a processor from the x86 architecture family of processors. A processor is typically associated with an assembly language for that architecture (which is just human friendly mnemonics for common processor tasks), so your x86 computer runs x86 assembly (ok that’s not 100% true, but for simplicity’s sake at the moment, it should serve. We will see why it’s not true later.) So the compiler (in a typical translation) translates (compiles) your C source code to x86 assembly. You can see this by compiling your hello world example and passing the compiler the -S (which asks it to stop, after x86 assembly is produced) parameter, likewise gcc -S hello.c. Conclusion At this part, we saw how the compiler and the preprocessor work with our code, in an attempt to demistify the so called library calls. In the next part, we are going to study the assembler and the linker, and for the final part the loader and the kernel.">
+  
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://nlightnfotis.github.io/2013/12/12/how-the-compiler/">
+  
+  
+  <link rel="alternate" type="application/rss+xml" title="Lambda reflections" href="https://nlightnfotis.github.io/feed.xml">
+
+  
+
+  
+  <meta property="og:title" content="How the compiler, the Library and the kernel work - Part 1">
+  <meta property="og:site_name" content="Lambda reflections">
+  <meta property="og:url" content="https://nlightnfotis.github.io/2013/12/12/how-the-compiler/">
+  <meta property="og:description" content="Before we get any further, it might be good if we provided some context. Hello world. Again. #include &amp;lt;stdio.h&amp;gt; int main (int argc, char **argv) { printf (&quot;Hello world!\n&quot;); return 0; } Every user space (read: application) programmer, has written a hello world program. Only god knows how many times this program has been written. Yet, most programmers’ knowledge of the program is limited to something along the lines of: It sends the string passed as a parameter to the system to print. It takes the printf function from stdio.h and prints the string and various other things, which are anywhere between plain wrong, or partially correct. ** So why not demistify the process? ** Enter the C preprocessor. You may have heard of the C Preprocessor. It’s the first stage of a c or c++ file compilation, and it’s actually responsible for things such as: inclusion of header files (it does so by replacing #include &amp;lt;header.h&amp;gt; with the content of this file, and the file it includes recursively), macro expansion, such as the famous comparison of two numbers (a greater than b). In essence, if you define the following macro #define gt(a, b) ((a &amp;gt; b) ? 1 : 0), then in a statement such as this: if (gt (5, 3)) printf (&quot;The first parameter is greater than the second.\n&quot;); gt (5, 3) gets expanded to the macro definition, so after the preprocessor has run you end up with something like this: if (((5 &amp;gt; 3) ? 1 : 0)) printf (&quot;The first parameter is greater than the second.\n&quot;); conditional compilation (things such as: #ifdef WIN32 printf (&quot;We are on windows\n&quot;); #endif amongst others. You can see it for yourself. Write the hello world program, and pass it to cpp: cpp hello_world.c So now that we know what it does it’s time to demistify a common myth regarding it: Some people believe that the header files include the function to be called.. That’s wrong. What it does include is function prototypes (and some type definitions, etc) only. It doesn’t include the body of the function to be called. Some people find that fact quite surprising, though, it isn’t, if you get to understand what the compiler does with it. Say hello to the compiler. Here we are gonna unmask another pile of misconceptions. First of all, some people think that when they call gcc on the command line they are actually calling the compiler. They are not. In fact they are calling the software commonly called the compilation driver, whose job is to run all the software needed to fully turn source to binary, including preprocessors, the actual compiler, an assembler and finally the linker Having said that, the actual compiler that’s getting called when you call gcc is called cc1. You may have seen it some times when the driver reports errors. Wanna take a look at it, to make sure I’m not lying to you? (Hint: I’m not!) Fair enough. Why don’t you type this in the command line: gcc -print-prog-name=cc1. It should tell you where the actual compiler is located in your system. So now that we have this (misconception) out of our minds, we can continue with our analysis. Last time we talked about it, we said that the header files include prototypes and not the whole function. You may know that in C, you usually declare a function, before you use it. The primary reason for doing this is to provide the compiler with the ability to perform type checking, that is to check that the arguments passed are correct, both in number, and in type, and to verify that the returned value (assuming there is one) is being used correctly. Below is a program that demonstrates the function prototype: #include &amp;lt;stdio.h&amp;gt; int add_nums (int first, int second); int main (void) { printf (&quot;5 + 5 results in %d\n&quot;, add_nums (5, 5)); return 0; } int add_nums (int first, int second) { return first + second; } In this particular example, the prototype gives the compiler a wide variety of information. It tells it that function add_nums takes two int arguments and returns an integer to the calling function. Now the compiler can verify that I am passing correct arguments to it when I call it inside printf. If I don’t include the function prototype, and do something slightly evil such as calling add_nums with float arguments then this might happen: 5 + 4 results in 2054324224 Now that you know that the compiler (the real one) only needs the prototype and not the actual function code, you may be wondering how the compiler actually compiles it if it doesn’t know it’s code. Now is the time to bring down another missconception. The word compiler is just a fancy name for software otherwise known as translators. A translator’s job is to get input and turn it from one language (source language) to a second language (target language), whatever that may be. Most of the times, when you compile software, you compile it to run in your computer, which runs on a processor from the x86 architecture family of processors. A processor is typically associated with an assembly language for that architecture (which is just human friendly mnemonics for common processor tasks), so your x86 computer runs x86 assembly (ok that’s not 100% true, but for simplicity’s sake at the moment, it should serve. We will see why it’s not true later.) So the compiler (in a typical translation) translates (compiles) your C source code to x86 assembly. You can see this by compiling your hello world example and passing the compiler the -S (which asks it to stop, after x86 assembly is produced) parameter, likewise gcc -S hello.c. Conclusion At this part, we saw how the compiler and the preprocessor work with our code, in an attempt to demistify the so called library calls. In the next part, we are going to study the assembler and the linker, and for the final part the loader and the kernel.">
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="NlightNFotis">
+  <meta name="twitter:title" content="How the compiler, the Library and the kernel work - Part 1">
+  <meta name="twitter:description" content="Before we get any further, it might be good if we provided some context. Hello world. Again. #include &amp;lt;stdio.h&amp;gt; int main (int argc, char **argv) { printf (&quot;Hello world!\n&quot;);...">
+  
+    <meta name="twitter:creator" content="NlightNFotis">
+  
+  
+
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet">
+
+  
+
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">Lambda reflections</a>
+
+    <nav class="site-nav">
+      
+        
+        <a class="page-link" href="/about/">About</a>
+      
+        
+        <a class="page-link" href="/archives/">Archives</a>
+      
+        
+        <a class="page-link" href="https://github.com/NlightNFotis">GitHub</a>
+      
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    
+      <h1 class="post-title" itemprop="name headline">How the compiler, the Library and the kernel work - Part 1</h1>
+    
+    <p class="post-meta"><time datetime="2013-12-12T16:13:00+00:00" itemprop="datePublished">Dez 12, 2013</time>
+
+ •
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/compiler/">compiler</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/kernel/">kernel</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/libc/">libc</a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+</p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>Before we get any further, it might be good if we provided some context.</p>
+
+<h1>Hello world. Again.</h1>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span>
+<span class="kt">int</span>
+<span class="nf">main</span> <span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">printf</span> <span class="p">(</span><span class="s">"Hello world!</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Every user space (read: application) programmer, has written a hello world program. 
+Only god knows how many times this program has been written. Yet, 
+most programmers’ knowledge of the program is limited to something along the lines of:</p>
+
+<blockquote>
+  <ul>
+    <li>It sends the string passed as a parameter to the system to print.</li>
+    <li>It takes the printf function from stdio.h and prints the string</li>
+  </ul>
+</blockquote>
+
+<p>and various other things, which are anywhere between plain wrong, or partially correct.</p>
+
+<p>** So why not demistify the process? **</p>
+
+<h1>Enter the C preprocessor.</h1>
+
+<p>You may have heard of the C Preprocessor. It’s the first stage of a c or c++ file compilation,
+and it’s actually responsible for things such as:</p>
+
+<ul>
+  <li><strong>inclusion of header files</strong> (it does so by replacing
+<code class="language-plaintext highlighter-rouge">#include &lt;header.h&gt;</code> with the content of this file, and the file it includes recursively),</li>
+  <li><strong>macro expansion</strong>, such as the famous comparison of two numbers (a greater than b). In essence, if you define
+ the following macro <code class="language-plaintext highlighter-rouge">#define gt(a, b) ((a &gt; b) ? 1 : 0)</code>, then in a statement such as this:</li>
+</ul>
+
+<div lang="c" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> if (gt (5, 3)) printf ("The first parameter is greater than the second.\n");
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">gt (5, 3)</code> gets expanded to the macro definition, so after the preprocessor has run you end up with something like this:</p>
+
+<div lang="c" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> if (((5 &gt; 3) ? 1 : 0)) printf ("The first parameter is greater than the second.\n");
+</code></pre></div></div>
+
+<ul>
+  <li><strong>conditional compilation</strong> (things such as:</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#ifdef WIN32 
+</span>    <span class="n">printf</span> <span class="p">(</span><span class="s">"We are on windows</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span> 
+<span class="cp">#endif</span></code></pre></figure>
+
+<p>amongst others. You can see it for yourself. Write the hello world program, and pass it to cpp: <code class="language-plaintext highlighter-rouge">cpp hello_world.c</code></p>
+
+<p>So now that we know what it does it’s time to demistify a common myth regarding it: <em>Some people believe
+that the header files include the function to be called.</em>. <strong>That’s wrong.</strong> What it does include is 
+<strong>function prototypes</strong> (and some type definitions, etc) <strong>only</strong>. It doesn’t include the body of the function
+to be called.</p>
+
+<p>Some people find that fact quite surprising, though, it isn’t, if you get to understand what the compiler
+does with it.</p>
+
+<h1>Say hello to the compiler.</h1>
+
+<p>Here we are gonna unmask another pile of misconceptions. First of all, some people think that when they call 
+<code class="language-plaintext highlighter-rouge">gcc</code> on the command line they are actually calling the compiler. <strong>They are not.</strong> <em>In fact they are calling
+the software commonly called <strong>the compilation driver</strong>, whose job is to run all the software needed to fully
+turn source to binary, including preprocessors, the actual compiler, an assembler and finally the linker</em></p>
+
+<p>Having said that, the actual compiler that’s getting called when you call <code class="language-plaintext highlighter-rouge">gcc</code> is called <code class="language-plaintext highlighter-rouge">cc1</code>. You may have seen it some times when the driver reports errors. Wanna take a look at it, to make sure I’m not lying to you? 
+(Hint: I’m not!) Fair enough. Why don’t you type this in the command line: <code class="language-plaintext highlighter-rouge">gcc -print-prog-name=cc1</code>. It should tell you where the actual compiler is located in your system.</p>
+
+<p>So now that we have this (misconception) out of our minds, we can continue with our analysis. Last time we talked
+about it, we said that the header files include <strong>prototypes</strong> and not the whole function.</p>
+
+<p>You may know that in C, you usually declare a function, before you use it. The primary reason for doing this
+is to provide the compiler with the ability to perform <strong>type checking</strong>, that is to check that the arguments
+passed are correct, both in number, and in type, and to verify that the returned value (assuming there is one)
+is being used correctly. Below is a program that demonstrates the function prototype:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span>
+<span class="kt">int</span> <span class="nf">add_nums</span> <span class="p">(</span><span class="kt">int</span> <span class="n">first</span><span class="p">,</span> <span class="kt">int</span> <span class="n">second</span><span class="p">);</span>
+
+<span class="kt">int</span>
+<span class="nf">main</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">printf</span> <span class="p">(</span><span class="s">"5 + 5 results in %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">add_nums</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">));</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span>
+<span class="nf">add_nums</span> <span class="p">(</span><span class="kt">int</span> <span class="n">first</span><span class="p">,</span> <span class="kt">int</span> <span class="n">second</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">first</span> <span class="o">+</span> <span class="n">second</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>In this particular example, the prototype gives the compiler a wide variety of information. It tells it
+that function <code class="language-plaintext highlighter-rouge">add_nums</code> takes two int arguments and returns an integer to the calling function. Now the
+compiler can verify that I am passing correct arguments to it when I call it inside printf. If I don’t include
+the function prototype, and do something slightly evil such as calling <code class="language-plaintext highlighter-rouge">add_nums</code> with <code class="language-plaintext highlighter-rouge">float</code> arguments then 
+this might happen:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>5 + 4 results in 2054324224
+</code></pre></div></div>
+
+<p>Now that you know that the compiler (the real one) only needs the prototype and not the actual function code,
+you may be wondering how the compiler actually compiles it if it doesn’t know it’s code.</p>
+
+<p>Now is the time to bring down another missconception. The word <em>compiler</em> is just a fancy name for software
+otherwise known as <em>translators</em>. A <em>translator’s</em> job is to get input and turn it from one language (source language) to a second language (target language), whatever that may be. Most of the times, when you compile software,
+you compile it to run in your computer, which runs on a processor from the x86 architecture family of processors.
+A processor is typically associated with an assembly language for that architecture (which is just human friendly
+mnemonics for common processor tasks), so your <em>x86 computer runs x86 assembly</em> (ok that’s not 100% true, but for
+simplicity’s sake at the moment, it should serve. We will see why it’s not true later.) So the compiler 
+(in a typical translation) translates (compiles) your C source code to x86 assembly. 
+You can see this by compiling your hello world example and passing the compiler the <code class="language-plaintext highlighter-rouge">-S</code> (which asks it to stop,
+after x86 assembly is produced) parameter, likewise <code class="language-plaintext highlighter-rouge">gcc -S hello.c</code>.</p>
+
+<h1>Conclusion</h1>
+
+<p>At this part, we saw how the compiler and the preprocessor work with our code, in an attempt to demistify the 
+so called library calls. In the next part, we are going to study the assembler and the linker, and for the final
+part the loader and the kernel.</p>
+
+  </div>
+
+  
+
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <p>
+      
+
+&copy; Fotis Koutoulakis - Powered by <a href="https://jekyllrb.com">Jekyll</a> &amp; <a href="https://github.com/yous/whiteglass">whiteglass</a> - Subscribe via <a href="https://nlightnfotis.github.io/feed.xml">RSS</a>
+
+    </p>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

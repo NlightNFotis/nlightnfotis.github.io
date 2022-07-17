@@ -1,0 +1,2813 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  
+  
+  <title>Lambda reflections</title>
+  <meta name="description" content="Functional Programming, Proofs, Bioinformatics and more.">
+  
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://nlightnfotis.github.io/">
+  
+  
+  <link rel="alternate" type="application/rss+xml" title="Lambda reflections" href="https://nlightnfotis.github.io/feed.xml">
+
+  
+
+  
+  <meta property="og:title" content="Lambda reflections">
+  <meta property="og:site_name" content="Lambda reflections">
+  <meta property="og:url" content="https://nlightnfotis.github.io/">
+  <meta property="og:description" content="Functional Programming, Proofs, Bioinformatics and more.">
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="NlightNFotis">
+  <meta name="twitter:title" content="Lambda reflections">
+  <meta name="twitter:description" content="Functional Programming, Proofs, Bioinformatics and more.">
+  
+    <meta name="twitter:creator" content="NlightNFotis">
+  
+  
+
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet">
+
+  
+
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">Lambda reflections</a>
+
+    <nav class="site-nav">
+      
+        
+        <a class="page-link" href="/about/">About</a>
+      
+        
+        <a class="page-link" href="/archives/">Archives</a>
+      
+        
+        <a class="page-link" href="https://github.com/NlightNFotis">GitHub</a>
+      
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <div class="home">
+
+  
+
+  
+
+  <ul class="post-list">
+    
+      
+      
+
+      <li>
+        <header class="post-header">
+          <h1 class="post-title">
+            
+              <a class="post-link" href="/2022/06/12/couple-of-mental-models-software-complexity/">A Couple of Mental Models to Help Us Tackle Software Complexity</a>
+            
+          </h1>
+
+          <p class="post-meta">
+            Jun 12, 2022
+            
+              
+
+ •
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/mental-models/">mental-models</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/software-design/">software-design</a>
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+
+            
+            
+          </p>
+        </header>
+
+        <div class="post-content">
+          <p>Have you ever started designing your software while doing your best to keep the design
+clean and simple, and still came up with a tangled mess? Read on for a small number of
+mental models that might help you avoid this next time.</p>
+
+<hr />
+
+<h2>Everything’s in your head: A small introduction to Mental Models</h2>
+
+<p>Excited yet? Me too.</p>
+
+<p>But before we go on further with our discussion, let me introduce an appropriate definition
+for <em>Mental Models</em>, just to make sure that we are all in the same page.</p>
+
+<p><em>Mental models</em>, as their name suggests, are abstract mental representations of a wide variety of
+topics. On a daily basis, we use mental models for everything: how we understand certain
+events that happen around us, how we expect a certain object or the environment to respond
+in our interactions with it, and a lot of other things.</p>
+
+<p>They were first introduced by Charlie Munger (of Berkshire Hathaway) fame in a talk he
+gave named <a href="https://fs.blog/great-talks/a-lesson-on-worldly-wisdom/">A Lesson on Elementary Worldly Wisdom</a>.</p>
+
+<p>For more reading on Mental Models, I refer you to the excellent guide by <a href="https://fs.blog/mental-models/#what_are_mental_models">Farnam Street</a>,
+which played a large part in popularising the idea of mental models (and familiarising me
+with many of the ideas).</p>
+
+<h3>Mental models and programming</h3>
+
+<p>In programming (and computer science, more generally) mental models are everywhere.
+Sometimes they are explicit (for instance, <a href="https://en.wikipedia.org/wiki/Model_of_computation"><em>Models of Computation</em></a>
+are abstract representations of how humans or machines can perform a computation).
+Other times, less so.</p>
+
+<p>As an example, your knowledge of your favourite programming language is really a
+just a model of it. Think of Python - you don’t really <em>know</em> Python.</p>
+
+<p>Now, I can already picture you recoiling in disbelief. “How is that possible?”,
+you ask. There’s something in your head that allows you to write programs
+in Python, so my claim looks ridiculous upon surface examination.</p>
+
+<p>Not so fast - I didn’t finish 😁</p>
+
+<p>You don’t <em>know</em> Python - but what you do have in your head are two (partially?)
+complete mental models of Python: a mental model of its syntax, and a mental
+model of its semantics. You may also have mental models of the behaviour of
+certain Python tools. You might also be very familiar with a number of different
+libraries (e.g. <code class="language-plaintext highlighter-rouge">requests</code>), at which point you may have a very robust mental
+model of its behaviour or the internal mechanisms that drive that behaviour.
+You get the point.</p>
+
+<h2>Our first model: The Function as an (Invisible) Machine</h2>
+
+<p>In the two most well established models of computation the smallest unit of code
+organisation is the <strong>function</strong>.</p>
+
+<p>We software engineers deal with the abstract - we design software (write functions),
+but for the most part, we see the end result of the computation they perform and
+not much more. You can think of a function as an ethereal object (I stole this analogy
+from <a href="https://mitpress.mit.edu/sites/default/files/sicp/full-text/book/book-Z-H-9.html"><em>Structure and Interpretation of Computer Programs</em></a>,
+where the authors compare it to an “abstract being that inhabit computers”).</p>
+
+<p>If we take the previous analogy, and ground it a bit into the more concrete idea
+space, we can think of the function as the ethereal equivalent of <em>a machine</em>. It’s
+really the digital equivalent of the machines other engineers are dealing with:
+our machines have some <em>inputs</em> and are comprised of a different number of <em>components</em>,
+the interplay of which produces <em>outputs</em>.</p>
+
+<p>(This view aligns very well with ideas from the field of <em>Software Engineering</em> as well.)</p>
+
+<p>If we admit that the analogy holds, then we are met with some pretty interesting implications.
+For example, our ethereal machines share the following properties with concrete machines:</p>
+
+<ul>
+  <li>Complexity,</li>
+  <li>Failure modes,</li>
+  <li>Interfaces,</li>
+  <li>Etc.</li>
+</ul>
+
+<h3>Simple machines - Complex Machines</h3>
+
+<p>I’m going to stray away from computers for a moment so that I can make a point.</p>
+
+<p>Think of a simple machine, say a <em>Bicycle</em>. A bicycle has some components (say,
+it has a frame, tires, pedals, a handlebar, etc.) and performs a function,
+namely, getting you from point A to point B.</p>
+
+<p>There are other machines that are functionally equivalent from a high-level
+standpoint, for example a <em>motocross bike</em>. These machines however are lot more
+complex: they possess a greater number of components and features a greater number
+of interactions between these components.</p>
+
+<p>(Now, of course, the <em>motocross bike</em> offers functionality not present on the
+<em>bicycle</em>, but that is beside the point I’m trying to make here.)</p>
+
+<p>It should not be that much of a logical leap that the more complex machine
+(with many more components and interactions) has more failure points than
+the simpler machine. Not only that, but in the case of the simpler machine,
+it takes less knowledge and effort to fix any failures.</p>
+
+<p>Let’s hold that thought for a bit while we have a look at the second mental
+model I wanted to talk about and go on to see how these two interplay with
+each other.</p>
+
+<h2>Bounded Rationality</h2>
+
+<p>Enough talk about the machines - let’s now have a look at the human side of all this:
+we are all affected by a cognitive bias known as <em>Bounded Rationality</em>.</p>
+
+<p><em>Bounded rationality</em> is effectively a £10 word for describing the phenomenon of
+some cognitive limitations, such as:</p>
+
+<ul>
+  <li>the lack of perfect information,</li>
+  <li>the limited capacity of our <a href="https://www.simplypsychology.org/short-term-memory.html">short term memory</a>,</li>
+  <li>the collapse of long-winded reasoning processes under a time limit or an informational
+overload,</li>
+  <li>the interplay between other cognitive biases, etc,</li>
+</ul>
+
+<p>negatively affecting our decision making process. The way the do that is by shifting
+our decision making priority to be that of <em>satisficing</em> (aiming for just an adequate
+outcome) instead of <em>optimising</em> (aiming for an optimal outcome).</p>
+
+<p>This means that instead of going for the best solution in the current context,
+we just go with the first one that seemingly satisfies the constraints that are
+obvious to us at the moment.</p>
+
+<p>You will see bounded rationality being discussed in different contexts. It is, however,
+especially prevalent in behavioural economics (the field of study combining economics
+and psychology), and cognitive science. The concept is more general, though, and is
+relevant in any context that entails decision making.</p>
+
+<p>When it comes to us, for the purposes of this article, we care about how bounded
+rationality affects us when we design software, and this is what we’re going to
+be focusing on from now on onwards.</p>
+
+<h3>Bounded Rationality and Software Design</h3>
+
+<p>At this point, an astute reader should be able to see where I am going with this:</p>
+
+<blockquote>
+  <p>A function should be as simple as possible so that we can avoid the pitfalls
+associated with cognitive limitations on our end.</p>
+</blockquote>
+
+<p>You may have seen software design guidelines before that look like this:</p>
+
+<ul>
+  <li>“Limit the number of parameters a function accepts to less than 5”</li>
+  <li>“Do not use global variables”</li>
+  <li>“Use preconditions and postconditions”</li>
+  <li>“Obey the <a href="https://en.wikipedia.org/wiki/Law_of_Demeter">Law of Demeter</a>”</li>
+  <li>…</li>
+</ul>
+
+<p>All of these, from a high level standpoint, aim to narrow down the <em>size of
+the set</em> of components and interactions of our function - our (invisible) machine.</p>
+
+<p>Indeed, programming languages today include a number of features (static manifest typing,
+lexical scope, etc) that limit the input, range of states and behaviour that our code
+can find itself in.</p>
+
+<p>This has a number of benefits relating to software correctness (as the compiler
+enforces these constraints) but the biggest one is probably that it frees up
+our mental capacity by making the function simpler. A smaller design space for
+that function means less things that can cause us to throw our hands up and start
+<em>satisficing</em>, and also less things that can go wrong or need fixing when we inevitably
+make a mistake.</p>
+
+<h2>Conclusion</h2>
+
+<p>I hope that my small essay convinced you about the need to make functions as small
+as possible (but not smaller 😁 ).</p>
+
+<p>If you want a TL/DR of the whole article, it boils down to this:</p>
+
+<blockquote>
+  <p>The simpler your software design, the less likely your cognitive limitations are
+going to negatively affect it.</p>
+</blockquote>
+
+        </div>
+        
+      </li>
+    
+      
+      
+
+      <li>
+        <header class="post-header">
+          <h1 class="post-title">
+            
+              <a class="post-link" href="/2022/06/02/three-versions-of-map/">Three (plus one) Different Versions of map in Haskell</a>
+            
+          </h1>
+
+          <p class="post-meta">
+            Jun 2, 2022
+            
+              
+
+ •
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/fp/">fp</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/haskell/">haskell</a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+
+            
+            
+          </p>
+        </header>
+
+        <div class="post-content">
+          <p>If you are here, then <code class="language-plaintext highlighter-rouge">map</code> requires no introduction. You have seen it.
+You have used it. Many times. You have even implemented it before. But did you
+know that there are more than one ways to implement the function <code class="language-plaintext highlighter-rouge">map</code>?</p>
+
+<hr />
+
+<p>Of all the archetypal higher-order functions that I know, <code class="language-plaintext highlighter-rouge">map</code> is the function
+that I hold dearest in my heart. That’s because it marked a very pleasant memory
+when I finished <em>The Little Schemer</em> (for the first time, back in 2016) and I found
+out that <a href="https://gist.github.com/NlightNFotis/b662a0368b5eea68ebfde1e4e4fb9787">I grokked the concept enough to be able to write it on my own</a>.</p>
+
+<p>As a quick explainer, for the sake of completeness, <code class="language-plaintext highlighter-rouge">map</code> is a function that takes
+two arguments, a function <code class="language-plaintext highlighter-rouge">fn</code> and a list <code class="language-plaintext highlighter-rouge">lat</code>, and produces a new list with the
+elements being the result of the application of the function <code class="language-plaintext highlighter-rouge">fn</code> to the elements
+of <code class="language-plaintext highlighter-rouge">lat</code> (in mathematical writing, this would be <code class="language-plaintext highlighter-rouge">∀x ∈ lat, fn(x)</code> - that is, for
+all <code class="language-plaintext highlighter-rouge">x</code> that belong to <code class="language-plaintext highlighter-rouge">lat</code> we take the result of <code class="language-plaintext highlighter-rouge">fn</code> applied to <code class="language-plaintext highlighter-rouge">x</code>, <code class="language-plaintext highlighter-rouge">fn(x)</code>).</p>
+
+<p>I always knew of the (<em>classic</em>?) way to define that in <code class="language-plaintext highlighter-rouge">Scheme</code> (or more generally,
+in <code class="language-plaintext highlighter-rouge">Lisp</code>), which I had seen also being used in <code class="language-plaintext highlighter-rouge">OCaml</code>/<code class="language-plaintext highlighter-rouge">SML</code>, which looks like this:</p>
+
+<div class="language-lisp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">(</span><span class="nv">define</span> <span class="p">(</span><span class="nb">map</span> <span class="nv">fn</span> <span class="nv">lat</span><span class="p">)</span>
+  <span class="p">(</span><span class="nb">cond</span>
+    <span class="p">((</span><span class="nv">null?</span> <span class="nv">lat</span><span class="p">)</span> <span class="o">'</span><span class="p">())</span>
+    <span class="p">(</span><span class="nv">else</span>
+     <span class="p">(</span><span class="nb">cons</span> <span class="p">(</span><span class="nv">fn</span> <span class="p">(</span><span class="nb">car</span> <span class="nv">lat</span><span class="p">))</span> <span class="p">(</span><span class="nb">map</span> <span class="nv">fn</span> <span class="p">(</span><span class="nb">cdr</span> <span class="nv">lat</span><span class="p">))))))</span>
+</code></pre></div></div>
+
+<p>That is, a recursive function definition, that does the following:</p>
+
+<ul>
+  <li>If the input list <code class="language-plaintext highlighter-rouge">lat</code> is empty, it returns the empty list <code class="language-plaintext highlighter-rouge">()</code> (we use that as the
+base for <code class="language-plaintext highlighter-rouge">cons</code>structing a list of values), otherwise</li>
+  <li>It returns the list <code class="language-plaintext highlighter-rouge">cons</code>tructed from the application of the function to the first
+element of the list <code class="language-plaintext highlighter-rouge">(fn (car lat))</code> and the result of the recursive call on
+the remaining list <code class="language-plaintext highlighter-rouge">(map fn (cdr lat))</code>.</li>
+</ul>
+
+<p>In OCaml, the same function would probably be defined using pattern matching, but
+the pattern is the same:</p>
+
+<div class="language-ocaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">let</span> <span class="k">rec</span> <span class="n">map</span> <span class="n">fn</span> <span class="n">lat</span> <span class="o">=</span>
+  <span class="k">match</span> <span class="n">lat</span> <span class="k">with</span>
+  <span class="o">|</span> <span class="bp">[]</span> <span class="o">-&gt;</span> <span class="bp">[]</span>
+  <span class="o">|</span> <span class="n">h</span><span class="o">::</span><span class="n">t</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">fn</span> <span class="n">h</span><span class="p">)</span><span class="o">::</span><span class="p">(</span><span class="n">map</span> <span class="n">fn</span> <span class="n">t</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Recently though, I started reading Graham Hutton’s excellent <a href="https://www.cs.nott.ac.uk/~pszgmh/pih.html">Programming in Haskell</a>,
+as a preparation for some more advanced material I wanted to read that required Haskell
+knowledge.</p>
+
+<p>In that book, I was delighted to find not one, not two, but <strong>three</strong> different ways of
+defining the function <code class="language-plaintext highlighter-rouge">map</code> in Haskell.</p>
+
+<p>Let’s have a look at the first two ways of defining <code class="language-plaintext highlighter-rouge">map</code> in Haskell, both defined in
+chapter 7 of the book.</p>
+
+<h2>The classical recursive definition of <code class="language-plaintext highlighter-rouge">map</code></h2>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">map</span> <span class="o">::</span> <span class="p">(</span><span class="n">a</span> <span class="o">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span>
+<span class="n">map</span> <span class="n">f</span> <span class="kt">[]</span>     <span class="o">=</span> <span class="kt">[]</span>
+<span class="n">map</span> <span class="n">f</span> <span class="p">(</span><span class="n">x</span><span class="o">:</span><span class="n">xs</span><span class="p">)</span> <span class="o">=</span> <span class="n">f</span> <span class="n">x</span> <span class="o">:</span> <span class="n">map</span> <span class="n">f</span> <span class="n">xs</span>
+</code></pre></div></div>
+
+<p>The first definition is the one that is closest to what we described above for
+both Scheme and OCaml. It’s the (structural) recursive definition using pattern
+matching against two patterns:</p>
+
+<ul>
+  <li>The empty list in the first pattern <code class="language-plaintext highlighter-rouge">[]</code>, which as before returns the empty list,
+and</li>
+  <li>A pattern of a list with at least one element, which we immediately de-structure
+into a <code class="language-plaintext highlighter-rouge">head</code> and <code class="language-plaintext highlighter-rouge">tail</code> component in <code class="language-plaintext highlighter-rouge">(x:xs)</code>. When matched, it will build a
+<code class="language-plaintext highlighter-rouge">cons</code> (<code class="language-plaintext highlighter-rouge">:</code>) of the result of the function application <code class="language-plaintext highlighter-rouge">f x</code> and the result
+of the recursive call of the remaining list (<code class="language-plaintext highlighter-rouge">map f xs</code>).</li>
+</ul>
+
+<p>This definition is basically the exact equivalent of the OCaml definition above,
+with the only notable difference being the explicit function signature given:</p>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">map</span> <span class="o">::</span> <span class="p">(</span><span class="n">a</span> <span class="o">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>This tells us that the <code class="language-plaintext highlighter-rouge">map</code> function takes two arguments:</p>
+
+<ul>
+  <li>A polymorphic function that maps elements of type <code class="language-plaintext highlighter-rouge">a</code> to type <code class="language-plaintext highlighter-rouge">b</code> <code class="language-plaintext highlighter-rouge">(a -&gt; b)</code>,</li>
+  <li>A list of elements of type <code class="language-plaintext highlighter-rouge">a</code> (<code class="language-plaintext highlighter-rouge">[a]</code>)</li>
+</ul>
+
+<p>and as a result produces a list of elements of type <code class="language-plaintext highlighter-rouge">b</code> (<code class="language-plaintext highlighter-rouge">[b]</code>).</p>
+
+<p>(The <code class="language-plaintext highlighter-rouge">a</code> and <code class="language-plaintext highlighter-rouge">b</code> above are called <em>type variables</em>, and are implicitly <em>universally
+quantified</em>, i.e. they read as “for all elements of type <code class="language-plaintext highlighter-rouge">a</code>”).</p>
+
+<p>So far, so classic.</p>
+
+<p>Nothing out of the ordinary here.</p>
+
+<h2>Let the show start: The list comprehension definition of <code class="language-plaintext highlighter-rouge">map</code></h2>
+
+<p>Later on in the book, we come across this definition:</p>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">map</span> <span class="o">::</span> <span class="p">(</span><span class="n">a</span> <span class="o">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span>
+<span class="n">map</span> <span class="n">f</span> <span class="n">xs</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="n">x</span> <span class="o">|</span> <span class="n">x</span> <span class="o">&lt;-</span> <span class="n">xs</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>Wow!</p>
+
+<p>This one packs a punch in terms of conciseness, but I find it very elegant
+and very expressive at the same time.</p>
+
+<p>This definition is based in the syntax for <em>list comprehensions</em> in Haskell.</p>
+
+<p>List comprehensions are a concise and convenient way to define new lists
+by manipulating elements of other lists. As an example, consider the following:</p>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="p">[</span><span class="n">x</span><span class="o">^</span><span class="mi">2</span> <span class="o">|</span> <span class="n">x</span> <span class="o">&lt;-</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]]</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">25</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>This is read as make a list of “<code class="language-plaintext highlighter-rouge">x</code> squared, with <code class="language-plaintext highlighter-rouge">x</code> drawn from (<code class="language-plaintext highlighter-rouge">|</code>) the list
+<code class="language-plaintext highlighter-rouge">[1, 2, 3, 4, 5]</code>.</p>
+
+<p>Taking this into account, and back to our <code class="language-plaintext highlighter-rouge">map</code> function definition, our comprehension
+there:</p>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">map</span> <span class="n">f</span> <span class="n">xs</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="n">x</span> <span class="o">|</span> <span class="n">x</span> <span class="o">&lt;-</span> <span class="n">xs</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>reads as “make a list of the results of <code class="language-plaintext highlighter-rouge">f x</code>, where <code class="language-plaintext highlighter-rouge">x</code> is drawn from the list <code class="language-plaintext highlighter-rouge">xs</code>”.</p>
+
+<p>Beautiful.</p>
+
+<h2>Roll the carpet for Mr. Fold: The <code class="language-plaintext highlighter-rouge">foldr</code> definition of <code class="language-plaintext highlighter-rouge">map</code></h2>
+
+<p>One of the coolest things the book opened my eyes to was the fact that we can
+use a <code class="language-plaintext highlighter-rouge">fold</code> in a generative fashion.</p>
+
+<p>I was well aware of <code class="language-plaintext highlighter-rouge">fold</code> from both Racket and OCaml before, but I always thought
+of that in terms of a generalisation of <code class="language-plaintext highlighter-rouge">reduce</code> - it never occured to me that
+I can use the accumulating function to yield a value in a generative recursion
+fashion, like a new list 🤯</p>
+
+<p>(Embarassingly, it now looks kind of obvious, and related to ideas I’ve been exposed
+to in the past - this one is related to the <code class="language-plaintext highlighter-rouge">collector functions</code> idea that the <a href="https://mitpress.mit.edu/books/little-schemer-fourth-edition">Little
+Schemer</a> uses in chapter 8).</p>
+
+<p>Back to our definition.</p>
+
+<p>This one is not given by the book - in fact, it’s left for the reader to define as one
+of the exercises. This is what I came up with:</p>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">map</span> <span class="o">::</span> <span class="p">(</span><span class="n">a</span> <span class="o">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span>
+<span class="n">map</span> <span class="n">f</span> <span class="o">=</span> <span class="n">foldr</span> <span class="p">(</span><span class="nf">\</span> <span class="n">x</span> <span class="n">xs</span> <span class="o">-&gt;</span> <span class="n">f</span> <span class="n">x</span> <span class="o">:</span> <span class="n">xs</span><span class="p">)</span> <span class="kt">[]</span>
+</code></pre></div></div>
+
+<p>This definition is the one that left me most stunned and amazed with the generalising
+power of a fold.</p>
+
+<p>What this definition tells us is that we define <code class="language-plaintext highlighter-rouge">map</code> as a right fold (<code class="language-plaintext highlighter-rouge">foldr</code>)
+of a lambda that takes two arguments, <code class="language-plaintext highlighter-rouge">x</code> and <code class="language-plaintext highlighter-rouge">xs</code>, and <code class="language-plaintext highlighter-rouge">returns</code> the cons of <code class="language-plaintext highlighter-rouge">f x</code>
+and <code class="language-plaintext highlighter-rouge">xs</code>. The last value we pass to the <code class="language-plaintext highlighter-rouge">foldr</code> is the empty list <code class="language-plaintext highlighter-rouge">[]</code>, which is the
+value that is used as the base case.</p>
+
+<p>In order to understand what the <code class="language-plaintext highlighter-rouge">foldr</code> does, I find the following visual from
+<a href="https://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia</a> to be
+very helpful:</p>
+
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Right-fold-transformation.png" alt="foldr visualisation" /></p>
+
+<p>To understand the above visualisation, you need to understand that a list in Haskell
+(and most functional programming languages for that matter), is a <code class="language-plaintext highlighter-rouge">cons</code> of various
+values and the empty list. I.e. you can think of <code class="language-plaintext highlighter-rouge">[1, 2, 3, 4, 5]</code> as
+<code class="language-plaintext highlighter-rouge">1 : (2 : (3 : (4 : (5 : []))))</code>.</p>
+
+<p>With that in mind, what the <code class="language-plaintext highlighter-rouge">foldr</code> function does is that replaces the <code class="language-plaintext highlighter-rouge">cons</code> (<code class="language-plaintext highlighter-rouge">:</code>)
+operator with the function argument supplied to it, and <em>reduces</em> it all (<em>folds the
+list</em>) into a single value.</p>
+
+<p>(It also replaces the base case empty list value <code class="language-plaintext highlighter-rouge">[]</code> with the value of the last
+argument supplied to it. In our case, we are passing the empty list (<code class="language-plaintext highlighter-rouge">[]</code>) again,
+which we are going to use as a base to build a new list of values on top of.)</p>
+
+<p>And here’s the trick - because the (anonymous) function we passed to it is building
+a new list (by applying the <code class="language-plaintext highlighter-rouge">cons</code> operator again), what we end up is a new list instead
+of just a single value!</p>
+
+<p>In our case, this means that if we had the list:</p>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="mi">1</span> <span class="o">:</span> <span class="p">(</span><span class="mi">2</span> <span class="o">:</span> <span class="p">(</span><span class="mi">3</span> <span class="o">:</span> <span class="p">(</span><span class="mi">4</span> <span class="o">:</span> <span class="p">(</span><span class="mi">5</span> <span class="o">:</span> <span class="kt">[]</span><span class="p">))))</span>
+</code></pre></div></div>
+
+<p>after the application of the anonymous function we would have a new list, equivalent to</p>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">f</span> <span class="mi">1</span> <span class="o">:</span> <span class="p">(</span><span class="n">f</span> <span class="mi">2</span> <span class="o">:</span> <span class="p">(</span><span class="n">f</span> <span class="mi">3</span> <span class="o">:</span> <span class="p">(</span><span class="n">f</span> <span class="mi">4</span> <span class="o">:</span> <span class="p">(</span><span class="n">f</span> <span class="mi">5</span> <span class="o">:</span> <span class="kt">[]</span><span class="p">))))</span>
+</code></pre></div></div>
+
+<p>🤯</p>
+
+<h3>Bonus round: a monadic definition of <code class="language-plaintext highlighter-rouge">map</code></h3>
+
+<p>Okay, this is a bit of a cheat because this is basically our first definition, except
+that the function and the return type are monadic:</p>
+
+<div class="language-hs highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mapM</span> <span class="o">::</span> <span class="kt">Monad</span> <span class="n">m</span> <span class="o">=&gt;</span> <span class="p">(</span><span class="n">a</span> <span class="o">-&gt;</span> <span class="n">m</span> <span class="n">b</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">-&gt;</span> <span class="n">m</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span>
+<span class="n">mapM</span> <span class="n">f</span> <span class="kt">[]</span>     <span class="o">=</span> <span class="n">return</span> <span class="kt">[]</span>
+<span class="n">mapM</span> <span class="n">f</span> <span class="p">(</span><span class="n">x</span><span class="o">:</span><span class="n">xs</span><span class="p">)</span> <span class="o">=</span> <span class="kr">do</span> <span class="n">y</span> <span class="o">&lt;-</span> <span class="n">f</span> <span class="n">x</span>
+                   <span class="n">ys</span> <span class="o">&lt;-</span> <span class="n">mapM</span> <span class="n">f</span> <span class="n">xs</span>
+                   <span class="n">return</span> <span class="p">(</span><span class="n">y</span> <span class="o">:</span> <span class="n">ys</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>This is using the <a href="https://en.wikibooks.org/wiki/Haskell/do_notation"><code class="language-plaintext highlighter-rouge">do</code> notation to define a sequence of actions</a>,
+but the actions themselves have a near 1-1 correspondence to our original map implementation:</p>
+
+<ul>
+  <li>First we assign the name <code class="language-plaintext highlighter-rouge">y</code> to the result of <code class="language-plaintext highlighter-rouge">f x</code>, then</li>
+  <li>We assign the name <code class="language-plaintext highlighter-rouge">ys</code> to the result of the recursive call on the
+of the list (<code class="language-plaintext highlighter-rouge">mapM f xs</code>)</li>
+  <li>And the return the <code class="language-plaintext highlighter-rouge">cons</code> of the two values <code class="language-plaintext highlighter-rouge">(y : ys)</code></li>
+</ul>
+
+<p>How is this definition useful?</p>
+
+<p>You may have observed that the return type is <code class="language-plaintext highlighter-rouge">m [b]</code> - a monadic list of type <code class="language-plaintext highlighter-rouge">b</code>.</p>
+
+<p>Consider the following: we want a function that converts a string into a list only
+if all of the string characters correspond to a digit, or fail gracefully otherwise.</p>
+
+<p>One way to do that is to write a function to convert a single character into a
+<code class="language-plaintext highlighter-rouge">Maybe Int</code>:</p>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">conv</span> <span class="o">::</span> <span class="kt">Char</span> <span class="o">-&gt;</span> <span class="kt">Maybe</span> <span class="kt">Int</span>
+<span class="n">conv</span> <span class="n">c</span> <span class="o">|</span> <span class="n">isDigit</span> <span class="n">c</span> <span class="o">=</span> <span class="kt">Just</span> <span class="p">(</span><span class="n">digitToInt</span> <span class="n">c</span><span class="p">)</span>
+       <span class="o">|</span> <span class="n">otherwise</span> <span class="o">=</span> <span class="kt">Nothing</span>
+</code></pre></div></div>
+
+<p>With this definition, we can now use our function <code class="language-plaintext highlighter-rouge">mapM</code> like this:</p>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="n">mapM</span> <span class="n">conv</span> <span class="s">"1234"</span>
+<span class="kt">Just</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+
+<span class="o">&gt;</span> <span class="n">mapM</span> <span class="n">conv</span> <span class="s">"123a"</span>
+<span class="kt">Nothing</span>
+</code></pre></div></div>
+
+<h2>Conclusion</h2>
+
+<p>I enjoyed writing this post quite a bit.</p>
+
+<p>It’s a very humbling experience to be visiting books and seeing that ideas that you considered
+to be elementary and rather surface-level are a lot more nuanced once you start digging deeper
+into them.</p>
+
+<p>It’s something I need to keep top of mind as I go forward as well.</p>
+
+<p>This post also highlights one of the nice things of going for breadth of knowledge: exposure
+to a wider set of ideas. Had I only stayed in the Racket/OCaml realm, I probably wouldn’t have
+been exposed to this range of <code class="language-plaintext highlighter-rouge">map</code> implementations, for the reason that these languages don’t
+offer some of the language features that enable them, like list comprehensions.</p>
+
+<p>All in all, happy I went down this path, and looking forward to what’s next.</p>
+
+        </div>
+        
+      </li>
+    
+      
+      
+
+      <li>
+        <header class="post-header">
+          <h1 class="post-title">
+            
+              <a class="post-link" href="/2022/05/12/reflections-on-learning-how-to-grow-almost-anything/">Reflections on Learning &quot;How to Grow (Almost) Anything&quot;</a>
+            
+          </h1>
+
+          <p class="post-meta">
+            May 12, 2022
+            
+              
+
+ •
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/synbio/">synbio</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/course/">course</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/mooc/">mooc</a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+
+            
+            
+          </p>
+        </header>
+
+        <div class="post-content">
+          <p>Wow, what a journey this has been!</p>
+
+<p>Yesterday, Wednesday 11th of May, was the final project presentations for committed
+listeners in MIT’s synthetic biology course,
+<a href="https://htgaa2022.notion.site/htgaa2022/HTGAA-2022-d39e5560ad83483ab87d415f085b60c6">How To Grow (Almost) Anything</a>,
+class of 2022.</p>
+
+<p>When I started the course, sometime in the end of January, I had no idea what a blast
+this would be (nor did I have any idea of how much pressure this would apply on me, but
+hey, I survived this, and then some 😁 ).</p>
+
+<p>I credit this class with taking me from rudimentary biology knowledge to a fairly solid
+understanding of molecular biology and immunology, all in about 3-4 months.</p>
+
+<p>As you can probably imagine, this was… intense.</p>
+
+<p>But before I dive more into the experience and what I learnt in this course, let me
+give some background into the course and the context of my participation.</p>
+
+<h2>Some background</h2>
+
+<p>Anyone who knows me is aware of my awe at the potential of synthetic biology. There’s
+no doubt in my mind that it’s going to be the next exponential growth sector after
+the computer industry. The field itself is fairly nascent, but it’s going to pick
+up the pace in the next 5-10 years. And although I believe that all its subdomains
+hold massive potential, I’m especially keen on synthetic biology applications in
+human therapeutics.</p>
+
+<p>Now, I keep it no secret that I want to found a synthetic biology company in the
+(hopefully, not so distant) future.</p>
+
+<p>Given that, you may guess that in general I was observant of any opportunities
+to dig a bit deeper into the field.</p>
+
+<p>With that in mind (along with a hefty bit of luck - fate? 😁 ), I came across a
+tweet by the organiser of the course, <a href="https://twitter.com/davidsunkong">David Kong</a>,
+advertising the course, along with the fact that this year it would admit a small
+cohort of students who want to attend remotely.</p>
+
+<p>Wasting no time, I shot an email towards David, and was surprised when I got an
+email a couple days later admitting me to the course, and sharing zoom links for
+the course’s first lecture.</p>
+
+<h2>The Attendance Experience</h2>
+
+<p>The course was setup in a set of two classes per week:</p>
+
+<ul>
+  <li>one three-hour lecture, in which the first hour was spent reviewing homework
+from last week, and the next two hours had different presenters give presentations
+on various topics in synthetic biology, and</li>
+  <li>a two-hour class the next day, that included a recitation session - which was
+previewing next week’s homework - along with a homework review for online listeners.</li>
+</ul>
+
+<p>To my surprise, there was a relatively high number of online students participating
+(~ 45, IIRC - about 3 times the number of MIT students physically attending), but
+only about a third of the online students made it through to the end.</p>
+
+<p>Attendance was taken every lecture, for both online listeners and the students
+physically present at MIT. We were also expected to do all the exercises for
+the week - with the TAs ensuring that this was the case.</p>
+
+<p>In the middle of the course’s duration, we also had a handful of hands-on workshops
+(of which we had to attend some), aptly named the <em>Festival of Growing</em>.</p>
+
+<h2>The Lectures</h2>
+
+<p>The course was setup around a number of themes (therapeutics, biofabrication/biomaterials,
+DNA/RNA editing, microfluidics, etc), and every week we had two (sometimes three)
+different presenters (which ranged from university professors to company CEOs) present
+on the topic at hand.</p>
+
+<p>The first couple of weeks were focused on teaching the foundations of molecular biology
+(but in a very, <em>very</em> accelerated timeframe), and then the following weeks assumed
+competence in molecular biology and built on top of that in terms of presenting the
+state of the art in applications in various domains.</p>
+
+<p>It’s probably worth noting that the course attracted people from a wide variety
+of backgrounds - you could find architects, designers, computer scientists, chemists,
+etc. As you can imagine, a lot of these people didn’t have a background in biology
+(or had a very shallow one, myself included), and the intensity of the ramp up of
+the first few weeks might have contributed to the dropouts.</p>
+
+<p>For the MIT/Harvard students, most of these lectures were also followed by a lab
+component. For online listeners, we would partially follow along those processes
+(given the lack of wet lab access for some of us), or, at other times, we would
+be given substitute exercises that involved using online tools (such as <a href="https://www.benchling.com/">Benchling</a>
+to simulate the in-vitro experiments in-silico.</p>
+
+<h2>The <em>Festival of Growing</em></h2>
+
+<p>Sometime around the half of the semester, we had a pause in the online lectures
+for a couple of weeks in favour of attending various workshops. Those workshops
+were structured around a number of different themes. Examples of those were growing
+mycelium at home, or performing DNA sequencing using a nanopore device.</p>
+
+<p>From these workshops, some of them were on-premise and some of them were online.
+We did manage to watch one of the on-premise workshops (the nanopore sequencing one)
+via a TA streaming the workshop, which was nice. In retrospect, this would be
+a good idea for all of the on-premise workshops - maybe that will happen from
+next year onwards?</p>
+
+<p>For both online and MIT/Harvard students, we had to attend at least 1 of the workshops
+(attendance was taken), with no upper limit on how many you could attend.</p>
+
+<p>I think the Festival of Growing was a nice little fragment of the course’s structure,
+and it also contributed in making the course feel a lot more dynamic in nature
+(compared to an alternative, hypothetical course consisting only of lectures).</p>
+
+<h2>The Final Project</h2>
+
+<p>A relatively big part of the course (and the main focus of the last two weeks)
+was the the preparation of the final project. It had been made clear from the
+start that this was an integral part of the course, and that everyone who stuck
+to the end (either online listener or on-premise student) would have to
+present one.</p>
+
+<p>We had a lot of leeway in terms of the project that we would choose to do -
+though you were <em>strongly encouraged</em> to pick a project topic that fell within
+the experience/knowledge range of available TAs. For the on-premise students,
+the idea is that the project would include a lab component but for online students
+this was considered optional (given that only some people had access to a lab),
+but we still had to present on a topic that was considered feasible (if speculative),
+and the expectation was that the project would be fairly well-researched.</p>
+
+<p>For each one of us doing a final project, we would be assigned a mentor (a
+TA or industry professional) who would end up as an endpoint for answering
+questions/providing guidance on our project.</p>
+
+<h2>My Own Experience</h2>
+
+<p>I have to start with the fact that I enjoyed all of the course, and that
+I’m grateful to MIT/the organisers for admitting us online listeners to the
+course.</p>
+
+<p>Having said that, the first couple of weeks were very hard - it required
+<strong>a lot</strong> of outside studying (we’re talking several textbooks worth of
+reading) to catch up to the required knowledge. If you have to juggle a
+job as well, and you’re not a full-time student, that can definitely feel
+pretty overwhelming at times.</p>
+
+<p>(By the way, this is coming from someone who already commits 3-4 hours of
+study on a daily basis, if that helps underline the above paragraph - though
+to be fair, I think that a lot of the pressure was coming from the tight
+weekly deadlines for exercises.)</p>
+
+<p>I recall that at one point during the first two weeks I felt the presenters
+were speaking something other than English. 😓 The nice thing is that persistence
+does pay of, however, and by the end, you are also capable of fluently conversing
+with everyone else in this weird little dialect of English.</p>
+
+<p>The festival of growing was also very nice, but, personally, I was a little bit
+miffed by the fact that the workshop I was most looking forward to (metabolic
+simulation in Python) got cancelled without any explanation a day before it
+was to be presented.</p>
+
+<p>For me the most enjoyable part of the course was the final project because
+by that point I already knew enough to be able to do some competent background
+research on the project.</p>
+
+<h2>In Conclusion</h2>
+
+<p>In this final bit, I want to say that I wholeheartedly recommend this course
+to anyone who is keen on synthetic biology, if only to see some of the people
+on the forefront of the domain discuss the possibilities and what they are
+currently exploring.</p>
+
+<p>I also have a feeling that David and his course are going to be a future kingmaker
+of synthetic biology 😉 You would hear very often during the presentations (person
+X, CEO of Y, and alumni of HTGAA few years ago). I think this trend is going to
+continue for many more years to come.</p>
+
+<p>Again many thanks to the organisers (<strong>David</strong> in particular), the lecturers, TAs,
+and everyone else who contributed to this course.</p>
+
+<p>Special thanks from my end to the following people as well:</p>
+
+<ul>
+  <li><strong>Jessica Weber</strong>, for entertaining a barrage of questions I posed during
+one of the lectures.</li>
+  <li><strong>Karolina Sulich</strong>, for providing some early assistance during my project,
+and for introducing me to Amy Holt,</li>
+  <li><strong>Amy Holt</strong>, who provided me with specific answers to some immunology related
+questions I had, with regard to my final project.</li>
+</ul>
+
+<p>You can find my course notes, exercises, and final project at my course notes
+<a href="https://www.notion.so/HTGAA-2022-a43e0f0b56a444f29aea3a94a388c7bf">Notion page</a>.</p>
+
+        </div>
+        
+      </li>
+    
+      
+      
+
+      <li>
+        <header class="post-header">
+          <h1 class="post-title">
+            
+              <a class="post-link" href="/2022/03/28/bioinformatics-stronghold-nucleotide-counting/">Nucleotide Counting the TDD Way - A Bioinformatics Stronghold Story</a>
+            
+          </h1>
+
+          <p class="post-meta">
+            Mar 28, 2022
+            
+              
+
+ •
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/ruby/">ruby</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/bioinformatics/">bioinformatics</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/tdd/">tdd</a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+
+            
+            
+          </p>
+        </header>
+
+        <div class="post-content">
+          <p>A few days ago, I was going through my code archives and came across my old solutions
+of the <a href="https://rosalind.info/problems/list-view/">Bioinformatics Stronghold</a> by
+<a href="https://rosalind.info/problems/locations/">Project Rosalind</a>. For those of you who
+don’t know, <em>Project Rosalind</em> is one of those problem-based skill development exercises,
+akin to <a href="https://projecteuler.net">Project Euler</a> but aimed at nascent bioinformaticians.</p>
+
+<p>Coincidentally, I finished a <a href="https://www.goodreads.com/book/show/33527186-test-driven-development-in-ruby">book on Test-Driven Development (TDD) in Ruby</a>
+around the same time. I particularly enjoyed TDD the way it was presented in
+the book, and I was looking for some problems to apply it to and the Stronghold
+Project is the perfect lab space for me to apply those new ideas (because of
+its relatively simple from an algorithmic perspective problems).</p>
+
+<hr />
+
+<p>My initial foray into the Stronghold project was in an attempt at comparative solutions,
+wherein I attempted the exercises in a number of different programming languages
+(Python, Go, OCaml, Racket, etc.) while observing any differences in the style I
+chose, refactoring them, benchmarking them, and all around having some good fun
+with those 😄</p>
+
+<p>One thing I’m embarrassed to admit about that first attempt though, is that while
+my solutions worked (or so I can conveniently recall), they didn’t contain any
+reproducible documentation of their satisfying of the requirements of the
+exercise - there were no assertions, no tests, nothing. 😅 I can only attribute it
+to my enthusiasm in getting each solution done to move on to the next one.</p>
+
+<p>Bad me.</p>
+
+<p>I’m now revisiting these exercises to atone for my insolence. I’m going to go through
+the exercises again, but this time I’m going to be approaching them in a TDD/BDD style.</p>
+
+<p>But before I move on to actual code, what on Earth is TDD (and its cousin, BDD)? We
+already saw that <em>TDD</em> stands for <em>Test-Driven Development</em>. By that, we mean a
+programming approach that encourages writing tests for the feature code <strong>before</strong>
+the actual feature code is written, so that the tests guide the design of the code
+itself.</p>
+
+<p><em>Behaviour-Driven Development</em> (BDD for short), is a sister approach to TDD, but for
+the purposes of this article, BDD is the approach of <em>writing the tests in a way
+that they reflect prose specification of the behaviour of the module</em> under test.</p>
+
+<p>Okay, are you ready now? Let’s roll.</p>
+
+<hr />
+
+<p>I’m going to start with the <a href="https://rosalind.info/problems/dna/">first exercise</a>,
+which is about counting nucleotides in a DNA strand, which is given as an input of
+a <code class="language-plaintext highlighter-rouge">string</code> type.</p>
+
+<p>Now, if you visit the problem page, you will see that it also gives us a sample
+dataset, along with the expected output for that.</p>
+
+<p>(You may have noticed that the above sentence is just a particularly verbose way
+of describing a <em>test case</em>. 😉 )</p>
+
+<p>Our implementation language for this exercise is going to be Ruby, for two reasons.</p>
+
+<p>1) I started learning Ruby recently and I’ve been enjoying it a lot, and
+2) Ruby comes with excellent built-in support for testing in the form of the <code class="language-plaintext highlighter-rouge">Minitest</code>
+   library.</p>
+
+<p>Let’s quickly make a file called <code class="language-plaintext highlighter-rouge">counting_nucleotides.rb</code>, and add an empty test
+specification:</p>
+
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s1">'minitest/autorun'</span>
+
+<span class="n">describe</span> <span class="s1">'nucleotide counting function'</span> <span class="k">do</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>At this point it’s worth having a pause to think about our test cases before we move
+forward.</p>
+
+<p>We already have been given a sample input, as we mentioned above, that we could use
+as our test case. The problem, however, with that particular input is that it describes
+the functionality of the module when it’s finished.</p>
+
+<p>That’s probably a bit <em>too</em> elaborate for us to use now that we start designing our
+function.</p>
+
+<p>We probably want something much simpler - indeed, this is what TDD as an approach
+is advocating. What might be simpler for us?</p>
+
+<p>What about a strand with a very small length? Say, 8 bases long?</p>
+
+<p>Sounds like it <em>should</em> work.</p>
+
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s1">'minitest/autorun'</span>
+
+<span class="n">describe</span> <span class="s1">'nucleotide counting function'</span> <span class="k">do</span>
+  <span class="n">it</span> <span class="s1">'returns a count of 2 2 2 2 for strand "ATCGATCG"'</span> <span class="k">do</span>
+    <span class="n">strand</span> <span class="o">=</span> <span class="s1">'ATCGATCG'</span>
+    <span class="n">nucleotide_count</span> <span class="o">=</span> <span class="s1">'2 2 2 2'</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span>
+
+    <span class="n">assert_equal</span> <span class="n">nucleotide_count</span><span class="p">,</span> <span class="n">result</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>Looks good for a first test. Let’s run it and see what happens.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ruby counting_nucleotides.rb
+Run options: <span class="nt">--seed</span> 64068
+
+<span class="c"># Running:</span>
+
+E
+
+Finished <span class="k">in </span>0.000265s, 3773.5860 runs/s, 0.0000 assertions/s.
+
+  1<span class="o">)</span> Error:
+nucleotide counting <span class="k">function</span><span class="c">#test_0001_returns a count of 2 2 2 2 for strand "ATCGATCG":</span>
+NoMethodError: undefined method <span class="sb">`</span>count_nucleotides<span class="s1">' for #&lt;#&lt;Class:0x000000015e831da0&gt;:0x000000015b940028&gt;
+    counting_nucleotides.rb:8:in `block (2 levels) in &lt;main&gt;'</span>
+
+1 runs, 0 assertions, 0 failures, 1 errors, 0 skips
+</code></pre></div></div>
+
+<p>Ahh, it complains that we “forgot” to define our function <code class="language-plaintext highlighter-rouge">count_nucleotides</code>.
+Easy to fix, let’s add a function called that, taking in one parameter, but
+with an empty body.</p>
+
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s1">'minitest/autorun'</span>
+
+<span class="k">def</span> <span class="nf">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="n">describe</span> <span class="s1">'nucleotide counting function'</span> <span class="k">do</span>
+  <span class="n">it</span> <span class="s1">'returns a count of 2 2 2 2 for strand "ATCGATCG"'</span> <span class="k">do</span>
+    <span class="n">strand</span> <span class="o">=</span> <span class="s1">'ATCGATCG'</span>
+    <span class="n">nucleotide_count</span> <span class="o">=</span> <span class="s1">'2 2 2 2'</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span>
+
+    <span class="n">assert_equal</span> <span class="n">nucleotide_count</span><span class="p">,</span> <span class="n">result</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>Nice, let’s run it again, and see what we get.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ruby counting_nucleotides.rb
+Run options: <span class="nt">--seed</span> 20901
+
+<span class="c"># Running:</span>
+
+F
+
+Finished <span class="k">in </span>0.000287s, 3484.3209 runs/s, 3484.3209 assertions/s.
+
+  1<span class="o">)</span> Failure:
+nucleotide counting <span class="k">function</span><span class="c">#test_0001_returns a count of 2 2 2 2 for strand "ATCGATCG" [counting_nucleotides.rb:12]:</span>
+Expected: <span class="s2">"2 2 2 2"</span>
+  Actual: nil
+
+1 runs, 1 assertions, 1 failures, 0 errors, 0 skips
+</code></pre></div></div>
+
+<p>Okay, this seems a bit more intriguing. Now it doesn’t come back to us with an <strong>error</strong>.
+Rather, it comes back with a <strong>failure</strong>, indicating that the test got executed,
+but the expected and the actual results differ. In our case, we asserted in our test
+that we expect the result to be a string with the contents <code class="language-plaintext highlighter-rouge">"2 2 2 2"</code> in exactly
+that form (spaces and everything), but we got back <code class="language-plaintext highlighter-rouge">nil</code> from the actual execution.</p>
+
+<p>The reason for the <code class="language-plaintext highlighter-rouge">nil</code> in particular is that ruby is an <em>expression-based language</em>.</p>
+
+<p>In an expression-based language every program fragment is an <em>expression</em>, meaning
+that it will return a value upon execution of that program fragment (we call that,
+in more technical terms, <em>expression evaluation</em>).</p>
+
+<p>A function, thus, is also an expression, and will upon evaluation return the value
+of the last expression in its body. For a function with an empty body, there are no
+such expressions, so a default of <code class="language-plaintext highlighter-rouge">nil</code> is returned.</p>
+
+<hr />
+
+<p>Right, so we run our test, and got back <code class="language-plaintext highlighter-rouge">nil</code> for a return value. This is our clue
+that our test is executing the function as we expect, but our function is not yet
+implemented (does not contain a function body). Let’s crack on with that.</p>
+
+<p>In Ruby, there’s a very convenient method defined on the <code class="language-plaintext highlighter-rouge">String</code> type whose job
+is to count the presence of particular subsequences (substrings in our case).</p>
+
+<p>To no one’s suprise, it’s called <code class="language-plaintext highlighter-rouge">count</code>.</p>
+
+<p>Let’s use that to count the number of nucleotides and return that in a string format.</p>
+
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span>
+    <span class="n">strand</span><span class="p">.</span><span class="nf">count</span><span class="p">(</span><span class="s1">'A'</span><span class="p">)</span> <span class="o">+</span> <span class="n">strand</span><span class="p">.</span><span class="nf">count</span><span class="p">(</span><span class="s1">'C'</span><span class="p">)</span> <span class="o">+</span> <span class="n">strand</span><span class="p">.</span><span class="nf">count</span><span class="p">(</span><span class="s1">'G'</span><span class="p">)</span> <span class="o">+</span> <span class="n">strand</span><span class="p">.</span><span class="nf">count</span><span class="p">(</span><span class="s1">'T'</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>Let’s run our test again.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ruby counting_nucleotides.rb
+Run options: <span class="nt">--seed</span> 3996
+
+<span class="c"># Running:</span>
+
+F
+
+Finished <span class="k">in </span>0.000411s, 2433.0901 runs/s, 2433.0901 assertions/s.
+
+  1<span class="o">)</span> Failure:
+nucleotide counting <span class="k">function</span><span class="c">#test_0001_returns a count of 2 2 2 2 for strand "ATCGATCG" [counting_nucleotides.rb:13]:</span>
+Expected: <span class="s2">"2 2 2 2"</span>
+  Actual: 8
+
+1 runs, 1 assertions, 1 failures, 0 errors, 0 skips
+</code></pre></div></div>
+
+<p>Whoops!</p>
+
+<p>That looks like it found the number of substrings correctly. However, because
+of a programming mistake, it looks like it added all the occurences together,
+instead of presenting them in a formatted string.</p>
+
+<p>Let’s do that in the easiest way that comes to mind - using string concatenation
+and casting the <code class="language-plaintext highlighter-rouge">integer</code> representing the count back to a <code class="language-plaintext highlighter-rouge">string</code>, while also
+adding some spaces (so that we get closer to the expected output):</p>
+
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span>
+    <span class="n">strand</span><span class="p">.</span><span class="nf">count</span><span class="p">(</span><span class="s1">'A'</span><span class="p">).</span><span class="nf">to_s</span> <span class="o">+</span> <span class="s2">" "</span> <span class="o">+</span> <span class="n">strand</span><span class="p">.</span><span class="nf">count</span><span class="p">(</span><span class="s1">'C'</span><span class="p">).</span><span class="nf">to_s</span> <span class="o">+</span> <span class="s2">" "</span> <span class="o">+</span> <span class="n">strand</span><span class="p">.</span><span class="nf">count</span><span class="p">(</span><span class="s1">'G'</span><span class="p">).</span><span class="nf">to_s</span> <span class="o">+</span> <span class="s2">" "</span> <span class="o">+</span> <span class="n">strand</span><span class="p">.</span><span class="nf">count</span><span class="p">(</span><span class="s1">'T'</span><span class="p">).</span><span class="nf">to_s</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>Let’s see what happens now…</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ruby counting_nucleotides.rb
+Run options: <span class="nt">--seed</span> 37259
+
+<span class="c"># Running:</span>
+
+<span class="nb">.</span>
+
+Finished <span class="k">in </span>0.000321s, 3115.2648 runs/s, 3115.2648 assertions/s.
+
+1 runs, 1 assertions, 0 failures, 0 errors, 0 skips
+</code></pre></div></div>
+
+<p>It worked! I mean, our code <del>is a bit atrocious</del> could be better, but here
+we have our first version of it working. 🎉</p>
+
+<hr />
+
+<p>Now that we have our first unit test passing, let’s think a bit more about
+the test cases we want.</p>
+
+<p>We want at least a representative sample of each of the following:</p>
+
+<ul>
+  <li>Positive cases,</li>
+  <li>Negative cases,</li>
+  <li>Degenerate cases.</li>
+</ul>
+
+<p><em>Positive cases</em> are cases in which we exercise the <em>happy path</em> - the code path we
+were most anticipating when we were designing our code.</p>
+
+<p><em>Negative cases</em> are cases in which we divert away from the happy path, and
+try to exercise error conditions, etc.</p>
+
+<p><em>Degenerate cases</em> are cases in which we test around boundary conditions, such as
+empty lists, strings, etc, to see if our function can handle these cases.</p>
+
+<p>We already have a test for a positive case, so right now, it might make more sense
+for us to test against a negative case. So what would be a negative case for us?</p>
+
+<p>We are being passed a strand in as a <code class="language-plaintext highlighter-rouge">string</code>. Given that a <code class="language-plaintext highlighter-rouge">string</code> can have a
+lot more characters than just the four representing nucleobases, what happens if we
+have a string that has characters that don’t represent a nucleotide base? What happens
+if we have something like <code class="language-plaintext highlighter-rouge">ATCGW</code> for a <code class="language-plaintext highlighter-rouge">strand</code>? Let’s see.</p>
+
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">it</span> <span class="s1">'throws an exception if a non-base encoding character is found in the strand'</span> <span class="k">do</span>
+    <span class="n">strand</span> <span class="o">=</span> <span class="s1">'ATCGW'</span>
+    
+    <span class="n">assert_raises</span><span class="p">(</span><span class="no">ArgumentError</span><span class="p">)</span> <span class="p">{</span> <span class="n">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span> <span class="p">}</span>
+  <span class="k">end</span>
+</code></pre></div></div>
+
+<p>Let’s run it to see what happened this time.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ruby counting_nucleotides.rb
+Run options: <span class="nt">--seed</span> 54524
+
+<span class="c"># Running:</span>
+
+.F
+
+Finished <span class="k">in </span>0.000506s, 3952.5692 runs/s, 3952.5692 assertions/s.
+
+  1<span class="o">)</span> Failure:
+nucleotide counting <span class="k">function</span><span class="c">#test_0002_throws an exception if a non-base encoding character is found in the strand [counting_nucleotides.rb:19]:</span>
+ArgumentError expected but nothing was raised.
+
+2 runs, 2 assertions, 1 failures, 0 errors, 0 skips
+</code></pre></div></div>
+
+<p>😱</p>
+
+<p>Yikes! We were expecting an exception to be raised, but none was raised.
+That means that our code had no issue handling the invalid string. Let’s fix that.</p>
+
+<p>Let’s fix that the simplest way we can: by defining a list of illegal characters
+for the strand string and seeing if they are present in the string.</p>
+
+<p>That gets us with the following version of <code class="language-plaintext highlighter-rouge">count_nucleotides</code>:</p>
+
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span>
+    <span class="n">illegal_chars</span> <span class="o">=</span> <span class="s1">'BDEFHIJKLNOPQRSUVWXYZ'</span>
+    <span class="n">illegal_chars</span><span class="p">.</span><span class="nf">split</span><span class="p">(</span><span class="s1">''</span><span class="p">).</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">char</span><span class="o">|</span>
+        <span class="k">if</span> <span class="n">strand</span><span class="p">.</span><span class="nf">include?</span><span class="p">(</span><span class="n">char</span><span class="p">)</span> <span class="k">then</span>
+            <span class="k">raise</span> <span class="no">ArgumentError</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="s1">'Illegal character in strand '</span> <span class="o">+</span> <span class="n">char</span><span class="p">)</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+    <span class="n">strand</span><span class="p">.</span><span class="nf">count</span><span class="p">(</span><span class="s1">'A'</span><span class="p">).</span><span class="nf">to_s</span> <span class="o">+</span> <span class="s2">" "</span> <span class="o">+</span> <span class="n">strand</span><span class="p">.</span><span class="nf">count</span><span class="p">(</span><span class="s1">'C'</span><span class="p">).</span><span class="nf">to_s</span> <span class="o">+</span> <span class="s2">" "</span> <span class="o">+</span> <span class="n">strand</span><span class="p">.</span><span class="nf">count</span><span class="p">(</span><span class="s1">'G'</span><span class="p">).</span><span class="nf">to_s</span> <span class="o">+</span> <span class="s2">" "</span> <span class="o">+</span> <span class="n">strand</span><span class="p">.</span><span class="nf">count</span><span class="p">(</span><span class="s1">'T'</span><span class="p">).</span><span class="nf">to_s</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>Let’s see where we stand now:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ruby counting_nucleotides.rb
+Run options: <span class="nt">--seed</span> 25460
+
+<span class="c"># Running:</span>
+
+..
+
+Finished <span class="k">in </span>0.000348s, 5747.1265 runs/s, 5747.1265 assertions/s.
+
+2 runs, 2 assertions, 0 failures, 0 errors, 0 skips
+</code></pre></div></div>
+
+<p>Nice. That works, so now both our positive case and our negative test cases pass.</p>
+
+<p>The only downside is that we are left with a <code class="language-plaintext highlighter-rouge">counting_nucleotides</code> function that
+looks a bit hard to read - not to mention a bit wasteful, too.</p>
+
+<p>(Aside: It loops through the string a lot more times than it needs to, as it loops
+once per every illegal character it’s looking for, and then once for every character
+it’s searching the count for.)</p>
+
+<hr />
+
+<p>At this point, it’s worth to pause, and reflect on where we are in the process so far.</p>
+
+<p>TDD is a loop of the following 3 steps:</p>
+
+<ol>
+  <li>Write a <em>failing test</em>.</li>
+  <li>Make the test <em>pass</em>.</li>
+  <li><em>Refactor</em> the implementation.</li>
+</ol>
+
+<p>(Refactoring is the reorganisation of the code with the aim of improving it with
+regard to some metric, say, robustness, readability, performance, etc)</p>
+
+<p>Up until this point, we have been focusing on the first two steps, but did none
+of the third one.</p>
+
+<p>We usually refactor once we get some of our implementation done, and <strong>all our
+tests are passing</strong>.</p>
+
+<p>In other words, now is as good time as any to refactor our code.</p>
+
+<hr />
+
+<p>Let’s have a look at our feature code, the <code class="language-plaintext highlighter-rouge">count_nucleotides</code> function.</p>
+
+<p>What if, instead of looping so many times, we looped just once, and collected
+both counts and watched out for any illegal character at the same time?</p>
+
+<p>That does sound like it should improve our performance, now, doesn’t it?</p>
+
+<p>Let’s go ahead and do this, and see what happens.</p>
+
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span>
+    <span class="n">count_a</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">count_t</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">count_c</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">count_g</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">strand</span><span class="p">.</span><span class="nf">split</span><span class="p">(</span><span class="s1">''</span><span class="p">).</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">base</span><span class="o">|</span>
+        <span class="k">if</span> <span class="n">base</span> <span class="o">==</span> <span class="s1">'A'</span> <span class="k">then</span>
+            <span class="n">count_a</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">elsif</span> <span class="n">base</span> <span class="o">==</span> <span class="s1">'T'</span> <span class="k">then</span>
+            <span class="n">count_t</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">elsif</span> <span class="n">base</span> <span class="o">==</span> <span class="s1">'C'</span> <span class="k">then</span>
+            <span class="n">count_c</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">elsif</span> <span class="n">base</span> <span class="o">==</span> <span class="s1">'G'</span> <span class="k">then</span>
+            <span class="n">count_g</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span>
+            <span class="k">raise</span> <span class="no">ArgumentError</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="s1">'Invalid character in strand '</span> <span class="o">+</span> <span class="n">base</span><span class="p">)</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+
+    <span class="s2">"</span><span class="si">#{</span><span class="n">count_a</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">count_t</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">count_c</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">count_g</span><span class="si">}</span><span class="s2">"</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>Looks simpler to me. Does it work, though?</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ruby counting_nucleotides.rb
+Run options: <span class="nt">--seed</span> 48449
+
+<span class="c"># Running:</span>
+
+..
+
+Finished <span class="k">in </span>0.000378s, 5291.0053 runs/s, 5291.0053 assertions/s.
+
+2 runs, 2 assertions, 0 failures, 0 errors, 0 skips
+</code></pre></div></div>
+
+<p>It does.</p>
+
+<p>And just like this, we saw the massive benefit of having automated tests for this:
+we did some pretty significant <em>structural changes</em> to our function under test,
+but even so, we are confident that its observable behaviour remains unchanged
+given our tests and their coverage.</p>
+
+<hr />
+
+<p>Now that we have both the positive and negative tests, can we write a test for
+the degenerate case?</p>
+
+<p>Turns out we can.</p>
+
+<p>A degenerate case for us would be an <strong>empty string</strong> (<code class="language-plaintext highlighter-rouge">""</code>), given that we anticipate
+the <code class="language-plaintext highlighter-rouge">strand</code> to exist (signified by a non-empty string).</p>
+
+<p>Before we go ahead and write our test case, let’s have a bit of a think around
+the behaviour of our function in the case of an empty string. Should it:</p>
+
+<ol>
+  <li>Return a count of <code class="language-plaintext highlighter-rouge">0 0 0 0</code>, or</li>
+  <li>Raise an exception?</li>
+</ol>
+
+<p>Usually, in situations like this, a decision like this already forms part of
+our specification - but in our case, though, the exercise contains no indication
+as to what is considered canonical, so we can choose either.</p>
+
+<p>Let’s go with expecting a count of <code class="language-plaintext highlighter-rouge">0 0 0 0</code> for this one (there don’t appear to
+be any significant benefits whichever one we choose).</p>
+
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">it</span> <span class="s1">'returns a count of 0 0 0 0 for a strand with zero bases (empty string)'</span> <span class="k">do</span>
+    <span class="n">strand</span> <span class="o">=</span> <span class="s1">''</span>
+    <span class="n">nucleotide_count</span> <span class="o">=</span> <span class="s1">'0 0 0 0'</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span>
+
+    <span class="n">assert_equal</span> <span class="n">nucleotide_count</span><span class="p">,</span> <span class="n">result</span>
+  <span class="k">end</span>
+</code></pre></div></div>
+
+<p>Let’s check our function’s behaviour:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ruby counting_nucleotides.rb
+Run options: <span class="nt">--seed</span> 33926
+
+<span class="c"># Running:</span>
+
+...
+
+Finished <span class="k">in </span>0.000378s, 7936.5079 runs/s, 7936.5079 assertions/s.
+
+3 runs, 3 assertions, 0 failures, 0 errors, 0 skips
+</code></pre></div></div>
+
+<p>Very nice.</p>
+
+<hr />
+
+<p>Are we done, now?</p>
+
+<p>Not so fast.</p>
+
+<p>There’s a requirement in our specification that we have ignored so far:</p>
+
+<blockquote>
+  <p>Given: A DNA string s of length <em>at most 1000 nt</em>.</p>
+</blockquote>
+
+<p>(Emphasis mine.)</p>
+
+<p>Let’s quickly add a test case with an invalid length (&gt; 1000 nucleotides) to see
+how our code behaves with against this requirement:</p>
+
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">it</span> <span class="s1">'throws an exception if a strand is more than 1000nt long'</span> <span class="k">do</span>
+    <span class="n">strand</span> <span class="o">=</span> <span class="s1">'A'</span> <span class="o">*</span> <span class="mi">1005</span>
+
+    <span class="n">assert_raises</span><span class="p">(</span><span class="no">ArgumentError</span><span class="p">)</span> <span class="p">{</span> <span class="n">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span> <span class="p">}</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ruby counting_nucleotides.rb
+Run options: <span class="nt">--seed</span> 15834
+
+<span class="c"># Running:</span>
+
+...F
+
+Finished <span class="k">in </span>0.000579s, 6908.4628 runs/s, 6908.4628 assertions/s.
+
+  1<span class="o">)</span> Failure:
+nucleotide counting <span class="k">function</span><span class="c">#test_0004_throws an exception if a strand is more than 1000nt long [counting_nucleotides.rb:52]:</span>
+ArgumentError expected but nothing was raised.
+
+4 runs, 4 assertions, 1 failures, 0 errors, 0 skips
+</code></pre></div></div>
+
+<p>The test fails, as we were anticipating an exception but none was raised.</p>
+
+<p>Let’s change our function to factor in this new requirement.</p>
+
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span>
+    <span class="n">count_a</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">count_t</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">count_c</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">count_g</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="n">strand</span><span class="p">.</span><span class="nf">length</span> <span class="o">&gt;</span> <span class="mi">1000</span> <span class="k">then</span>
+        <span class="k">raise</span> <span class="no">ArgumentError</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="s1">'A strand of at most 1000nt is expected'</span><span class="p">)</span>
+    <span class="k">end</span>
+
+    <span class="n">strand</span><span class="p">.</span><span class="nf">split</span><span class="p">(</span><span class="s1">''</span><span class="p">).</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">base</span><span class="o">|</span>
+        <span class="k">if</span> <span class="n">base</span> <span class="o">==</span> <span class="s1">'A'</span> <span class="k">then</span>
+            <span class="n">count_a</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">elsif</span> <span class="n">base</span> <span class="o">==</span> <span class="s1">'T'</span> <span class="k">then</span>
+            <span class="n">count_t</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">elsif</span> <span class="n">base</span> <span class="o">==</span> <span class="s1">'C'</span> <span class="k">then</span>
+            <span class="n">count_c</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">elsif</span> <span class="n">base</span> <span class="o">==</span> <span class="s1">'G'</span> <span class="k">then</span>
+            <span class="n">count_g</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span>
+            <span class="k">raise</span> <span class="no">ArgumentError</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="s1">'Invalid character in strand '</span> <span class="o">+</span> <span class="n">base</span><span class="p">)</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+
+    <span class="s2">"</span><span class="si">#{</span><span class="n">count_a</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">count_t</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">count_c</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">count_g</span><span class="si">}</span><span class="s2">"</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>Let’s see how our test does now:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ruby counting_nucleotides.rb
+Run options: <span class="nt">--seed</span> 14091
+
+<span class="c"># Running:</span>
+
+....
+
+Finished <span class="k">in </span>0.000355s, 11267.6056 runs/s, 11267.6056 assertions/s.
+
+4 runs, 4 assertions, 0 failures, 0 errors, 0 skips
+</code></pre></div></div>
+
+<p>Very nice. Everything passes now.</p>
+
+<hr />
+
+<p>Before we wrap this up, let’s make one final addition to our test case.</p>
+
+<p>Do you remember how I mentioned that the exercise specification describes
+a test case already?</p>
+
+<p>We can incorporate this into our test cases. As a matter of fact, we can
+substitute this one for the simpler positive case we had.</p>
+
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">it</span> <span class="s1">'returns a count of 20 12 17 21 for the specification strand'</span> <span class="k">do</span>
+    <span class="n">strand</span> <span class="o">=</span> <span class="s1">'AGCTTTTCATTCTGACTGCAACGGGCAATATGTCTCTGTGTGGATTAAAAAAAGAGTGTCTGATAGCAGC'</span>
+    <span class="n">nucleotide_count</span> <span class="o">=</span> <span class="s1">'20 12 17 21'</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span>
+
+    <span class="n">assert_equal</span> <span class="n">nucleotide_count</span><span class="p">,</span> <span class="n">result</span>
+  <span class="k">end</span>
+</code></pre></div></div>
+
+<p>Let’s see how we fare against the story test case (the one given to us in
+the specification).</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ruby counting_nucleotides.rb
+Run options: <span class="nt">--seed</span> 17159
+
+<span class="c"># Running:</span>
+
+.....
+
+Finished <span class="k">in </span>0.000428s, 11682.2430 runs/s, 11682.2430 assertions/s.
+
+5 runs, 5 assertions, 0 failures, 0 errors, 0 skips
+</code></pre></div></div>
+
+<p>Looks like everything works as expected. 🎉</p>
+
+<hr />
+
+<p>Before I wrap up, I would be remiss if I did not mention that this particular
+approach of designing code (<em>Test-Driven Development</em>) works very well when we
+know the expected output of our code (say, when we know a lot about the domain,
+or when our specification allows for examples that demonstrate expected input
+and output).</p>
+
+<p>It doesn’t work as great, however, when we don’t know what the output is (say,
+for instance, when we do exploratory programming, as in the case of exploring
+an API that’s given to us).</p>
+
+<p>The complete code for this small exercise is listed below:</p>
+
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s1">'minitest/autorun'</span>
+
+<span class="c1">## IMPLEMENTATION CODE</span>
+
+<span class="k">def</span> <span class="nf">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span>
+    <span class="n">count_a</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">count_t</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">count_c</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">count_g</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="n">strand</span><span class="p">.</span><span class="nf">length</span> <span class="o">&gt;</span> <span class="mi">1000</span> <span class="k">then</span>
+        <span class="k">raise</span> <span class="no">ArgumentError</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="s1">'A strand of at most 1000nt is expected'</span><span class="p">)</span>
+    <span class="k">end</span>
+
+    <span class="n">strand</span><span class="p">.</span><span class="nf">split</span><span class="p">(</span><span class="s1">''</span><span class="p">).</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">base</span><span class="o">|</span>
+        <span class="k">if</span> <span class="n">base</span> <span class="o">==</span> <span class="s1">'A'</span> <span class="k">then</span>
+            <span class="n">count_a</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">elsif</span> <span class="n">base</span> <span class="o">==</span> <span class="s1">'T'</span> <span class="k">then</span>
+            <span class="n">count_t</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">elsif</span> <span class="n">base</span> <span class="o">==</span> <span class="s1">'C'</span> <span class="k">then</span>
+            <span class="n">count_c</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">elsif</span> <span class="n">base</span> <span class="o">==</span> <span class="s1">'G'</span> <span class="k">then</span>
+            <span class="n">count_g</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span>
+            <span class="k">raise</span> <span class="no">ArgumentError</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="s1">'Invalid character in strand '</span> <span class="o">+</span> <span class="n">base</span><span class="p">)</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+
+    <span class="s2">"</span><span class="si">#{</span><span class="n">count_a</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">count_c</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">count_g</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">count_t</span><span class="si">}</span><span class="s2">"</span>
+<span class="k">end</span>
+
+
+<span class="c1">## TEST CODE</span>
+
+<span class="n">describe</span> <span class="s1">'nucleotide counting function'</span> <span class="k">do</span>
+  <span class="c1"># Positive case</span>
+  <span class="n">it</span> <span class="s1">'returns a count of 20 12 17 21 for the specification strand'</span> <span class="k">do</span>
+    <span class="n">strand</span> <span class="o">=</span> <span class="s1">'AGCTTTTCATTCTGACTGCAACGGGCAATATGTCTCTGTGTGGATTAAAAAAAGAGTGTCTGATAGCAGC'</span>
+    <span class="n">nucleotide_count</span> <span class="o">=</span> <span class="s1">'20 12 17 21'</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span>
+
+    <span class="n">assert_equal</span> <span class="n">nucleotide_count</span><span class="p">,</span> <span class="n">result</span>
+  <span class="k">end</span>
+
+  <span class="c1"># Negative cases</span>
+  <span class="n">it</span> <span class="s1">'throws an exception if a non-base encoding character is found in the strand'</span> <span class="k">do</span>
+    <span class="n">strand</span> <span class="o">=</span> <span class="s1">'ATCGW'</span>
+    
+    <span class="n">assert_raises</span><span class="p">(</span><span class="no">ArgumentError</span><span class="p">)</span> <span class="p">{</span> <span class="n">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span> <span class="p">}</span>
+  <span class="k">end</span>
+
+  <span class="n">it</span> <span class="s1">'throws an exception if a strand is more than 1000nt long'</span> <span class="k">do</span>
+    <span class="n">strand</span> <span class="o">=</span> <span class="s1">'A'</span> <span class="o">*</span> <span class="mi">1005</span>
+
+    <span class="n">assert_raises</span><span class="p">(</span><span class="no">ArgumentError</span><span class="p">)</span> <span class="p">{</span> <span class="n">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span> <span class="p">}</span>
+  <span class="k">end</span>
+
+  <span class="c1"># Degenerate cases</span>
+  <span class="n">it</span> <span class="s1">'returns a count of 0 0 0 0 for a strand with zero bases (empty string)'</span> <span class="k">do</span>
+    <span class="n">strand</span> <span class="o">=</span> <span class="s1">''</span>
+    <span class="n">nucleotide_count</span> <span class="o">=</span> <span class="s1">'0 0 0 0'</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span>
+
+    <span class="n">assert_equal</span> <span class="n">nucleotide_count</span><span class="p">,</span> <span class="n">result</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+        </div>
+        
+      </li>
+    
+      
+      
+
+      <li>
+        <header class="post-header">
+          <h1 class="post-title">
+            
+              <a class="post-link" href="/2014/07/09/distro-forking-101/">Distro forking 101: How do you fork a Linux distro?</a>
+            
+          </h1>
+
+          <p class="post-meta">
+            Jul 9, 2014
+            
+              
+
+ •
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/linux/">linux</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/distro/">distro</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/fork/">fork</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/debian/">debian</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/arch/">arch</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/fedora/">fedora</a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+
+            
+            
+          </p>
+        </header>
+
+        <div class="post-content">
+          <h1>Defining the GNU/Linux distribution</h1>
+
+<p>If you are here, we can safely assume that you already know what a <strong>GNU/Linux software
+distribution</strong> is, but for completion’s sake, let’s just define so we all have the same context.</p>
+
+<p>A GNU/Linux distribution is a collection of system and application software, packaged together
+by the distribution’s developers, so that they are distributed in a nicely integrated bundle, ready
+to be used by users and developers alike. Software typically included in such a distribution
+ranges from a compiler toolchain, to the C library, to filesystem utilities to text editors.</p>
+
+<p>As you can imagine, from the existence of several different GNU/Linux distributions, there are 
+multiple ways that you could possibly combine all these different applications and their respective
+configurations, not to mention that you could include even more specialised software, depending
+on the target audience of the distribution (such as multimedia software for a distribution like 
+<a href="http://ubuntustudio.org/">Ubuntu Studio</a> or penetration testing tools for a distribution such as
+<a href="http://www.kali.org/">Kali Linux</a>)</p>
+
+<h1>The “f” word</h1>
+
+<p>But even with such a great number of different software collections and their respective configurations
+there still may not be one that appeals to your specific needs. That’s ok though, as you can still
+customize each and every distribution to your specific liking. Extensive customization is known to
+create a <em>differentiation point</em> known as a <strong>potential forking point</strong>.</p>
+
+<p>Forking is a term that has been known to carry negative connotations. <a href="http://en.wikipedia.org/wiki/Fork_%28software_development%29">As wikipedia puts it</a>,</p>
+
+<blockquote>
+  <p>the term often implies not merely a development branch, but a split in the developer community
+a form of schism.</p>
+</blockquote>
+
+<p>Historically, it has also been used as a leverage to coerce a project’s developers 
+into merging code into their master branches
+that they didn’t originally want to, or otherwise take a decision that they wouldn’t have taken
+if not under the pressure of a <em>“fork”</em>. But why is it so?</p>
+
+<p>You see, traditionally, forking a project meant a couple of things: For starters, there were now
+two, identical projects, competing in the same solution space. 
+Those two projects had different development hours and 
+features or bug fixes going into them, and eventually, one of the two ended up being obsolete.
+Apart from that forking also created an atmosphere of intense competition among the two projects.</p>
+
+<p>However, in 2014, and the advent of the distributed version control systems such as <a href="http://git-scm.com/">git</a> 
+and <a href="http://mercurial.selenic.com/">mercurial</a> and of the social coding websites such as <a href="http://www.github.com">Github</a> and <a href="http://www.bitbucket.org">Bitbucket</a>, the term is finally taking
+on a more lax meaning, as just another code repository that may or may not enjoy major 
+(or even minor, for that matter) development.</p>
+
+<h2>Forking a GNU/Linux distribution</h2>
+
+<p>So, up until now we have discussed what a GNU/Linux distribution is, and what a fork is. 
+However, we haven’t discussed yet what it means to fork a GNU/Linux distribution.</p>
+
+<p>You see, what differentiates each distro from the other ones, apart from the software collection 
+that they contain, is the way in which they provide (and deploy) that software. Yes, we are talking about software packages and their respective package managers. Distributions from the Debian
+(.deb) family are using <code class="language-plaintext highlighter-rouge">dpkg</code> along with <code class="language-plaintext highlighter-rouge">apt</code> or <code class="language-plaintext highlighter-rouge">synaptic</code> or <code class="language-plaintext highlighter-rouge">aptitude</code> or some other higher level
+tool. RPM (.rpm) based distributions may use <code class="language-plaintext highlighter-rouge">rpm</code> with <code class="language-plaintext highlighter-rouge">yum</code> or <code class="language-plaintext highlighter-rouge">dnf</code> or  <code class="language-plaintext highlighter-rouge">zypper</code> or another higher level tool. 
+Other distributions, not based on the aforementioned may choose to roll their own configuration
+of packages and package managers, with Arch Linux using its own <code class="language-plaintext highlighter-rouge">pacman</code>, Sabayon uses its <code class="language-plaintext highlighter-rouge">entropy</code>
+package manager, etc.</p>
+
+<p>Now, naturally, if you want to customize an application to your liking, you have many ways in which
+you could do that. One of them is downloading the tarball from the upstream’s website or ftp 
+server, <code class="language-plaintext highlighter-rouge">./configure</code> it and then <code class="language-plaintext highlighter-rouge">make</code> and <code class="language-plaintext highlighter-rouge">make install</code> it. But if you do start customizing
+lots of applications this way, it can become tedious and unwieldy too soon. After all, what did
+that <code class="language-plaintext highlighter-rouge">make install</code> install exactly? Will the new update replace those files? What were your
+configuration options? Did they replace the files the package manager installed?</p>
+
+<p>In this case, it really pays off to learn <strong>packaging</strong> software for your distribution of choice.
+What this means is to learn the format of packages your distribution’s package manager accepts
+as well as how you could produce them. This way, instead of the <code class="language-plaintext highlighter-rouge">./configure &amp;&amp; make &amp;&amp; make install</code> 
+cycle, you just have beautiful software packages, that you can control more tightly, you can 
+update more easily and you can also distribute them to your friends if you so desire. As an added
+bonus, now the package manager also knows about those files, and you can install, remove
+or update them much more easily. What’s not to like?</p>
+
+<p>After you have created some custom packages, you may also wish to create a repository
+to contain them and update straight from that. <strong>Congratulations, you have created your custom
+distribution, and a potential fork.</strong> While you are at it, if you really want to fork the distribution,
+you could as well take the distribution’s <code class="language-plaintext highlighter-rouge">base</code> packages, customize them, rebuild them, and then
+distribute them. <strong>Congratulations again, now you have your true GNU/Linux distribution fork</strong>.</p>
+
+<h1>That seems easy. More specifically?</h1>
+
+<p>Yes of course. Let’s take a look at how you might want to go about forking some well known
+GNU/Linux distribution.</p>
+
+<h2>Debian</h2>
+
+<p>In Debian, your usual procedure if you wish to customize a package is the below:</p>
+
+<ul>
+  <li>First, you make sure you have the essential building software installed. <code class="language-plaintext highlighter-rouge">apt-get install build-essential devscripts debhelper</code></li>
+  <li>Then you need to download the package’s build dependencies. <code class="language-plaintext highlighter-rouge">apt-get build-dep $package_name</code></li>
+  <li>Now it’s time to download it’s sources, via <code class="language-plaintext highlighter-rouge">apt-get source $package_name</code></li>
+  <li>Proceed with customizing it to your liking (update it, patch the sources, etc)</li>
+  <li>Now it’s time to rebuild it. <code class="language-plaintext highlighter-rouge">debuild -us -uc</code></li>
+</ul>
+
+<p>Assuming all went fine, you should now have an <code class="language-plaintext highlighter-rouge">$package_name.deb</code> file in your current 
+directory ready to be installed with <code class="language-plaintext highlighter-rouge">dpkg -i $package_name.deb</code>.</p>
+
+<p>Please take note that the above is not an extensive treatise into debian packaging by any means.
+If you want to build custom debian packages, here are some links:</p>
+
+<ul>
+  <li><a href="https://wiki.debian.org/IntroDebianPackaging">Debian wiki: intro to Debian packaging</a></li>
+  <li><a href="http://people.connexer.com/~roberto/howtos/debcustomize">Roberto C Sanchez: Debian package customization how to</a></li>
+  <li><a href="https://wiki.debian.org/HowToPackageForDebian">Debian wiki: How to package for Debian</a></li>
+</ul>
+
+<p>Now that you have your custom packages, it’s time to build a repository to contain them. There 
+are many tools you can use to do that, including the official debian package archiving tool
+known as <code class="language-plaintext highlighter-rouge">dak</code>, but if you want a personal repository without too much hassle, it’s better if you
+use <code class="language-plaintext highlighter-rouge">reprepro</code>. I won’t go to full length on that here, <a href="http://www.debian-administration.org/article/286/Setting_up_your_own_APT_repository_with_upload_support">but instead I will lead you to a very
+good guide to do so if you so desire</a></p>
+
+<h2>Fedora</h2>
+
+<p>Building packages for fedora is a procedure similar to the debian one. Fedora however is more
+convenient in one aspect: <a href="http://download.fedoraproject.org/pub/fedora/linux/releases/20/Fedora/source/iso/Fedora-20-source-DVD.iso">It allows you to download a DVD image with all the sources in <code class="language-plaintext highlighter-rouge">.rpm</code> form
+ready for you to customize and rebuild to your tastes.</a></p>
+
+<p>Apart from that, the usual procedure is the following:</p>
+
+<ul>
+  <li>Download the <code class="language-plaintext highlighter-rouge">SRPM</code> (source RPM) via any means. You could do that using the <code class="language-plaintext highlighter-rouge">yumdownloader</code> utility, likewise <code class="language-plaintext highlighter-rouge">yumdownloader $package_name</code>. To use <code class="language-plaintext highlighter-rouge">yumdownloader</code>, you need
+to have <code class="language-plaintext highlighter-rouge">yum-utils</code> installed.</li>
+  <li>After you have downloaded the <code class="language-plaintext highlighter-rouge">SRPM</code>, next you have to unpack it: <code class="language-plaintext highlighter-rouge">rpm -i $package_name</code></li>
+  <li>Next up, you customize the package to your liking (patch the sources, etc)</li>
+  <li>Finally, you <code class="language-plaintext highlighter-rouge">cd</code> to the <code class="language-plaintext highlighter-rouge">SPECS</code> folder, and then <code class="language-plaintext highlighter-rouge">rpmbuild -ba $package.spec</code></li>
+</ul>
+
+<p>Again the above mentioned steps may not be 100% correct. If you want to go down this route,
+see the following links for more information:</p>
+
+<ul>
+  <li><a href="http://wiki.centos.org/HowTos/RebuildSRPM">Centos wiki: Rebuild SRPM how-to</a></li>
+  <li><a href="http://www.cyberciti.biz/faq/yum-download-source-packages-from-rhn/">cyberciti: yum Download all Source Packages from RedHat</a></li>
+  <li><a href="http://bradthemad.org/tech/notes/patching_rpms.php">bradthemad.org: How to patch and rebuild an RPM package</a></li>
+  <li><a href="http://www.rpm.org/max-rpm/ch-rpm-build.html">rpm.org: Chapter 11. Building packages</a></li>
+  <li><a href="https://fedoraproject.org/wiki/How_to_create_an_RPM_package">Fedora wiki: How to create an RPM package</a></li>
+</ul>
+
+<p>Next up, is the repository creation step.</p>
+
+<ul>
+  <li>To create a yum repository, you need to <code class="language-plaintext highlighter-rouge">yum install createrepo</code>. 
+After that you need to create a directory to use as the repository, likewise
+<code class="language-plaintext highlighter-rouge">mkdir /var/ftp/repo/Fedora/19/{SRPMS, i386,x86_64)</code>.</li>
+  <li>After that you move your i386 packages to <code class="language-plaintext highlighter-rouge">/var/ftp/repo/Fedora/19/i386</code>, and the rest
+of the packages to their respective folders.</li>
+  <li>Next step is adding a configuration file to <code class="language-plaintext highlighter-rouge">/etc/yum.repos.d/</code> that describes your repository
+to yum.</li>
+</ul>
+
+<p>Again, not definitive, and for more information, take a look at these links:</p>
+
+<ul>
+  <li><a href="https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Deployment_Guide/sec-Yum_Repository.html">Redhat: Creating a yum repository</a></li>
+  <li><a href="http://www.techrepublic.com/blog/linux-and-open-source/create-your-own-yum-repository">techrepublic: Creating your own yum repository</a></li>
+  <li><a href="http://docs.fedoraproject.org/en-US/Fedora/14/html/Deployment_Guide/sec-Creating_a_Yum_Repository.html">Fedora documentation: Creating a yum repository</a></li>
+</ul>
+
+<h2>Arch Linux</h2>
+
+<p><a href="https://www.archlinux.org/">Arch Linux</a>, at least in comparison to <code class="language-plaintext highlighter-rouge">.deb</code> and <code class="language-plaintext highlighter-rouge">.rpm</code> package
+distribution families is very easy to customize to your liking. That’s to be expected though
+as Arch Linux is a distribution that sells itself of the customization capabilities it offers to its user.</p>
+
+<p>In essence, if you want to customize a package, the general process is this:</p>
+
+<ul>
+  <li>Download Arch tarball that contains the <code class="language-plaintext highlighter-rouge">PKGBUILD</code> file</li>
+  <li>untar the tarball</li>
+  <li>(Optional) download the upstream tarball referenced in the <code class="language-plaintext highlighter-rouge">PKGBUILD</code>, and modify it
+ to your liking</li>
+  <li>run <code class="language-plaintext highlighter-rouge">makepkg</code> in the folder containing the <code class="language-plaintext highlighter-rouge">PKGBUILD</code></li>
+  <li>install (using pacman) the <code class="language-plaintext highlighter-rouge">.xz</code> file produced after the whole process is finished.</li>
+</ul>
+
+<p>In order to download the official {core | extra | community} packages, you need to run as root
+<code class="language-plaintext highlighter-rouge">abs</code>. This will create a directory tree that contains the files required for building any package 
+in the official repositories.</p>
+
+<p>Next up, you can create a custom local repository with the <code class="language-plaintext highlighter-rouge">repo-add</code> tool, and then proceeding
+with editing <code class="language-plaintext highlighter-rouge">/etc/pacman.conf</code> and adding an entry for your repository there. For more information:</p>
+
+<ul>
+  <li><a href="http://arch-stable.blogspot.gr/2012/02/make-your-own-local-repo-for-arch-linux.html">arch-stable: make your own local repo for arch linux</a></li>
+  <li><a href="https://wiki.archlinux.org/index.php/makepkg">arch wiki: makepkg</a></li>
+  <li><a href="https://wiki.archlinux.org/index.php/Pacman_tips">arch wiki: pacman tips</a></li>
+  <li><a href="https://wiki.archlinux.org/index.php/Arch_Build_System">arch wiki: Arch Build System</a></li>
+  <li><a href="https://wiki.archlinux.org/index.php/Pacman#Repositories">arch wiki: Pacman#Repositories</a></li>
+</ul>
+
+<h1>To fork or not to fork?</h1>
+
+<p>Well, that’s not an easy question to answer. My opinion is that it’s extremely educational to
+do a <strong><em>soft</em></strong> fork, clone the distribution’s core repository, and for some time maintain your own
+distribution based on it, that is, update and customize all the repositories. Do that for some months,
+then go back to using your distribution of choice now that you are enlightened with how it works
+under the hood. The reason this is very educational is that it will teach you the ins and outs of
+your distribution, teach you about <strong>all</strong> the software in it, how it integrates, what its role is.
+It will teach you packaging which is a tremendously undervalued skill, as you can customize
+your experience to your liking, and it will make you appreciate the effort going into maintaining
+the distribution.</p>
+
+<p>As for doing a <strong>hard</strong> fork, that is creating your own distribution, that you commit to maintaining
+it for a long time, my opinion is that it’s simply not worth it. Maintaining a distribution, be it
+by yourself, or with your friends, is a tremendous amount of work, that’s not worth it unless
+you have other goals you want to achieve by that. If all you want to do is to customize your 
+distribution of choice to your liking, then go ahead, learn packaging for it, customize-package
+the applications you want, then create your own repo - but always track the upstream. Diverging
+too much from the upstream is not worth the hassle, as you will end up spending more time
+maintaining than using the distribution in the end.</p>
+
+<h2>tl;dr:</h2>
+
+<p>If you want to do a small scale, private fork in order to see what’s under the hood of your Linux
+distro; by all means go ahead.</p>
+
+<p>If you want to do a large scale, public fork, then take your time to calculate the effort, if it’s worth it,
+and if you could just help the upstream distribution implement the features you want.</p>
+
+        </div>
+        
+      </li>
+    
+  </ul>
+
+  
+  <div class="pagination">
+    
+      <a class="previous" href="/posts/2/">&laquo; Older</a>
+    
+
+    
+  </div>
+
+
+
+</div>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <p>
+      
+
+&copy; Fotis Koutoulakis - Powered by <a href="https://jekyllrb.com">Jekyll</a> &amp; <a href="https://github.com/yous/whiteglass">whiteglass</a> - Subscribe via <a href="https://nlightnfotis.github.io/feed.xml">RSS</a>
+
+    </p>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

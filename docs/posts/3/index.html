@@ -1,0 +1,2010 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  
+  
+  <title>Lambda reflections</title>
+  <meta name="description" content="Functional Programming, Proofs, Bioinformatics and more.">
+  
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://nlightnfotis.github.io/posts/3/">
+  
+  
+  <link rel="alternate" type="application/rss+xml" title="Lambda reflections" href="https://nlightnfotis.github.io/feed.xml">
+
+  
+
+  
+  <meta property="og:title" content="Lambda reflections">
+  <meta property="og:site_name" content="Lambda reflections">
+  <meta property="og:url" content="https://nlightnfotis.github.io/posts/3/">
+  <meta property="og:description" content="Functional Programming, Proofs, Bioinformatics and more.">
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="NlightNFotis">
+  <meta name="twitter:title" content="Lambda reflections">
+  <meta name="twitter:description" content="Functional Programming, Proofs, Bioinformatics and more.">
+  
+    <meta name="twitter:creator" content="NlightNFotis">
+  
+  
+
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet">
+
+  
+
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">Lambda reflections</a>
+
+    <nav class="site-nav">
+      
+        
+        <a class="page-link" href="/about/">About</a>
+      
+        
+        <a class="page-link" href="/archives/">Archives</a>
+      
+        
+        <a class="page-link" href="https://github.com/NlightNFotis">GitHub</a>
+      
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <div class="home">
+
+  
+
+  
+
+  <ul class="post-list">
+    
+      
+      
+
+      <li>
+        <header class="post-header">
+          <h1 class="post-title">
+            
+              <a class="post-link" href="/2013/09/02/gsoc-week-11-report/">GSOC Week 11 report</a>
+            
+          </h1>
+
+          <p class="post-meta">
+            Sep 2, 2013
+            
+              
+
+ •
+  
+    
+    
+      
+    
+      
+        <a href="/tags/gcc/">gcc</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+        <a href="/tags/golang/">golang</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+        <a href="/tags/gsoc/">gsoc</a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+
+            
+            
+          </p>
+        </header>
+
+        <div class="post-content">
+          <h1>Introduction</h1>
+
+<p>This week was spent investigating the runtime and debugging executables with gdb.
+It was interesting in the sense that it provided me with some interesting
+pieces of information. Without any further ado, let’s present our findings:</p>
+
+<h2>My findings</h2>
+
+<p>Before starting out playing with libpthread, and glibc, I wanted to make sure
+that the goruntime behaved the way I believed it behaved, and make some further
+assurances about the goruntime. These assurances had to do with the total number
+of goroutines and the total number of machine threads at various checkpoints
+in the language runtime.</p>
+
+<ul>
+  <li>The first thread in the program is initialised during <code class="language-plaintext highlighter-rouge">runtime_schedinit</code>.</li>
+  <li>The number of m’s (kernel threads) is dependent on the number of goroutines.
+The runtime basically attempts to create an equal amount of m’s to run the goroutines.
+We can observe everytime a new goroutine is created, there is a number of calls
+to initiate a new kernel thread.</li>
+  <li>There are at least two kernel threads. One that supports the runtime (mainly the 
+garbage collector) and one that executes the code of the go program.</li>
+</ul>
+
+<p>There is only one small piece of code in the goruntime that creates some sort of
+confusion for me, and that is the code for a new m initialisation. Let me first
+present the code that confuses me:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="n">M</span><span class="o">*</span>
+<span class="nf">runtime_newm</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+
+    <span class="p">...</span>
+	<span class="n">mp</span> <span class="o">=</span> <span class="n">runtime_mal</span><span class="p">(</span><span class="k">sizeof</span> <span class="o">*</span><span class="n">mp</span><span class="p">);</span>
+
+    <span class="p">...</span>
+	<span class="n">mcommoninit</span><span class="p">(</span><span class="n">mp</span><span class="p">);</span>
+	<span class="n">mp</span><span class="o">-&gt;</span><span class="n">g0</span> <span class="o">=</span> <span class="n">runtime_malg</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">nil</span><span class="p">,</span> <span class="n">nil</span><span class="p">);</span>
+
+    <span class="p">...</span>
+	<span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_attr_init"</span><span class="p">);</span>
+	<span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_setdetachstate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">PTHREAD_CREATE_DETACHED</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_attr_setdetachstate"</span><span class="p">);</span>
+
+    <span class="p">...</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>I purposely compacted the function for brevity, as it only serves as a demonstration for a point.
+Now, my confusion lies in the line <code class="language-plaintext highlighter-rouge">mp-&gt;g0 = runtime_malg(-1, nil, nil)</code>. It is a piece of code
+that allocates memory for a new goroutine. Now I am ok with that, <strong>but</strong> what I do not understand
+is that new kernel threads (m’s) are supposed to be pick and run a goroutine from the global 
+goroutine pool - that is run an existing one, and not create a new one. Now, the <code class="language-plaintext highlighter-rouge">runtime_malg</code>
+is given parameters that don’t initialise a new goroutine properly, but still, new memory
+is allocated for a new goroutine, and is returned to <code class="language-plaintext highlighter-rouge">mp-&gt;g0</code> from runtime_malg.</p>
+
+<p>Assuming I have not misunderstood something, and I am not mistaken (which is kind of likely), 
+this is behavior that could lead to a number of questions and/or problems. For instance,
+what happens to the goroutine created by <code class="language-plaintext highlighter-rouge">runtime_malg</code>? Is it killed after the m is assigned
+a new goroutine to execute? Is it parked on the goroutine global list? Is it just ignored?
+Does it affect the runtime scheduler’s goroutine count? This is the last thing I feel I wanna
+clear out regarding gccgo’s runtime.</p>
+
+<h2>gdb</h2>
+
+<p>For this week, I also run the executables created by gccgo through gdb. It was a fertile attempt
+that, most of the time, confirmed my findings in the goruntime. It also provided us with some
+other nice pieces of information regarding the crashing of goroutines, but also left me with a 
+question.</p>
+
+<p>The code in question that I run through gdb is this:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="n">package</span> <span class="n">main</span>
+
+<span class="n">import</span> <span class="s">"fmt"</span>
+
+<span class="n">func</span> <span class="nf">say</span><span class="p">(</span><span class="n">s</span> <span class="n">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="n">fmt</span><span class="p">.</span><span class="n">Println</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="p">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"[!!] right before a go statement"</span><span class="p">)</span>
+    <span class="n">go</span> <span class="n">say</span><span class="p">(</span><span class="s">"world"</span><span class="p">)</span>
+    <span class="n">say</span> <span class="p">(</span><span class="s">"hello"</span><span class="p">)</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Your very typical hello world like goroutine program. Now, setting a break point in main 
+(not the program’s main, that’s <code class="language-plaintext highlighter-rouge">main.main</code>. <code class="language-plaintext highlighter-rouge">main</code> as far as the runtime is concerned is
+ the runtime entry point, in <code class="language-plaintext highlighter-rouge">go-main.c</code>) and running it through gdb yields the following
+results:</p>
+
+<figure class="highlight"><pre><code class="language-sh" data-lang="sh">Breakpoint 1, main <span class="o">()</span> at ../../../gcc_source/libgo/runtime/go-main.c:52
+52 runtime_check <span class="o">()</span><span class="p">;</span>
+2:  __pthread_total <span class="o">=</span> 1
+1: runtime_sched.mcount <span class="o">=</span> 0
+<span class="o">(</span>gdb<span class="o">)</span> next
+53 runtime_args <span class="o">(</span>argc, <span class="o">(</span>byte <span class="k">**</span><span class="o">)</span> argv<span class="o">)</span><span class="p">;</span>
+2: __pthread_total <span class="o">=</span> 1
+1: runtime_sched.mcount <span class="o">=</span> 0
+54 runtime_osinit <span class="o">()</span><span class="p">;</span>
+2: __pthread_total <span class="o">=</span> 1
+1: runtime_sched.mcount <span class="o">=</span> 0
+63: runtime_schedinit <span class="o">()</span><span class="p">;</span>
+2: __pthread_total <span class="o">=</span> 1
+1: runtime_sched.mcount <span class="o">=</span> 1</code></pre></figure>
+
+<p>Up until now, nothing unexpected. The kernel thread is registered with the runtime scheduler
+during its initialisation process in <code class="language-plaintext highlighter-rouge">runtime_schedinit</code> and that’ why the <code class="language-plaintext highlighter-rouge">runtime_sched.mcount</code>
+is reported to be zero many times before schedinit is run.</p>
+
+<figure class="highlight"><pre><code class="language-sh" data-lang="sh">68 __go_go <span class="o">(</span>mainstart, NULL<span class="o">)</span><span class="p">;</span>
+2: __pthread_total <span class="o">=</span> 1
+1: runtime_sched.mcount <span class="o">=</span> 1
+<span class="o">(</span>gdb<span class="o">)</span> display runtime_sched.gcount
+3: runtime_sched.gcount <span class="o">=</span> 0</code></pre></figure>
+
+<p>That too is ok, because a new goroutine is registered with the scheduler during the call to
+<code class="language-plaintext highlighter-rouge">__go_go</code>. Now I am gonna fast forward a bit, to a more interesting point.</p>
+
+<figure class="highlight"><pre><code class="language-sh" data-lang="sh">...
+<span class="o">[</span>DEBUG] <span class="o">(</span><span class="k">in </span>runtime_gogo<span class="o">)</span> new goroutine<span class="s1">'s status is 2
+[DEBUG] (in runtime_gogo) number of goroutines now is 2
+[New Thread 629.30]
+
+Program received SIGTRAP, Trace/breakpoint trap.
+0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3
+3: runtime_sched.gcount = 2
+2: __pthread_total = 2
+1: runtime_sched.mcount = 2
+(gdb) info threads
+ Id   Target  Id       Frame
+ 6    Thread  629.30   0x08048eb7 in main.main () at goroutine.go:12
+ 5    Thread  629.29   0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3
+*4    Thread  629.28   0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3
+```
+This is getting weird. I mean, libpthread is reporting that 2 threads are active,
+but gdb reports that 3 are active. Anyway, let'</span>s <span class="k">continue</span>:
+
+<span class="sb">```</span>
+<span class="o">[</span>DEBUG] <span class="o">(</span><span class="k">in </span>runtime_stoptheworld<span class="o">)</span> stopped the garbage collector
+<span class="o">[</span>DEBUG] <span class="o">(</span><span class="k">in </span>runtime_starttheworld<span class="o">)</span> starting the garbage collector
+<span class="o">[</span>DEBUG] <span class="o">(</span><span class="k">in </span>runtime_starttheworld<span class="o">)</span> number of m<span class="s1">'s now is: 2
+[DEBUG] (in runtime_starttheworld) [note] there is already one gc thread
+[!!] right before a go statement
+
+Program received signal SIGTRAP, Trace/breakpoint trap.
+0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3
+3: runtime_sched.gcount = 2
+2: __pthread_total = 2
+1: runtime_sched.mcount = 2
+(gdb) continue
+... (output omitted by me for brevity)
+
+[DEBUG] (in runtime_newm) Right before the call to pthread_create.
+a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&gt;kernel_thread == ktid;
+__mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })'</span> failed.
+<span class="o">[</span>New Thread 629.31]
+
+Program received signal SIGABRT, Aborted.
+0x01da48ec <span class="k">in</span> ?? <span class="o">()</span> from /lib/i386-gnu/libc.so.0.3
+3: runtime_sched.gcount <span class="o">=</span> 3
+2: __pthread_total <span class="o">=</span> 2
+1: runtime_sched.mcount <span class="o">=</span> 3</code></pre></figure>
+
+<p>Oh my goodness. From a first glance, this seems to be a very serious inconsistency between libpthread and the goruntime.
+At this point, the go scheduler reports 3 threads (3 registered threads, that means 
+that flow of execution has passed <code class="language-plaintext highlighter-rouge">mcommoninit</code>, the kernel thread initialisation function
+which also registers the kernel thread with the runtime_scheduler) whereas libpthread reports 2 threads.</p>
+
+<p><strong>But WAIT! Where are you going? Things are about to get even more interesting!</strong></p>
+
+<figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="o">(</span>gdb<span class="o">)</span> info threads
+ Id   Target  Id       Frame
+ 7    Thread  629.31   0x01f4da00 <span class="k">in </span>entry_point <span class="o">()</span> from /lib/i386-gnu/libpthread.so.0.3
+ 6    Thread  629.30   0x01da48ec <span class="k">in</span> ?? <span class="o">()</span> from /lib/i386-gnu/libc.so.0.3
+ 5    Thread  629.29   0x01da48ec <span class="k">in</span> ?? <span class="o">()</span> from /lib/i386-gnu/libc.so.0.3
+<span class="k">*</span>4    Thread  629.28   0x01da48ec <span class="k">in</span> ?? <span class="o">()</span> from /lib/i386-gnu/libc.so.0.3</code></pre></figure>
+
+<p>GDB reports 4 threads. Yes, 4 threads ladies and gentlemen. Now take a look closely.
+3 threads are in the same frame, with the one with id 4 being the one currently executed.
+And there is also a pattern. <code class="language-plaintext highlighter-rouge">0x01da48ec</code> is the value of the <code class="language-plaintext highlighter-rouge">eip</code> register for all 3 of them.</p>
+
+<p>That’s one thing that is for certain. Now I already have an idea. Why not change
+the current thread to the one with id 7? I’m sold to the idea, let’s do this:</p>
+
+<figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="o">(</span>gdb<span class="o">)</span> thread 7
+<span class="o">[</span>Switching to thread 7 <span class="o">(</span>Thread 629.31<span class="o">)]</span>
+<span class="c">#0  0x01f4da00 in entry_point () from /lib/i386-gnu/libpthread.so.0.3</span>
+<span class="o">(</span>gdb<span class="o">)</span> <span class="k">continue
+</span>Continuing.
+
+Program received signal SIGABRT, Aborted.
+<span class="o">[</span>Switching to Thread 629.28]
+0x01da48ec <span class="k">in</span> ?? <span class="o">()</span> from /lib/i386-gnu/libc.so.0.3
+3: runtime_sched.gcount <span class="o">=</span> 3
+2: __pthread_total <span class="o">=</span> 2
+1: runtime_sched.mcount <span class="o">=</span> 3
+<span class="o">(</span>gdb<span class="o">)</span> info threads
+ Id   Target  Id       Frame
+ 7    Thread  629.31   0x01dc08b0 <span class="k">in</span> ?? <span class="o">()</span> from /lib/i386-gnu/libc.so.0.3
+ 6    Thread  629.30   0x01da48ec <span class="k">in</span> ?? <span class="o">()</span> from /lib/i386-gnu/libc.so.0.3
+ 5    Thread  629.29   0x01da48ec <span class="k">in</span> ?? <span class="o">()</span> from /lib/i386-gnu/libc.so.0.3
+<span class="k">*</span>4    Thread  629.28   0x01da48ec <span class="k">in</span> ?? <span class="o">()</span> from /lib/i386-gnu/libc.so.0.3</code></pre></figure>
+
+<p>Damn. But I am curious. What’s the next value to be executed?</p>
+
+<figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="o">(</span>gdb<span class="o">)</span> x/i <span class="nv">$eip</span>
+<span class="o">=&gt;</span> 0x1da48ec: ret</code></pre></figure>
+
+<p>And what is the next value to be executed for the thread with id 7?</p>
+
+<figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="o">(</span>gdb<span class="o">)</span> x/i <span class="nv">$eip</span>
+<span class="o">=&gt;</span> 0x1dc08b0: call <span class="k">*</span>%edx</code></pre></figure>
+
+<h1>Conclusion</h1>
+
+<p>Apparently, there is still much debugging left to checkout what is really happening.
+But we have got some leads in the right direction, that hopefully will lead us to 
+finally finding out where the problem lies, and correct it.</p>
+
+<p>Most importantly, in my immediate plans, before iI start playing around with libpthread
+is to attempt the same debugging run on the same code, under linux (x86). Seeing as
+go is clean on linux, it would provide some clues as to what the expected results 
+should be, and where the execution differentiates substantially, a clue
+that might be vital to finding the problem.</p>
+
+        </div>
+        
+      </li>
+    
+      
+      
+
+      <li>
+        <header class="post-header">
+          <h1 class="post-title">
+            
+              <a class="post-link" href="/2013/08/26/gsoc-week-10-report/">GSOC week 10 report</a>
+            
+          </h1>
+
+          <p class="post-meta">
+            Aug 26, 2013
+            
+              
+
+ •
+  
+    
+    
+      
+        <a href="/tags/gsoc/">gsoc</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+        <a href="/tags/gcc/">gcc</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+        <a href="/tags/golang/">golang</a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+
+            
+            
+          </p>
+        </header>
+
+        <div class="post-content">
+          <h1>Introduction</h1>
+
+<p>This week was spent attempting to debug the gccgo runtime via print statements. There were many things
+that I gained from this endeavour. The most significant of which, is the fact that I have got a great
+deal of information regarding the bootstrapping of a go process. Let’s proceed into presenting this 
+week’s findings, shall we?</p>
+
+<h1>Findings</h1>
+
+<h2>The process bootstrapping sequence</h2>
+
+<p>The code that begins a new go-process is conveniently located in a file called <code class="language-plaintext highlighter-rouge">go-main.c</code>, the most significant
+part of which is the following:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">int</span>
+<span class="nf">main</span> <span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">runtime_check</span> <span class="p">();</span>
+  <span class="n">runtime_args</span> <span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="p">(</span><span class="n">byte</span> <span class="o">**</span><span class="p">)</span> <span class="n">argv</span><span class="p">);</span>
+  <span class="n">runtime_osinit</span> <span class="p">();</span>
+  <span class="n">runtime_schedinit</span> <span class="p">();</span>
+  <span class="n">__go_go</span> <span class="p">(</span><span class="n">mainstart</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+  <span class="n">runtime_mstart</span> <span class="p">(</span><span class="n">runtime_m</span> <span class="p">());</span>
+  <span class="n">abort</span> <span class="p">();</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">void</span>
+<span class="nf">mainstart</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">arg</span> <span class="n">__attribute__</span> <span class="p">((</span><span class="n">unused</span><span class="p">)))</span>
+<span class="p">{</span>
+  <span class="n">runtime_main</span> <span class="p">();</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>The process is as follows:</p>
+
+<ul>
+  <li>First <code class="language-plaintext highlighter-rouge">runtime_check</code> runs and registers the os_Args and syscall_Envs as runtime_roots with the garbage collector. I am still investigating what this function exactly is doing, but it seems like some early initialisation of the garbage collector</li>
+  <li>Secondly, <code class="language-plaintext highlighter-rouge">runtime_args</code> is run. It’s job is to call a specific argument handler for the arguments passed to <code class="language-plaintext highlighter-rouge">main</code>.</li>
+  <li>Thirdly, <code class="language-plaintext highlighter-rouge">runtime_osinit</code> is run, whose job is to call the lowlevel _CPU_COUNT function, to get the number of CPUs (in a specific data structure that represents a set of CPUs)</li>
+  <li>After that, <code class="language-plaintext highlighter-rouge">runtime_schedinit</code> is run, whose job is to create the very first goroutine (g) and system thread (m), and continues with parsing the command line arguments, and the environment variables. After that it sets the maximum number of cpus that are to be used (via <code class="language-plaintext highlighter-rouge">GOMAXPROCS</code>), runs the first goroutine, and does some last pieces of the scheduler’s initialisation.</li>
+  <li>Following <code class="language-plaintext highlighter-rouge">runtime_schedinit</code>, <code class="language-plaintext highlighter-rouge">__go_go</code> is run, a function whose purpose is to create a new queue, tell it to execute the function that is passed to it as the first parameter, and then queue the goroutine in the
+global ready-to-run goroutine pool.</li>
+  <li>Last but not least, <code class="language-plaintext highlighter-rouge">runtime_mstart</code> runs, which seems to be starting te execution of the kernel thread created during <code class="language-plaintext highlighter-rouge">runtime_schedinit</code>.</li>
+</ul>
+
+<p>The very last piece of code that is run (and most probably the most important) is <code class="language-plaintext highlighter-rouge">runtime_main</code>. Remember that this is passed as a parameter to a goroutine created during the <code class="language-plaintext highlighter-rouge">__go_go</code> call, and its job is to mark the goroutine that called it as <em>the main os thread</em>, to initialise the sceduler, and create a goroutine whose job is to release unused memory (from the heap) back to the OS.
+It then starts executing the process user defined instructions (the code the programmer run) via a call to a
+macro that directs it to <code class="language-plaintext highlighter-rouge">__go_init_main</code> in the assembly generated by the compiler.</p>
+
+<p><code class="language-plaintext highlighter-rouge">Runtime_main</code> is also the function that terminates the execution of a go process, with a call to <code class="language-plaintext highlighter-rouge">runtime_exit</code>
+which seems to be a macro to the <code class="language-plaintext highlighter-rouge">exit</code> function.</p>
+
+<h2>Other findings</h2>
+
+<p>During our debugging sessions we found out that the total count of kernel threads that are running in a simple program is at least two.
+The first one is the bootstrap M, (the one initialised during the program’s initialisation, inside <code class="language-plaintext highlighter-rouge">runtime_schedinit</code>) and at least another one, (I am still invistigating the validity of the following claim) 
+created to be used by the garbage collector.</p>
+
+<p>A simple go program such as one doing arithmetic or printing a helloworld like message evidently has no issue
+running.
+The issues arrise when we use a <code class="language-plaintext highlighter-rouge">go statement</code>. With all our debugging messages activated, this is how a simple
+go program flows:</p>
+
+<figure class="highlight"><pre><code class="language-sh" data-lang="sh">root@debian:~/Software/Experiments/go# ./a.out
+<span class="o">[</span>DEBUG] <span class="o">(</span><span class="k">in </span>main<span class="o">)</span> before runtime_mcheck is run
+<span class="o">[</span>DEBUG] <span class="o">(</span><span class="k">in </span>main<span class="o">)</span> before runtime_args is run
+<span class="o">[</span>DEBUG] <span class="o">(</span><span class="k">in </span>main<span class="o">)</span> before runtime_osinit is run
+<span class="o">[</span>DEBUG] <span class="o">(</span><span class="k">in </span>main<span class="o">)</span> before runtime_schedinit is run
+<span class="o">[</span>DEBUG] <span class="o">(</span><span class="k">in </span>main<span class="o">)</span> before runtime_mstart is run
+<span class="o">[</span>DEBUG] <span class="o">(</span><span class="k">in </span>runtime_mstart<span class="o">)</span> right before the call to runtime_minit
+<span class="o">[</span>DEBUG] <span class="o">(</span><span class="k">in </span>mainstart<span class="o">)</span> right before the call to runtime_main
+<span class="o">[</span>DEBUG] <span class="o">(</span><span class="k">in </span>runtime_main<span class="o">)</span> Beginning of runtime_main
+<span class="o">[</span>DEBUG] <span class="o">(</span>start of runtime_newm<span class="o">)</span> Total number of m<span class="s1">'s is 1
+[DEBUG] (in runtime_newm) Preparing to create a new thread
+[DEBUG] (in runtime_newm) Right before the call to pthread_create
+[DEBUG] (in runtime_newm) pthread_create returned 0
+[DEBUG] (in runtime_mstart) right before the call to runtime_minit
+[DEBUG] (end of runtime_newm) Total number of m'</span>s is 2
+Hello, fotis
+<span class="o">[</span>DEBUG] <span class="o">(</span><span class="k">in </span>runtime_main<span class="o">)</span> Right before runtime_exit</code></pre></figure>
+
+<p>And this is how a goroutine powered program fails:</p>
+
+<figure class="highlight"><pre><code class="language-sh" data-lang="sh">root@debian:~/Software/Experiments/go# ./a.out
+<span class="o">[</span>DEBUG] <span class="o">(</span><span class="k">in </span>main<span class="o">)</span> before runtime_mcheck is run
+<span class="o">[</span>DEBUG] <span class="o">(</span><span class="k">in </span>main<span class="o">)</span> before runtime_args is run
+<span class="o">[</span>DEBUG] <span class="o">(</span><span class="k">in </span>main<span class="o">)</span> before runtime_osinit is run
+<span class="o">[</span>DEBUG] <span class="o">(</span><span class="k">in </span>main<span class="o">)</span> before runtime_schedinit is run
+<span class="o">[</span>DEBUG] <span class="o">(</span><span class="k">in </span>main<span class="o">)</span> before runtime_mstart is run
+<span class="o">[</span>DEBUG] <span class="o">(</span><span class="k">in </span>runtime_mstart<span class="o">)</span> right before the call to runtime_minit
+<span class="o">[</span>DEBUG] <span class="o">(</span><span class="k">in </span>mainstart<span class="o">)</span> right before the call to runtime_main
+<span class="o">[</span>DEBUG] <span class="o">(</span><span class="k">in </span>runtime_main<span class="o">)</span> Beginning of runtime_main
+<span class="o">[</span>DEBUG] <span class="o">(</span>start of runtime_newm<span class="o">)</span> Total number of m<span class="s1">'s is 1
+[DEBUG] (in runtime_newm) Preparing to create a new thread
+[DEBUG] (in runtime_newm) Right before the call to pthread_create
+[DEBUG] (in runtime_newm) pthread_create returned 0
+[DEBUG] (in runtime_mstart) right before the call to runtime_minit
+[DEBUG] (end of runtime_newm) Total number of m'</span>s is 2
+<span class="o">[</span>DEBUG] <span class="o">(</span>start of runtime_new<span class="o">)</span> Total number of m<span class="s1">'s is 2
+[DEBUG] (in runtime_newm) Preparing to create a new thread.
+[DEBUG] (in runtime_newm) Right before the call to pthread_create
+a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&gt;kernel_thread == ktid;
+__mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })'</span> failed.
+Aborted</code></pre></figure>
+
+<h1>Work for the next week</h1>
+
+<p>I will of course continue to print debug until I have knowledge of the exact flow of execution in the go
+runtime. Right now I have very good knowledge of the flow, but there are some things that I need to sort out.
+For instance it is not exactly clear to me why we call certain functions, or what they are supposed to be doing at certain parts. After I sort this out,  I also plan to start debugging the libpthread to see what’s libpthreads status
+during a hello world like program, and during a goroutine powered program, to get to see if we get
+to find something interesting in libpthread (like how many threads does libpthread report against how
+many the goruntime reports)</p>
+
+
+        </div>
+        
+      </li>
+    
+      
+      
+
+      <li>
+        <header class="post-header">
+          <h1 class="post-title">
+            
+              <a class="post-link" href="/2013/08/19/gsoc-week-9-partial-report/">GSOC Week 9 (Partial) report</a>
+            
+          </h1>
+
+          <p class="post-meta">
+            Aug 19, 2013
+            
+              
+
+ •
+  
+    
+    
+      
+    
+      
+        <a href="/tags/gcc/">gcc</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+        <a href="/tags/golang/">golang</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+        <a href="/tags/gsoc/">gsoc</a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+
+            
+            
+          </p>
+        </header>
+
+        <div class="post-content">
+          <p>This week was revolving around the print debugging in the gccgo runtime in search
+for clues regarding the creation of new threads under the goruntime, so as to see
+if there is something wrong with the runtime itself, or the way the runtime 
+interacts with the libpthread.</p>
+
+<h2>(partial presentation of) findings</h2>
+
+<p>During print debugging the gccgo runtime, I didn’t notice anything abnormal or 
+unusual so far. For example, the code that does trigger the assertion failure
+seems to work at least once, since <code class="language-plaintext highlighter-rouge">pthread_create()</code> returns <code class="language-plaintext highlighter-rouge">0</code> at least once.</p>
+
+<p>This is expected behavior, since we already have stated that there is at least
+one <code class="language-plaintext highlighter-rouge">M</code> (kernel thread) created at the initialisation of the program’s runtime.</p>
+
+<p>If however, we try to use a <em>go statement</em> in our program, to make usage of a 
+goroutine, the runtime still fails at the usual assertion fail, however the 
+output of the program is this:</p>
+
+<div lang="shell" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@debian:~/Software/Experiments/go# ./a.out
+[DEBUG] pthread_create returned 0
+a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&gt;kernel_thread == ktid;
+__mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })' failed.
+Aborted
+</code></pre></div></div>
+
+<p>The above output can give us some pieces of information:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">pthread_create()</code> is called at least once.</li>
+  <li>it executes successfuly and without errors - libpthread code suggests that 0 is returned upon successful execution and creation of a thread</li>
+  <li>However the assertion is still triggered, which we know it’s getting triggered during thread creation.</li>
+</ul>
+
+<p>The second bullet point is also being supported by the fact that even if you exe
+cute something as simple as hello world in go, a new M is created, so you get
+something along the lines of this as an output:</p>
+
+<figure class="highlight"><pre><code class="language-sh" data-lang="sh">root@debian:~/Software/Experiments/go# ./a.out
+<span class="o">[</span>DEBUG] pthread_create returned 0
+Hello World!
+root@debian:~/Software/Experiments/go#</code></pre></figure>
+
+<p>There is however something that the above piece of code doesn’t tell us, 
+but it would be useful to know: <em>How many times did we create a new thread?</em>
+So we modify our gcc’s source code to see how many times the runtimes 
+attempts to create a new kernel thread (M). This is what we get out of it:</p>
+
+<div lang="shell" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@debian:~/Software/Experiments/go# ./a.out
+[DEBUG] Preparing to create a new thread.
+[DEBUG] pthread_create returned 0
+a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&gt;kernel_thread == ktid;
+__mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })' failed.
+[DEBUG] Preparing to create a new thread.
+aborted.
+</code></pre></div></div>
+
+<p>The code at this point in the runtime is this:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="c1">// Create a new m.  It will start off with a call to runtime_mstart.</span>
+<span class="n">M</span><span class="o">*</span>
+<span class="nf">runtime_newm</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">M</span> <span class="o">*</span><span class="n">mp</span><span class="p">;</span>
+	<span class="n">pthread_attr_t</span> <span class="n">attr</span><span class="p">;</span>
+	<span class="n">pthread_t</span> <span class="n">tid</span><span class="p">;</span>
+	<span class="kt">size_t</span> <span class="n">stacksize</span><span class="p">;</span>
+	<span class="n">sigset_t</span> <span class="n">clear</span><span class="p">;</span>
+	<span class="n">sigset_t</span> <span class="n">old</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="n">ret</span><span class="p">;</span>
+
+<span class="c">#if 0
+	static const Type *mtype;  // The Go type M
+	if(mtype == nil) {
+		Eface e;
+		runtime_gc_m_ptr(&amp;e);
+		mtype = ((const PtrType*)e.__type_descriptor)-&gt;__element_type;
+	}
+#endif
+</span>
+	<span class="c1">// XXX: Added by fotis for print debugging.</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">"[DEBUG] Preparing to create a new thread.</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+
+	<span class="n">mp</span> <span class="o">=</span> <span class="n">runtime_mal</span><span class="p">(</span><span class="k">sizeof</span> <span class="o">*</span><span class="n">mp</span><span class="p">);</span>
+	<span class="n">mcommoninit</span><span class="p">(</span><span class="n">mp</span><span class="p">);</span>
+	<span class="n">mp</span><span class="o">-&gt;</span><span class="n">g0</span> <span class="o">=</span> <span class="n">runtime_malg</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">nil</span><span class="p">,</span> <span class="n">nil</span><span class="p">);</span>
+
+	<span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_attr_init"</span><span class="p">);</span>
+	<span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_setdetachstate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">PTHREAD_CREATE_DETACHED</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_attr_setdetachstate"</span><span class="p">);</span>
+
+	<span class="c1">// &lt;http://www.gnu.org/software/hurd/open_issues/libpthread_set_stack_size.html&gt;</span>
+<span class="cp">#ifdef __GNU__
+</span>	<span class="n">stacksize</span> <span class="o">=</span> <span class="n">StackMin</span><span class="p">;</span>
+<span class="cp">#else
+</span>	<span class="n">stacksize</span> <span class="o">=</span> <span class="n">PTHREAD_STACK_MIN</span><span class="p">;</span>
+
+	<span class="c1">// With glibc before version 2.16 the static TLS size is taken</span>
+	<span class="c1">// out of the stack size, and we get an error or a crash if</span>
+	<span class="c1">// there is not enough stack space left.  Add it back in if we</span>
+	<span class="c1">// can, in case the program uses a lot of TLS space.  FIXME:</span>
+	<span class="c1">// This can be disabled in glibc 2.16 and later, if the bug is</span>
+	<span class="c1">// indeed fixed then.</span>
+	<span class="n">stacksize</span> <span class="o">+=</span> <span class="n">tlssize</span><span class="p">;</span>
+<span class="cp">#endif
+</span>
+	<span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_setstacksize</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">stacksize</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_attr_setstacksize"</span><span class="p">);</span>
+
+	<span class="c1">// Block signals during pthread_create so that the new thread</span>
+	<span class="c1">// starts with signals disabled.  It will enable them in minit.</span>
+	<span class="n">sigfillset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">clear</span><span class="p">);</span>
+
+<span class="cp">#ifdef SIGTRAP
+</span>	<span class="c1">// Blocking SIGTRAP reportedly breaks gdb on Alpha GNU/Linux.</span>
+	<span class="n">sigdelset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">clear</span><span class="p">,</span> <span class="n">SIGTRAP</span><span class="p">);</span>
+<span class="cp">#endif
+</span>
+	<span class="n">sigemptyset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">old</span><span class="p">);</span>
+	<span class="n">sigprocmask</span><span class="p">(</span><span class="n">SIG_BLOCK</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">clear</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">old</span><span class="p">);</span>
+	<span class="n">ret</span> <span class="o">=</span> <span class="n">pthread_create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tid</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">runtime_mstart</span><span class="p">,</span> <span class="n">mp</span><span class="p">);</span>
+
+	<span class="cm">/* XXX: added for debug printing */</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">"[DEBUG] pthread_create() returned %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">ret</span><span class="p">);</span>
+
+	<span class="n">sigprocmask</span><span class="p">(</span><span class="n">SIG_SETMASK</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">old</span><span class="p">,</span> <span class="n">nil</span><span class="p">);</span>
+
+	<span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_create"</span><span class="p">);</span>
+
+	<span class="k">return</span> <span class="n">mp</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>We can deduce two things about our situation right now:</p>
+
+<ul>
+  <li>There is <strong>at least one</strong> thread successfully created, and there is an attempt
+to create another one.</li>
+  <li>The second time, there is a failure before pthread_create is called.</li>
+</ul>
+
+<h2>Continuation of work.</h2>
+
+<p>I have been following this course of path the last week. I presented
+some of my findings, and hope to soon be able to write an exhaustive
+report on what exactly it is that causes the bug.</p>
+
+        </div>
+        
+      </li>
+    
+      
+      
+
+      <li>
+        <header class="post-header">
+          <h1 class="post-title">
+            
+              <a class="post-link" href="/2013/08/12/gsoc-week-8-partial-report/">GSOC Week 8 (Partial) report</a>
+            
+          </h1>
+
+          <p class="post-meta">
+            Aug 12, 2013
+            
+              
+
+ •
+  
+    
+    
+      
+        <a href="/tags/gsoc/">gsoc</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+        <a href="/tags/golang/">golang</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+        <a href="/tags/gcc/">gcc</a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+
+            
+            
+          </p>
+        </header>
+
+        <div class="post-content">
+          <p>This week was spent studying the go language’s runtime and studying the behaviour of various go programs when executed under the Hurd. I learnt a variety of new things, and got some 
+new clues about the problem.</p>
+
+<h2>The new libgo clues</h2>
+
+<p>I already know that <em>M’s are the “real” kernel schedulable threads</em> and <em>G’s are the go runtime managed ones (goroutines)</em>. Last time I had gone through the go runtime’s code I had noticed that neither of them get created, so there must be an issue with thread creation. <strong>But since there is at least one of each created during the program’s initialization, how come
+most programs are able to run, and issues present themselves when we manually attempt to run a goroutine?</strong></p>
+
+<p>I will admit that the situation looks strange. So I decided to look more into it. Before we go any further, I have to embed the issues I had when I run goroutine powered programs under the Hurd.</p>
+
+<div lang="shell" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@debian:~/Software/Experiments/go# ./a.out
+a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&gt;kernel_thread == ktid;
+__mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })' failed.
+Aborted
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">__pthread_create_internal</code> is a libpthread function that gets called when a new posix thread is instanciated. So we know that when we call a goroutine, apart from the goroutine,
+there is at least one kernel thread created, otherwise, if a new goroutine was created, and not a new kernel thread (M) why wasn’t it matched with an existing kernel thread
+(remember there is at least one).</p>
+
+<p>That made me look into the go runtime some more. I found a lot of things, that I can not enumerate here, but amongst the most interesting ones, was the following piece of code:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="c1">// Create a new m.  It will start off with a call to runtime_mstart.</span>
+<span class="n">M</span><span class="o">*</span>
+<span class="nf">runtime_newm</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">M</span> <span class="o">*</span><span class="n">mp</span><span class="p">;</span>
+	<span class="n">pthread_attr_t</span> <span class="n">attr</span><span class="p">;</span>
+	<span class="n">pthread_t</span> <span class="n">tid</span><span class="p">;</span>
+	<span class="kt">size_t</span> <span class="n">stacksize</span><span class="p">;</span>
+	<span class="n">sigset_t</span> <span class="n">clear</span><span class="p">;</span>
+	<span class="n">sigset_t</span> <span class="n">old</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="n">ret</span><span class="p">;</span>
+
+<span class="c">#if 0
+	static const Type *mtype;  // The Go type M
+	if(mtype == nil) {
+		Eface e;
+		runtime_gc_m_ptr(&amp;e);
+		mtype = ((const PtrType*)e.__type_descriptor)-&gt;__element_type;
+	}
+#endif
+</span>
+	<span class="n">mp</span> <span class="o">=</span> <span class="n">runtime_mal</span><span class="p">(</span><span class="k">sizeof</span> <span class="o">*</span><span class="n">mp</span><span class="p">);</span>
+	<span class="n">mcommoninit</span><span class="p">(</span><span class="n">mp</span><span class="p">);</span>
+	<span class="n">mp</span><span class="o">-&gt;</span><span class="n">g0</span> <span class="o">=</span> <span class="n">runtime_malg</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">nil</span><span class="p">,</span> <span class="n">nil</span><span class="p">);</span>
+
+	<span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_attr_init"</span><span class="p">);</span>
+	<span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_setdetachstate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">PTHREAD_CREATE_DETACHED</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_attr_setdetachstate"</span><span class="p">);</span>
+
+	<span class="n">stacksize</span> <span class="o">=</span> <span class="n">PTHREAD_STACK_MIN</span><span class="p">;</span>
+
+	<span class="c1">// With glibc before version 2.16 the static TLS size is taken</span>
+	<span class="c1">// out of the stack size, and we get an error or a crash if</span>
+	<span class="c1">// there is not enough stack space left.  Add it back in if we</span>
+	<span class="c1">// can, in case the program uses a lot of TLS space.  FIXME:</span>
+	<span class="c1">// This can be disabled in glibc 2.16 and later, if the bug is</span>
+	<span class="c1">// indeed fixed then.</span>
+	<span class="n">stacksize</span> <span class="o">+=</span> <span class="n">tlssize</span><span class="p">;</span>
+
+	<span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_setstacksize</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">stacksize</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_attr_setstacksize"</span><span class="p">);</span>
+
+	<span class="c1">// Block signals during pthread_create so that the new thread</span>
+	<span class="c1">// starts with signals disabled.  It will enable them in minit.</span>
+	<span class="n">sigfillset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">clear</span><span class="p">);</span>
+
+<span class="cp">#ifdef SIGTRAP
+</span>	<span class="c1">// Blocking SIGTRAP reportedly breaks gdb on Alpha GNU/Linux.</span>
+	<span class="n">sigdelset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">clear</span><span class="p">,</span> <span class="n">SIGTRAP</span><span class="p">);</span>
+<span class="cp">#endif
+</span>
+	<span class="n">sigemptyset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">old</span><span class="p">);</span>
+	<span class="n">sigprocmask</span><span class="p">(</span><span class="n">SIG_BLOCK</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">clear</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">old</span><span class="p">);</span>
+	<span class="n">ret</span> <span class="o">=</span> <span class="n">pthread_create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tid</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">runtime_mstart</span><span class="p">,</span> <span class="n">mp</span><span class="p">);</span>
+	<span class="n">sigprocmask</span><span class="p">(</span><span class="n">SIG_SETMASK</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">old</span><span class="p">,</span> <span class="n">nil</span><span class="p">);</span>
+
+	<span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_create"</span><span class="p">);</span>
+
+	<span class="k">return</span> <span class="n">mp</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>This is the code that creates a new kernel thread. Notice the line <code class="language-plaintext highlighter-rouge">ret = pthread_create(&amp;tid, &amp;attr, runtime_mstart, mp);</code>. It’s obvious that it creates a new kernel thread,
+so that explains why we get the specific error. But what is not explained is that since we do have at least one in program startup, why is this specific error only triggered when
+we manually create a go routine?</p>
+
+<h2>Go programs under the Hurd</h2>
+
+<p>Apart from studying Go’s runtime source code, I also run some experiments under the Hurd. I got some very weird results that I am investigating, but I would like to share nonetheless.
+Consider the following piece of code:</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="k">package</span> <span class="n">main</span>
+
+<span class="k">import</span> <span class="s">"fmt"</span>
+
+<span class="k">func</span> <span class="n">say</span><span class="p">(</span><span class="n">s</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="m">5</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">say</span><span class="p">(</span><span class="s">"world"</span><span class="p">)</span>
+    <span class="n">say</span><span class="p">(</span><span class="s">"hello"</span><span class="p">)</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>A very basic example that can demonstrate goroutines. Now, if we change <strong>one</strong> of the say functions inside main to a goroutine, this happens:</p>
+
+<div lang="shell" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@debian:~/Software/Experiments/go# ./a.out
+a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&gt;kernel_thread == ktid;
+__mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })' failed.
+Aborted
+</code></pre></div></div>
+
+<p><strong>BUT</strong> if we change <strong>BOTH</strong> of these functions to goroutines (<code class="language-plaintext highlighter-rouge">go say("world")</code>, <code class="language-plaintext highlighter-rouge">go say("hello")</code>), this happens:</p>
+
+<figure class="highlight"><pre><code class="language-sh" data-lang="sh">root@debian:~/Software/Experiments/go# ./a.out
+root@debian:~/Software/Experiments/go# </code></pre></figure>
+
+<p>Wait a minute. It can’t be! Did it execute correctly? Where is the output?</p>
+
+<figure class="highlight"><pre><code class="language-sh" data-lang="sh">root@debian:~/Software/Experiments/go# <span class="nb">echo</span> <span class="nv">$?</span>
+0
+root@debian:~/Software/Experiments/go#</code></pre></figure>
+
+<p>It reports that it has executed correctly. But there is no output.</p>
+
+<h2>What I am doing next</h2>
+
+<p>I will continue reading through the go runtime for some clues. On the more active size, I am writing a custom test case for goroutine testing under the Hurd, while also doing some analysis
+on the programs that run there (currently studying the assembly generated for these programs) to see how they differ and why we get this particular behavior.</p>
+
+        </div>
+        
+      </li>
+    
+      
+      
+
+      <li>
+        <header class="post-header">
+          <h1 class="post-title">
+            
+              <a class="post-link" href="/2013/08/05/gsoc-partial-week-7-report/">GSOC (Partial) Week 7 report</a>
+            
+          </h1>
+
+          <p class="post-meta">
+            Aug 5, 2013
+            
+               •
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/categories/gsoc/">gsoc</a>,
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/categories/golang/">golang</a>,
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/categories/gcc/">gcc</a>
+      
+    
+  
+
+
+
+
+            
+            
+          </p>
+        </header>
+
+        <div class="post-content">
+          <h1>An exciting week.</h1>
+
+<p>This week was exciting. Spending it on learning about the go runtime was the reason for this. As insightfull as it was however,
+it also confused me a little bit. Before this goes any further, I should state that this is a partial report on my research
+and my findings. My aims for this week were the following: <strong>To investigate the behavior of go programs under the Hurd, to
+study the go runtime, and possibly modify it to see if the goroutine issues are libpthread’s issue or the go’s runtime issue</strong>.</p>
+
+<h1>Presenting my findings.</h1>
+
+<p>Most of my time was spent studying the gcc go frontend, libgo and the go runtime. Fortunatelly, I can say (gladly) that it was
+time well spent. What I got from it were some nice pieces of insight, but also some slight confusion and doubts.</p>
+
+<p>The first interesting thing in my findings was this:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">struct</span>	<span class="n">G</span>
+<span class="p">{</span>
+	<span class="n">Defer</span><span class="o">*</span>	<span class="n">defer</span><span class="p">;</span>
+	<span class="n">Panic</span><span class="o">*</span>	<span class="n">panic</span><span class="p">;</span>
+	<span class="kt">void</span><span class="o">*</span>	<span class="n">exception</span><span class="p">;</span>	<span class="c1">// current exception being thrown</span>
+	<span class="n">bool</span>	<span class="n">is_foreign</span><span class="p">;</span>	<span class="c1">// whether current exception from other language</span>
+	<span class="kt">void</span>	<span class="o">*</span><span class="n">gcstack</span><span class="p">;</span>	<span class="c1">// if status==Gsyscall, gcstack = stackbase to use during gc</span>
+	<span class="n">uintptr</span>	<span class="n">gcstack_size</span><span class="p">;</span>
+	<span class="kt">void</span><span class="o">*</span>	<span class="n">gcnext_segment</span><span class="p">;</span>
+	<span class="kt">void</span><span class="o">*</span>	<span class="n">gcnext_sp</span><span class="p">;</span>
+	<span class="kt">void</span><span class="o">*</span>	<span class="n">gcinitial_sp</span><span class="p">;</span>
+	<span class="n">ucontext_t</span> <span class="n">gcregs</span><span class="p">;</span>
+	<span class="n">byte</span><span class="o">*</span>	<span class="n">entry</span><span class="p">;</span>		<span class="c1">// initial function</span>
+	<span class="n">G</span><span class="o">*</span>	<span class="n">alllink</span><span class="p">;</span>	<span class="c1">// on allg</span>
+	<span class="kt">void</span><span class="o">*</span>	<span class="n">param</span><span class="p">;</span>		<span class="c1">// passed parameter on wakeup</span>
+	<span class="n">bool</span>	<span class="n">fromgogo</span><span class="p">;</span>	<span class="c1">// reached from gogo</span>
+	<span class="n">int16</span>	<span class="n">status</span><span class="p">;</span>
+	<span class="n">int64</span>	<span class="n">goid</span><span class="p">;</span>
+	<span class="n">uint32</span>	<span class="n">selgen</span><span class="p">;</span>		<span class="c1">// valid sudog pointer</span>
+	<span class="k">const</span> <span class="kt">char</span><span class="o">*</span>	<span class="n">waitreason</span><span class="p">;</span>	<span class="c1">// if status==Gwaiting</span>
+	<span class="n">G</span><span class="o">*</span>	<span class="n">schedlink</span><span class="p">;</span>
+	<span class="n">bool</span>	<span class="n">readyonstop</span><span class="p">;</span>
+	<span class="n">bool</span>	<span class="n">ispanic</span><span class="p">;</span>
+	<span class="n">bool</span>	<span class="n">issystem</span><span class="p">;</span>
+	<span class="n">int8</span>	<span class="n">raceignore</span><span class="p">;</span> <span class="c1">// ignore race detection events</span>
+	<span class="n">M</span><span class="o">*</span>	<span class="n">m</span><span class="p">;</span>		<span class="c1">// for debuggers, but offset not hard-coded</span>
+	<span class="n">M</span><span class="o">*</span>	<span class="n">lockedm</span><span class="p">;</span>
+	<span class="n">M</span><span class="o">*</span>	<span class="n">idlem</span><span class="p">;</span>
+	<span class="n">int32</span>	<span class="n">sig</span><span class="p">;</span>
+	<span class="n">int32</span>	<span class="n">writenbuf</span><span class="p">;</span>
+	<span class="n">byte</span><span class="o">*</span>	<span class="n">writebuf</span><span class="p">;</span>
+	<span class="c1">// DeferChunk	*dchunk;</span>
+	<span class="c1">// DeferChunk	*dchunknext;</span>
+	<span class="n">uintptr</span>	<span class="n">sigcode0</span><span class="p">;</span>
+	<span class="n">uintptr</span>	<span class="n">sigcode1</span><span class="p">;</span>
+	<span class="c1">// uintptr	sigpc;</span>
+	<span class="n">uintptr</span>	<span class="n">gopc</span><span class="p">;</span>	<span class="c1">// pc of go statement that created this goroutine</span>
+
+	<span class="n">int32</span>	<span class="n">ncgo</span><span class="p">;</span>
+	<span class="n">CgoMal</span><span class="o">*</span>	<span class="n">cgomal</span><span class="p">;</span>
+
+	<span class="n">Traceback</span><span class="o">*</span> <span class="n">traceback</span><span class="p">;</span>
+
+	<span class="n">ucontext_t</span>	<span class="n">context</span><span class="p">;</span>
+	<span class="kt">void</span><span class="o">*</span>		<span class="n">stack_context</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>Yep. This is the code that resembles a (yeah, you guessed it, a <strong>goroutine</strong>). I was pretty surprised at first to see that a thread is resembled as a struct. But then again,
+taking a closer look at it, it makes perfect sense. The next one though was a <em>lot trickier</em>:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">struct</span>	<span class="n">M</span>
+<span class="p">{</span>
+	<span class="n">G</span><span class="o">*</span>	<span class="n">g0</span><span class="p">;</span>		<span class="c1">// goroutine with scheduling stack</span>
+	<span class="n">G</span><span class="o">*</span>	<span class="n">gsignal</span><span class="p">;</span>	<span class="c1">// signal-handling G</span>
+	<span class="n">G</span><span class="o">*</span>	<span class="n">curg</span><span class="p">;</span>		<span class="c1">// current running goroutine</span>
+	<span class="n">int32</span>	<span class="n">id</span><span class="p">;</span>
+	<span class="n">int32</span>	<span class="n">mallocing</span><span class="p">;</span>
+	<span class="n">int32</span>	<span class="n">throwing</span><span class="p">;</span>
+	<span class="n">int32</span>	<span class="n">gcing</span><span class="p">;</span>
+	<span class="n">int32</span>	<span class="n">locks</span><span class="p">;</span>
+	<span class="n">int32</span>	<span class="n">nomemprof</span><span class="p">;</span>
+	<span class="n">int32</span>	<span class="n">waitnextg</span><span class="p">;</span>
+	<span class="n">int32</span>	<span class="n">dying</span><span class="p">;</span>
+	<span class="n">int32</span>	<span class="n">profilehz</span><span class="p">;</span>
+	<span class="n">int32</span>	<span class="n">helpgc</span><span class="p">;</span>
+	<span class="n">uint32</span>	<span class="n">fastrand</span><span class="p">;</span>
+	<span class="n">uint64</span>	<span class="n">ncgocall</span><span class="p">;</span>	<span class="c1">// number of cgo calls in total</span>
+	<span class="n">Note</span>	<span class="n">havenextg</span><span class="p">;</span>
+	<span class="n">G</span><span class="o">*</span>	<span class="n">nextg</span><span class="p">;</span>
+	<span class="n">M</span><span class="o">*</span>	<span class="n">alllink</span><span class="p">;</span>	<span class="c1">// on allm</span>
+	<span class="n">M</span><span class="o">*</span>	<span class="n">schedlink</span><span class="p">;</span>
+	<span class="n">MCache</span>	<span class="o">*</span><span class="n">mcache</span><span class="p">;</span>
+	<span class="n">G</span><span class="o">*</span>	<span class="n">lockedg</span><span class="p">;</span>
+	<span class="n">G</span><span class="o">*</span>	<span class="n">idleg</span><span class="p">;</span>
+	<span class="n">Location</span> <span class="n">createstack</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>	<span class="c1">// Stack that created this thread.</span>
+	<span class="n">M</span><span class="o">*</span>	<span class="n">nextwaitm</span><span class="p">;</span>	<span class="c1">// next M waiting for lock</span>
+	<span class="n">uintptr</span>	<span class="n">waitsema</span><span class="p">;</span>	<span class="c1">// semaphore for parking on locks</span>
+	<span class="n">uint32</span>	<span class="n">waitsemacount</span><span class="p">;</span>
+	<span class="n">uint32</span>	<span class="n">waitsemalock</span><span class="p">;</span>
+	<span class="n">GCStats</span>	<span class="n">gcstats</span><span class="p">;</span>
+	<span class="n">bool</span>	<span class="n">racecall</span><span class="p">;</span>
+	<span class="kt">void</span><span class="o">*</span>	<span class="n">racepc</span><span class="p">;</span>
+
+	<span class="n">uintptr</span>	<span class="n">settype_buf</span><span class="p">[</span><span class="mi">1024</span><span class="p">];</span>
+	<span class="n">uintptr</span>	<span class="n">settype_bufsize</span><span class="p">;</span>
+
+	<span class="n">uintptr</span>	<span class="n">end</span><span class="p">[];</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>This was a source of endless confusion at the beginning. It does have some hints reassuring the fact that G’s are indeed goroutines, but nothing that really helps to describe what an M is.
+It’s structure is identical to that of the G however, which means that it might have something to do with a thread. And indeed it is. Further study of the source code
+made me speculate that <strong>M’s must be the real operating system scheduled (kernel) threads, while G’s (goroutines) must be the lightweight threads managed by the go runtime.</strong></p>
+
+<p>I was more than happy to find comments that reassured that position of mine.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// The go scheduler's job is to match ready-to-run goroutines (`g's)
+// with waiting-for-work schedulers (`m's)
+</code></pre></div></div>
+
+<p>Another cool finding was the go (runtime) scheduler - from which the above comment originates:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">Sched</span> <span class="p">{</span>
+	<span class="n">Lock</span><span class="p">;</span>
+
+	<span class="n">G</span> <span class="o">*</span><span class="n">gfree</span><span class="p">;</span>	<span class="c1">// available g's (status == Gdead)</span>
+	<span class="n">int64</span> <span class="n">goidgen</span><span class="p">;</span>
+
+	<span class="n">G</span> <span class="o">*</span><span class="n">ghead</span><span class="p">;</span>	<span class="c1">// g's waiting to run</span>
+	<span class="n">G</span> <span class="o">*</span><span class="n">gtail</span><span class="p">;</span>
+	<span class="n">int32</span> <span class="n">gwait</span><span class="p">;</span>	<span class="c1">// number of g's waiting to run</span>
+	<span class="n">int32</span> <span class="n">gcount</span><span class="p">;</span>	<span class="c1">// number of g's that are alive</span>
+	<span class="n">int32</span> <span class="n">grunning</span><span class="p">;</span>	<span class="c1">// number of g's running on cpu or in syscall</span>
+
+	<span class="n">M</span> <span class="o">*</span><span class="n">mhead</span><span class="p">;</span>	<span class="c1">// m's waiting for work</span>
+	<span class="n">int32</span> <span class="n">mwait</span><span class="p">;</span>	<span class="c1">// number of m's waiting for work</span>
+	<span class="n">int32</span> <span class="n">mcount</span><span class="p">;</span>	<span class="c1">// number of m's that have been created</span>
+
+	<span class="k">volatile</span> <span class="n">uint32</span> <span class="n">atomic</span><span class="p">;</span>	<span class="c1">// atomic scheduling word (see below)</span>
+
+	<span class="n">int32</span> <span class="n">profilehz</span><span class="p">;</span>	<span class="c1">// cpu profiling rate</span>
+
+	<span class="n">bool</span> <span class="n">init</span><span class="p">;</span>  <span class="c1">// running initialization</span>
+	<span class="n">bool</span> <span class="n">lockmain</span><span class="p">;</span>  <span class="c1">// init called runtime.LockOSThread</span>
+
+	<span class="n">Note</span>	<span class="n">stopped</span><span class="p">;</span>	<span class="c1">// one g can set waitstop and wait here for m's to stop</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>From that particular piece of code, without a doubt the most interesting line is: <code class="language-plaintext highlighter-rouge">G *gfree</code>. That is a pool of the go routines that are available to be used.
+There are also helper schedulling functions, from which, the most interesting (for my purposes), was the <code class="language-plaintext highlighter-rouge">static void gfput(G*);</code> which realeases a go routine (puts it to the gfree list)</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="c1">// Put on gfree list.  Sched must be locked.</span>
+<span class="k">static</span> <span class="kt">void</span>
+<span class="nf">gfput</span><span class="p">(</span><span class="n">G</span> <span class="o">*</span><span class="n">gp</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">gp</span><span class="o">-&gt;</span><span class="n">schedlink</span> <span class="o">=</span> <span class="n">runtime_sched</span><span class="p">.</span><span class="n">gfree</span><span class="p">;</span>
+	<span class="n">runtime_sched</span><span class="p">.</span><span class="n">gfree</span> <span class="o">=</span> <span class="n">gp</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>There are loads of other extremely interesting functions there, but for the sake of space I will not expand here more. However I will expand on what it is that is confusing me:</p>
+
+<h2>The source of confusion</h2>
+
+<p>My tests in this point are to include testing if removing thread destruction from the go runtime would result in difference in behavior.
+There are however (as far as go is concerned), two kinds of threads in the go runtime. <strong>Goroutines</strong> (G’s) and the <strong>kernel schedulable threads</strong> (M’s).</p>
+
+<p>Neither of which, seem to really be destroyed. From my understanding so far, G’s are never totally destroyed (I may be wrong here, I am still researching this bit). Whenever
+they are about to “destroyed”, they are added to the scheduler’s list of freeG’s to allow for reuse, as evidenced by the <code class="language-plaintext highlighter-rouge">gfput</code> and <code class="language-plaintext highlighter-rouge">gfget</code> functions. 
+M’s on the other hand (the kernel threads), also seem to not be destroyed. A comment in go’s scheduler seems to support this (<code class="language-plaintext highlighter-rouge">// For now, m's never go away.</code>) and as a 
+matter of fact I could not find any code that destroyed M’s (I am still researching this bit).</p>
+
+<p><strong>Since none of the two actually get destroyed, and seeing as thread creation alone should not be buggy, how come we are facing the specific bugs we are facing?</strong>
+I will try to provide with an interpretation: Either I am fairly wrong and M’s (or G’s or both) actually do get destroyed somewhere (possible and very much probable)
+or I looking for clues regarding the issue in the wrong place (might be possible but I don’t see it being very probable).</p>
+
+        </div>
+        
+      </li>
+    
+  </ul>
+
+  
+  <div class="pagination">
+    
+      <a class="previous" href="/posts/4/">&laquo; Older</a>
+    
+
+    
+      <a class="next" href="/posts/2/">Newer &raquo;</a>
+    
+  </div>
+
+
+
+</div>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <p>
+      
+
+&copy; Fotis Koutoulakis - Powered by <a href="https://jekyllrb.com">Jekyll</a> &amp; <a href="https://github.com/yous/whiteglass">whiteglass</a> - Subscribe via <a href="https://nlightnfotis.github.io/feed.xml">RSS</a>
+
+    </p>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

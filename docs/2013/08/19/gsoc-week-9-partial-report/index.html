@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  
+  
+  <title>GSOC Week 9 (Partial) report</title>
+  <meta name="description" content="This week was revolving around the print debugging in the gccgo runtime in search for clues regarding the creation of new threads under the goruntime, so as to see if there is something wrong with the runtime itself, or the way the runtime interacts with the libpthread. (partial presentation of) findings During print debugging the gccgo runtime, I didn’t notice anything abnormal or unusual so far. For example, the code that does trigger the assertion failure seems to work at least once, since pthread_create() returns 0 at least once. This is expected behavior, since we already have stated that there is at least one M (kernel thread) created at the initialisation of the program’s runtime. If however, we try to use a go statement in our program, to make usage of a goroutine, the runtime still fails at the usual assertion fail, however the output of the program is this: root@debian:~/Software/Experiments/go# ./a.out [DEBUG] pthread_create returned 0 a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })&#39; failed. Aborted The above output can give us some pieces of information: pthread_create() is called at least once. it executes successfuly and without errors - libpthread code suggests that 0 is returned upon successful execution and creation of a thread However the assertion is still triggered, which we know it’s getting triggered during thread creation. The second bullet point is also being supported by the fact that even if you exe cute something as simple as hello world in go, a new M is created, so you get something along the lines of this as an output: root@debian:~/Software/Experiments/go# ./a.out [DEBUG] pthread_create returned 0 Hello World! root@debian:~/Software/Experiments/go# There is however something that the above piece of code doesn’t tell us, but it would be useful to know: How many times did we create a new thread? So we modify our gcc’s source code to see how many times the runtimes attempts to create a new kernel thread (M). This is what we get out of it: root@debian:~/Software/Experiments/go# ./a.out [DEBUG] Preparing to create a new thread. [DEBUG] pthread_create returned 0 a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })&#39; failed. [DEBUG] Preparing to create a new thread. aborted. The code at this point in the runtime is this: // Create a new m. It will start off with a call to runtime_mstart. M* runtime_newm(void) { M *mp; pthread_attr_t attr; pthread_t tid; size_t stacksize; sigset_t clear; sigset_t old; int ret; #if 0 static const Type *mtype; // The Go type M if(mtype == nil) { Eface e; runtime_gc_m_ptr(&amp;amp;e); mtype = ((const PtrType*)e.__type_descriptor)-&amp;gt;__element_type; } #endif // XXX: Added by fotis for print debugging. printf(&quot;[DEBUG] Preparing to create a new thread.\n&quot;) mp = runtime_mal(sizeof *mp); mcommoninit(mp); mp-&amp;gt;g0 = runtime_malg(-1, nil, nil); if(pthread_attr_init(&amp;amp;attr) != 0) runtime_throw(&quot;pthread_attr_init&quot;); if(pthread_attr_setdetachstate(&amp;amp;attr, PTHREAD_CREATE_DETACHED) != 0) runtime_throw(&quot;pthread_attr_setdetachstate&quot;); // &amp;lt;http://www.gnu.org/software/hurd/open_issues/libpthread_set_stack_size.html&amp;gt; #ifdef __GNU__ stacksize = StackMin; #else stacksize = PTHREAD_STACK_MIN; // With glibc before version 2.16 the static TLS size is taken // out of the stack size, and we get an error or a crash if // there is not enough stack space left. Add it back in if we // can, in case the program uses a lot of TLS space. FIXME: // This can be disabled in glibc 2.16 and later, if the bug is // indeed fixed then. stacksize += tlssize; #endif if(pthread_attr_setstacksize(&amp;amp;attr, stacksize) != 0) runtime_throw(&quot;pthread_attr_setstacksize&quot;); // Block signals during pthread_create so that the new thread // starts with signals disabled. It will enable them in minit. sigfillset(&amp;amp;clear); #ifdef SIGTRAP // Blocking SIGTRAP reportedly breaks gdb on Alpha GNU/Linux. sigdelset(&amp;amp;clear, SIGTRAP); #endif sigemptyset(&amp;amp;old); sigprocmask(SIG_BLOCK, &amp;amp;clear, &amp;amp;old); ret = pthread_create(&amp;amp;tid, &amp;amp;attr, runtime_mstart, mp); /* XXX: added for debug printing */ printf(&quot;[DEBUG] pthread_create() returned %d\n&quot;, ret); sigprocmask(SIG_SETMASK, &amp;amp;old, nil); if (ret != 0) runtime_throw(&quot;pthread_create&quot;); return mp; } We can deduce two things about our situation right now: There is at least one thread successfully created, and there is an attempt to create another one. The second time, there is a failure before pthread_create is called. Continuation of work. I have been following this course of path the last week. I presented some of my findings, and hope to soon be able to write an exhaustive report on what exactly it is that causes the bug.">
+  
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://nlightnfotis.github.io/2013/08/19/gsoc-week-9-partial-report/">
+  
+  
+  <link rel="alternate" type="application/rss+xml" title="Lambda reflections" href="https://nlightnfotis.github.io/feed.xml">
+
+  
+
+  
+  <meta property="og:title" content="GSOC Week 9 (Partial) report">
+  <meta property="og:site_name" content="Lambda reflections">
+  <meta property="og:url" content="https://nlightnfotis.github.io/2013/08/19/gsoc-week-9-partial-report/">
+  <meta property="og:description" content="This week was revolving around the print debugging in the gccgo runtime in search for clues regarding the creation of new threads under the goruntime, so as to see if there is something wrong with the runtime itself, or the way the runtime interacts with the libpthread. (partial presentation of) findings During print debugging the gccgo runtime, I didn’t notice anything abnormal or unusual so far. For example, the code that does trigger the assertion failure seems to work at least once, since pthread_create() returns 0 at least once. This is expected behavior, since we already have stated that there is at least one M (kernel thread) created at the initialisation of the program’s runtime. If however, we try to use a go statement in our program, to make usage of a goroutine, the runtime still fails at the usual assertion fail, however the output of the program is this: root@debian:~/Software/Experiments/go# ./a.out [DEBUG] pthread_create returned 0 a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })&#39; failed. Aborted The above output can give us some pieces of information: pthread_create() is called at least once. it executes successfuly and without errors - libpthread code suggests that 0 is returned upon successful execution and creation of a thread However the assertion is still triggered, which we know it’s getting triggered during thread creation. The second bullet point is also being supported by the fact that even if you exe cute something as simple as hello world in go, a new M is created, so you get something along the lines of this as an output: root@debian:~/Software/Experiments/go# ./a.out [DEBUG] pthread_create returned 0 Hello World! root@debian:~/Software/Experiments/go# There is however something that the above piece of code doesn’t tell us, but it would be useful to know: How many times did we create a new thread? So we modify our gcc’s source code to see how many times the runtimes attempts to create a new kernel thread (M). This is what we get out of it: root@debian:~/Software/Experiments/go# ./a.out [DEBUG] Preparing to create a new thread. [DEBUG] pthread_create returned 0 a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })&#39; failed. [DEBUG] Preparing to create a new thread. aborted. The code at this point in the runtime is this: // Create a new m. It will start off with a call to runtime_mstart. M* runtime_newm(void) { M *mp; pthread_attr_t attr; pthread_t tid; size_t stacksize; sigset_t clear; sigset_t old; int ret; #if 0 static const Type *mtype; // The Go type M if(mtype == nil) { Eface e; runtime_gc_m_ptr(&amp;amp;e); mtype = ((const PtrType*)e.__type_descriptor)-&amp;gt;__element_type; } #endif // XXX: Added by fotis for print debugging. printf(&quot;[DEBUG] Preparing to create a new thread.\n&quot;) mp = runtime_mal(sizeof *mp); mcommoninit(mp); mp-&amp;gt;g0 = runtime_malg(-1, nil, nil); if(pthread_attr_init(&amp;amp;attr) != 0) runtime_throw(&quot;pthread_attr_init&quot;); if(pthread_attr_setdetachstate(&amp;amp;attr, PTHREAD_CREATE_DETACHED) != 0) runtime_throw(&quot;pthread_attr_setdetachstate&quot;); // &amp;lt;http://www.gnu.org/software/hurd/open_issues/libpthread_set_stack_size.html&amp;gt; #ifdef __GNU__ stacksize = StackMin; #else stacksize = PTHREAD_STACK_MIN; // With glibc before version 2.16 the static TLS size is taken // out of the stack size, and we get an error or a crash if // there is not enough stack space left. Add it back in if we // can, in case the program uses a lot of TLS space. FIXME: // This can be disabled in glibc 2.16 and later, if the bug is // indeed fixed then. stacksize += tlssize; #endif if(pthread_attr_setstacksize(&amp;amp;attr, stacksize) != 0) runtime_throw(&quot;pthread_attr_setstacksize&quot;); // Block signals during pthread_create so that the new thread // starts with signals disabled. It will enable them in minit. sigfillset(&amp;amp;clear); #ifdef SIGTRAP // Blocking SIGTRAP reportedly breaks gdb on Alpha GNU/Linux. sigdelset(&amp;amp;clear, SIGTRAP); #endif sigemptyset(&amp;amp;old); sigprocmask(SIG_BLOCK, &amp;amp;clear, &amp;amp;old); ret = pthread_create(&amp;amp;tid, &amp;amp;attr, runtime_mstart, mp); /* XXX: added for debug printing */ printf(&quot;[DEBUG] pthread_create() returned %d\n&quot;, ret); sigprocmask(SIG_SETMASK, &amp;amp;old, nil); if (ret != 0) runtime_throw(&quot;pthread_create&quot;); return mp; } We can deduce two things about our situation right now: There is at least one thread successfully created, and there is an attempt to create another one. The second time, there is a failure before pthread_create is called. Continuation of work. I have been following this course of path the last week. I presented some of my findings, and hope to soon be able to write an exhaustive report on what exactly it is that causes the bug.">
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="NlightNFotis">
+  <meta name="twitter:title" content="GSOC Week 9 (Partial) report">
+  <meta name="twitter:description" content="This week was revolving around the print debugging in the gccgo runtime in search for clues regarding the creation of new threads under the goruntime, so as to see if there is something wrong with ...">
+  
+    <meta name="twitter:creator" content="NlightNFotis">
+  
+  
+
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet">
+
+  
+
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">Lambda reflections</a>
+
+    <nav class="site-nav">
+      
+        
+        <a class="page-link" href="/about/">About</a>
+      
+        
+        <a class="page-link" href="/archives/">Archives</a>
+      
+        
+        <a class="page-link" href="https://github.com/NlightNFotis">GitHub</a>
+      
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    
+      <h1 class="post-title" itemprop="name headline">GSOC Week 9 (Partial) report</h1>
+    
+    <p class="post-meta"><time datetime="2013-08-19T11:35:00+00:00" itemprop="datePublished">Aug 19, 2013</time>
+
+ •
+  
+    
+    
+      
+    
+      
+        <a href="/tags/gcc/">gcc</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+        <a href="/tags/golang/">golang</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+        <a href="/tags/gsoc/">gsoc</a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+</p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>This week was revolving around the print debugging in the gccgo runtime in search
+for clues regarding the creation of new threads under the goruntime, so as to see
+if there is something wrong with the runtime itself, or the way the runtime 
+interacts with the libpthread.</p>
+
+<h2>(partial presentation of) findings</h2>
+
+<p>During print debugging the gccgo runtime, I didn’t notice anything abnormal or 
+unusual so far. For example, the code that does trigger the assertion failure
+seems to work at least once, since <code class="language-plaintext highlighter-rouge">pthread_create()</code> returns <code class="language-plaintext highlighter-rouge">0</code> at least once.</p>
+
+<p>This is expected behavior, since we already have stated that there is at least
+one <code class="language-plaintext highlighter-rouge">M</code> (kernel thread) created at the initialisation of the program’s runtime.</p>
+
+<p>If however, we try to use a <em>go statement</em> in our program, to make usage of a 
+goroutine, the runtime still fails at the usual assertion fail, however the 
+output of the program is this:</p>
+
+<div lang="shell" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@debian:~/Software/Experiments/go# ./a.out
+[DEBUG] pthread_create returned 0
+a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&gt;kernel_thread == ktid;
+__mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })' failed.
+Aborted
+</code></pre></div></div>
+
+<p>The above output can give us some pieces of information:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">pthread_create()</code> is called at least once.</li>
+  <li>it executes successfuly and without errors - libpthread code suggests that 0 is returned upon successful execution and creation of a thread</li>
+  <li>However the assertion is still triggered, which we know it’s getting triggered during thread creation.</li>
+</ul>
+
+<p>The second bullet point is also being supported by the fact that even if you exe
+cute something as simple as hello world in go, a new M is created, so you get
+something along the lines of this as an output:</p>
+
+<figure class="highlight"><pre><code class="language-sh" data-lang="sh">root@debian:~/Software/Experiments/go# ./a.out
+<span class="o">[</span>DEBUG] pthread_create returned 0
+Hello World!
+root@debian:~/Software/Experiments/go#</code></pre></figure>
+
+<p>There is however something that the above piece of code doesn’t tell us, 
+but it would be useful to know: <em>How many times did we create a new thread?</em>
+So we modify our gcc’s source code to see how many times the runtimes 
+attempts to create a new kernel thread (M). This is what we get out of it:</p>
+
+<div lang="shell" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@debian:~/Software/Experiments/go# ./a.out
+[DEBUG] Preparing to create a new thread.
+[DEBUG] pthread_create returned 0
+a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&gt;kernel_thread == ktid;
+__mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })' failed.
+[DEBUG] Preparing to create a new thread.
+aborted.
+</code></pre></div></div>
+
+<p>The code at this point in the runtime is this:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="c1">// Create a new m.  It will start off with a call to runtime_mstart.</span>
+<span class="n">M</span><span class="o">*</span>
+<span class="nf">runtime_newm</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">M</span> <span class="o">*</span><span class="n">mp</span><span class="p">;</span>
+	<span class="n">pthread_attr_t</span> <span class="n">attr</span><span class="p">;</span>
+	<span class="n">pthread_t</span> <span class="n">tid</span><span class="p">;</span>
+	<span class="kt">size_t</span> <span class="n">stacksize</span><span class="p">;</span>
+	<span class="n">sigset_t</span> <span class="n">clear</span><span class="p">;</span>
+	<span class="n">sigset_t</span> <span class="n">old</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="n">ret</span><span class="p">;</span>
+
+<span class="c">#if 0
+	static const Type *mtype;  // The Go type M
+	if(mtype == nil) {
+		Eface e;
+		runtime_gc_m_ptr(&amp;e);
+		mtype = ((const PtrType*)e.__type_descriptor)-&gt;__element_type;
+	}
+#endif
+</span>
+	<span class="c1">// XXX: Added by fotis for print debugging.</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">"[DEBUG] Preparing to create a new thread.</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+
+	<span class="n">mp</span> <span class="o">=</span> <span class="n">runtime_mal</span><span class="p">(</span><span class="k">sizeof</span> <span class="o">*</span><span class="n">mp</span><span class="p">);</span>
+	<span class="n">mcommoninit</span><span class="p">(</span><span class="n">mp</span><span class="p">);</span>
+	<span class="n">mp</span><span class="o">-&gt;</span><span class="n">g0</span> <span class="o">=</span> <span class="n">runtime_malg</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">nil</span><span class="p">,</span> <span class="n">nil</span><span class="p">);</span>
+
+	<span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_attr_init"</span><span class="p">);</span>
+	<span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_setdetachstate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">PTHREAD_CREATE_DETACHED</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_attr_setdetachstate"</span><span class="p">);</span>
+
+	<span class="c1">// &lt;http://www.gnu.org/software/hurd/open_issues/libpthread_set_stack_size.html&gt;</span>
+<span class="cp">#ifdef __GNU__
+</span>	<span class="n">stacksize</span> <span class="o">=</span> <span class="n">StackMin</span><span class="p">;</span>
+<span class="cp">#else
+</span>	<span class="n">stacksize</span> <span class="o">=</span> <span class="n">PTHREAD_STACK_MIN</span><span class="p">;</span>
+
+	<span class="c1">// With glibc before version 2.16 the static TLS size is taken</span>
+	<span class="c1">// out of the stack size, and we get an error or a crash if</span>
+	<span class="c1">// there is not enough stack space left.  Add it back in if we</span>
+	<span class="c1">// can, in case the program uses a lot of TLS space.  FIXME:</span>
+	<span class="c1">// This can be disabled in glibc 2.16 and later, if the bug is</span>
+	<span class="c1">// indeed fixed then.</span>
+	<span class="n">stacksize</span> <span class="o">+=</span> <span class="n">tlssize</span><span class="p">;</span>
+<span class="cp">#endif
+</span>
+	<span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_setstacksize</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">stacksize</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_attr_setstacksize"</span><span class="p">);</span>
+
+	<span class="c1">// Block signals during pthread_create so that the new thread</span>
+	<span class="c1">// starts with signals disabled.  It will enable them in minit.</span>
+	<span class="n">sigfillset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">clear</span><span class="p">);</span>
+
+<span class="cp">#ifdef SIGTRAP
+</span>	<span class="c1">// Blocking SIGTRAP reportedly breaks gdb on Alpha GNU/Linux.</span>
+	<span class="n">sigdelset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">clear</span><span class="p">,</span> <span class="n">SIGTRAP</span><span class="p">);</span>
+<span class="cp">#endif
+</span>
+	<span class="n">sigemptyset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">old</span><span class="p">);</span>
+	<span class="n">sigprocmask</span><span class="p">(</span><span class="n">SIG_BLOCK</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">clear</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">old</span><span class="p">);</span>
+	<span class="n">ret</span> <span class="o">=</span> <span class="n">pthread_create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tid</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">runtime_mstart</span><span class="p">,</span> <span class="n">mp</span><span class="p">);</span>
+
+	<span class="cm">/* XXX: added for debug printing */</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">"[DEBUG] pthread_create() returned %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">ret</span><span class="p">);</span>
+
+	<span class="n">sigprocmask</span><span class="p">(</span><span class="n">SIG_SETMASK</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">old</span><span class="p">,</span> <span class="n">nil</span><span class="p">);</span>
+
+	<span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_create"</span><span class="p">);</span>
+
+	<span class="k">return</span> <span class="n">mp</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>We can deduce two things about our situation right now:</p>
+
+<ul>
+  <li>There is <strong>at least one</strong> thread successfully created, and there is an attempt
+to create another one.</li>
+  <li>The second time, there is a failure before pthread_create is called.</li>
+</ul>
+
+<h2>Continuation of work.</h2>
+
+<p>I have been following this course of path the last week. I presented
+some of my findings, and hope to soon be able to write an exhaustive
+report on what exactly it is that causes the bug.</p>
+
+  </div>
+
+  
+
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <p>
+      
+
+&copy; Fotis Koutoulakis - Powered by <a href="https://jekyllrb.com">Jekyll</a> &amp; <a href="https://github.com/yous/whiteglass">whiteglass</a> - Subscribe via <a href="https://nlightnfotis.github.io/feed.xml">RSS</a>
+
+    </p>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

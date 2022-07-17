@@ -1,0 +1,1947 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  
+  
+  <title>Lambda reflections</title>
+  <meta name="description" content="Functional Programming, Proofs, Bioinformatics and more.">
+  
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://nlightnfotis.github.io/posts/2/">
+  
+  
+  <link rel="alternate" type="application/rss+xml" title="Lambda reflections" href="https://nlightnfotis.github.io/feed.xml">
+
+  
+
+  
+  <meta property="og:title" content="Lambda reflections">
+  <meta property="og:site_name" content="Lambda reflections">
+  <meta property="og:url" content="https://nlightnfotis.github.io/posts/2/">
+  <meta property="og:description" content="Functional Programming, Proofs, Bioinformatics and more.">
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="NlightNFotis">
+  <meta name="twitter:title" content="Lambda reflections">
+  <meta name="twitter:description" content="Functional Programming, Proofs, Bioinformatics and more.">
+  
+    <meta name="twitter:creator" content="NlightNFotis">
+  
+  
+
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet">
+
+  
+
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">Lambda reflections</a>
+
+    <nav class="site-nav">
+      
+        
+        <a class="page-link" href="/about/">About</a>
+      
+        
+        <a class="page-link" href="/archives/">Archives</a>
+      
+        
+        <a class="page-link" href="https://github.com/NlightNFotis">GitHub</a>
+      
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <div class="home">
+
+  
+
+  
+
+  <ul class="post-list">
+    
+      
+      
+
+      <li>
+        <header class="post-header">
+          <h1 class="post-title">
+            
+              <a class="post-link" href="/2014/06/20/how-the-compiler/">How the Compiler, the Library and the Kernel work - Part 3</a>
+            
+          </h1>
+
+          <p class="post-meta">
+            Jun 20, 2014
+            
+              
+
+ •
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/compiler/">compiler</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/kernel/">kernel</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/libc/">libc</a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+
+            
+            
+          </p>
+        </header>
+
+        <div class="post-content">
+          <p>In the last part of this series, we talked about the compiler’s composition, including the assembler
+and the linker. We showed what happens when the compiler runs, and what’s the output
+of translation software such as <code class="language-plaintext highlighter-rouge">cc1</code> or <code class="language-plaintext highlighter-rouge">as</code> etc. In this final part of the series, we are going
+to talk about the C library, how our programs interface with it, and how it interfaces with 
+the kernel.</p>
+
+<h1>The C Standard Library</h1>
+
+<p>The C Standard Library is pretty much a part of every UNIX like operating system. It’s basically
+a collection of code, including functions, macros, type definitions etc, in order to provide facilities
+such as string handling (<code class="language-plaintext highlighter-rouge">string.h</code>), mathematical computations (<code class="language-plaintext highlighter-rouge">math.h</code>), input and output
+(<code class="language-plaintext highlighter-rouge">stdio.h</code>), etc.</p>
+
+<p>GNU/Linux operating systems are generally using the <a href="http://www.gnu.org/software/libc/libc.html">GNU C Library implementation(GLIBC)</a>,
+but it’s common to find other C libraries being used (especially in embedded systems) such as 
+<a href="http://www.uclibc.org">uClibC</a>, <a href="http://sources.redhat.com/newlib">newlib</a>, or in the case
+of Android/Linux systems <a href="https://android.googlesource.com/platform/bionic.git">Bionic</a>.
+BSD style operating systems usually have their own implementation of a C library.</p>
+
+<h2>So, how does one “use” the C Standard Library?</h2>
+
+<p>So, now that we are acquainted with the C Library, how do you make use of it, you ask? The answer is:
+<strong>automagically</strong> :). Hold on right there; that’s not exactly a hyperbole. You see, when you
+write a basic C program, you usually <code class="language-plaintext highlighter-rouge">#include &lt;some_header.h&gt;</code> and then continue with
+using the code declared in that header. We have explained in the previous part of this series
+that when we use a function, say <code class="language-plaintext highlighter-rouge">printf()</code>, in reality it’s the linker that does the hard work 
+and allows us to use this function, by linking our program against the <code class="language-plaintext highlighter-rouge">libc</code>’s <code class="language-plaintext highlighter-rouge">so</code> (shared 
+object). So in essence, when you need to use the C Standard Library, you just <code class="language-plaintext highlighter-rouge">#include</code>
+headers that belong to it, and the linker will resolve the references to the code included.</p>
+
+<p>Apart from the functions that are defined in the Standards however, a C Library might also
+implement further functionality. For example, the Standards don’t say anything about networking.
+As a matter of fact, most libraries today may implement not only what’s in the C Standards,
+but may also choose to comply with the requirements of the POSIX C library, which is a superset
+of the C Standard library.</p>
+
+<h2>Ok, and how does the C Library manage to provide these services?</h2>
+
+<p>The answer to this question is simple: Some of the services that the library provides, it does so
+without needing any sort of special privileges, being normal, userspace C code, while others
+need to ask the Operating’s system Kernel to provide these facilities for the library.</p>
+
+<p>How does it do so? By calling some functions exported by the kernel to provide certain functionality
+ named <strong>system calls</strong>. System calls are the fundamental interface between a userspace
+application and the Operating System Kernel. For example consider this:</p>
+
+<p>You might have a program that has code like this at one point: <code class="language-plaintext highlighter-rouge">fd = open("log.txt", "w+");</code>. That
+<code class="language-plaintext highlighter-rouge">open</code> function is provided by the C Library, but the C Library itself can not execute all of the
+functionality that’s required to open a file, so it may call a <code class="language-plaintext highlighter-rouge">sys_open()</code> system call that will
+ask the kernel to do what’s required to load the file. In this case we say that the library’s <code class="language-plaintext highlighter-rouge">open</code>
+call acts as a wrapper function of the system call.</p>
+
+<h1>Epilogue</h1>
+
+<p>In this final part of our series, we saw how our applications interface with the C Standard Library
+available in our system, and how the Library itself interfaces with the Operating system kernel
+to provide the required services needed by the userspace applications.</p>
+
+<h2>Further Reading:</h2>
+
+<p>If you want to take a look at the System Call interface in the Linux Operating System, you could
+always see the <a href="http://man7.org/linux/man-pages/man2/syscalls.2.html">man page for the Linux system calls</a></p>
+
+        </div>
+        
+      </li>
+    
+      
+      
+
+      <li>
+        <header class="post-header">
+          <h1 class="post-title">
+            
+              <a class="post-link" href="/2014/04/28/introduction-to-xv6-adding-a-new-system-call/">Introduction to xv6: Adding a new system call.</a>
+            
+          </h1>
+
+          <p class="post-meta">
+            Apr 28, 2014
+            
+              
+
+ •
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/kernel/">kernel</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/ensidia/">ensidia</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/xv6/">xv6</a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+
+            
+            
+          </p>
+        </header>
+
+        <div class="post-content">
+          <h1>xv6: An introduction</h1>
+
+<p>If you are like me, a low level pc programmer, it’s hard not to have heard
+of <strong>xv6</strong>. <a href="http://pdos.csail.mit.edu/6.828/2012/xv6.html">xv6</a>, for those
+who haven’t really heard of it, is a <em>UNIX version 6</em> clone, designed
+at MIT to help teach operating systems.</p>
+
+<p>The reasoning behind doing this was fairly simple: <a href="http://www.lemis.com/grog/Documentation/Lions/">Up until that point, MIT
+had used John Lions’ famous commentary on the Sixth Edition of UNIX</a>. But V6 was challenging due to a 
+number of reasons. To begin with, it was written in a near ancient version
+of C (pre K&amp;R), and apart from that, it contained PDP-11 assembly
+(a legendary machine for us UNIX lovers, but ancient nonetheless), which
+didn’t really help the students that had to study both PDP-11 and the
+(more common) x86 architecture to develop another (exokernel) operating
+system on.</p>
+
+<p>So, to make things much more simpler, professors there decided to 
+roll with a clone of UNIX version 6, that was x86 specific, 
+written in ANSI C and supported multiprocessor machines.</p>
+
+<p>For a student (or a programmer interested in operating systems), xv6 is 
+a unique opportunity to introduce himself to kernel hacking and to the
+architecture of UNIX like systems. At about 15k lines of code (iirc), 
+including the (primitive) libraries, the userland and the kernel,
+it’s very easy (or well, at least easier than production scale UNIX like
+systems) to grok, and it’s also very easy to expand on. It also helps
+tremendously that xv6 as a whole has magnificent documentation, not only
+from MIT, but from other universities that have adopted xv6 for use in their
+operating systems syllabus.</p>
+
+<h2>An introduction to Ensidia: my very personal xv6 fork</h2>
+
+<p>When I first discovered xv6 I was ecstatic. For the reasons mentioned above
+I couldn’t lose on the opportunity to fork xv6 and use it as a personal
+testbed for anything I could feel like exploring or testing out.</p>
+
+<p>As a matter of fact, when I first discovered xv6, <a href="https://github.com/NlightNFotis/Fotix">I had just finished 
+implementing (the base of) my own UNIX like operating system, named fotix</a>, 
+and the timing of my discovery was great. xv6 had done what I had done,
+and also implemented most of what I was planning to work on fotix
+(for example, elf file loading), and it was a solid base for further 
+development. It also had a userland, which fotix at the time didn’t have.</p>
+
+<p>After I forked xv6, I spent some time familiriazing myself with the code.
+I also cleaned up the source code quite a bit, structuring the code in a 
+BSD like folder structure, instead of having all of the code in the same 
+folder and made various small scale changes.</p>
+
+<p>After that for quite some time, I had left ensidia alone and didn’t touch
+it much. However, I always felt like I wanted to develop it a bit more
+and get to play with its code in interesting ways. I was trying to think of
+a great way to get started with kernel hacking on it, in a simple way, to 
+get more acquainted with the kernel, and found an interesting pdf with 
+interesting project ideas for it. One of them was to add a system call.
+I figured out that would be an interesting and quick hack, so hey, why not?</p>
+
+<h1>Getting started with kernel hacking on xv6: Adding the system call.</h1>
+
+<p>The system call I decided to introduce was the suggested one. It was
+fairly simple sounding too. You have to <strong>introduce a new system call
+that returns the number of total system calls that have taken place
+so far</strong>. So let’s see how I went about implementing it:</p>
+
+<h2>An introduction to system calls in xv6</h2>
+
+<p>First of all, we should provide some context about what system calls are,
+how they are used, and how they are implemented in xv6.</p>
+
+<p>A system call is a function that a userspace application will use, so as
+to ask for a specific service to be provided by the operating system. For
+instance with an <code class="language-plaintext highlighter-rouge">sbrk(n)</code> system call, a process can ask the kernel to
+grow its heap space by n bytes. Another example is the well known <code class="language-plaintext highlighter-rouge">fork()</code>
+system call in the UNIX world, that’s used to create a new process by 
+cloning the caller process.</p>
+
+<p>The way applications signal the kernel that they need that service is
+by issueing a software <em>interrupt</em>. An <em>interrupt</em> is a signal generated
+that notifies the processor that it needs to stop what its currently doing,
+and handle the interrupt. This mechanism is also used to notify the processor
+that information it was seeking from the disks is in some buffer, ready to
+be extracted and processed, or, that a key was pressed in the keyboard. This
+is called a hardware interrupt.</p>
+
+<p>Before the processor stops to handle the interrupt generated, it needs to 
+save the current state, so that it can resume the execution in this context
+after the interrupt has been handled.</p>
+
+<p>The code that calls a system call in xv6 looks like this:</p>
+
+<figure class="highlight"><pre><code class="language-gas" data-lang="gas"># exec(init, argv)
+ .globl start
+ start:
+   pushl $argv
+   pushl $init
+   pushl $0  // where caller pc would be
+   movl $SYS_exec, %eax
+   int $T_SYSCALL</code></pre></figure>
+
+<p>In essence, it pushes the argument of the call to the stack, and puts
+the system call number (in the above code, that’s <code class="language-plaintext highlighter-rouge">$SYS_exec</code>) into <code class="language-plaintext highlighter-rouge">%eax</code>.
+The number is used to match the entry in an array that holds pointers to
+all the system calls. After that, it generates a software interrupt, with
+a code (in this case <code class="language-plaintext highlighter-rouge">$T_SYSCALL</code>) that’s used to index the interrupt
+descriptor tables and find the appropriate interrupt handler.</p>
+
+<p>The code that is specific to find the appropriate interrupt handler is
+called <code class="language-plaintext highlighter-rouge">trap()</code> and is available in the file <code class="language-plaintext highlighter-rouge">trap.c</code>. If <code class="language-plaintext highlighter-rouge">trap()</code> check’s
+out the trapnumber in the generated trapframe (a structure that represents
+the processor’s state at the time that the trap happened) to be equal to
+<code class="language-plaintext highlighter-rouge">T_SYSCALL</code>, it calls <code class="language-plaintext highlighter-rouge">syscall()</code> (the software interrupt handler)
+ that’s available in <code class="language-plaintext highlighter-rouge">syscall.c</code></p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="c1">// This is the part of trap that</span>
+<span class="c1">// calls syscall()</span>
+<span class="kt">void</span>
+<span class="nf">trap</span><span class="p">(</span><span class="k">struct</span> <span class="n">trapframe</span> <span class="o">*</span><span class="n">tf</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="n">tf</span><span class="o">-&gt;</span><span class="n">trapno</span> <span class="o">==</span> <span class="n">T_SYSCALL</span><span class="p">){</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">proc</span><span class="o">-&gt;</span><span class="n">killed</span><span class="p">)</span>
+      <span class="n">exit</span><span class="p">();</span>
+    <span class="n">proc</span><span class="o">-&gt;</span><span class="n">tf</span> <span class="o">=</span> <span class="n">tf</span><span class="p">;</span>
+    <span class="n">syscall</span><span class="p">();</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">proc</span><span class="o">-&gt;</span><span class="n">killed</span><span class="p">)</span>
+      <span class="n">exit</span><span class="p">();</span>
+    <span class="k">return</span><span class="p">;</span>
+  <span class="p">}</span></code></pre></figure>
+
+<p><code class="language-plaintext highlighter-rouge">syscall()</code> is finally the function that checks out <code class="language-plaintext highlighter-rouge">%eax</code> to get the 
+number of the system call (to index the array with the system 
+call pointers), and execute the code corresponding to that system call.</p>
+
+<p>The implementation of system calls in xv6 is under two files. The first one
+is <code class="language-plaintext highlighter-rouge">sysproc.c</code>, and is the one containing the implementation of system calls
+correspondent to processes, and <code class="language-plaintext highlighter-rouge">sysfile.c</code> that contains the implementation
+of system calls regarding the file system.</p>
+
+<h2>The specific implementation of the <code class="language-plaintext highlighter-rouge">numcalls()</code> system call</h2>
+
+<p>To implement the system call itself is simple. I did so with a global variable
+in <code class="language-plaintext highlighter-rouge">syscall.c</code> called <code class="language-plaintext highlighter-rouge">syscallnum</code>, that’s incremented everytime 
+<code class="language-plaintext highlighter-rouge">syscall()</code>, calls a system call function, that is, the system call
+is valid.</p>
+
+<p>Next we just need a function, the system call implementation that returns
+that number to the userspace program that asks for it. Below is the 
+function itself, and <code class="language-plaintext highlighter-rouge">syscall()</code> after our change.</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="c1">// return the number of system calls that have taken place in</span>
+<span class="c1">// the system</span>
+<span class="kt">int</span>
+<span class="nf">sys_numcalls</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">syscallnum</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="c1">// The syscall() implementation after</span>
+<span class="c1">// our change</span>
+<span class="kt">void</span>
+<span class="nf">syscall</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="kt">int</span> <span class="n">num</span><span class="p">;</span>
+
+  <span class="n">num</span> <span class="o">=</span> <span class="n">proc</span><span class="o">-&gt;</span><span class="n">tf</span><span class="o">-&gt;</span><span class="n">eax</span><span class="p">;</span>
+  <span class="k">if</span><span class="p">(</span><span class="n">num</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">num</span> <span class="o">&lt;</span> <span class="n">NELEM</span><span class="p">(</span><span class="n">syscalls</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">syscalls</span><span class="p">[</span><span class="n">num</span><span class="p">])</span> <span class="p">{</span>
+    <span class="n">syscallnum</span><span class="o">++</span><span class="p">;</span> <span class="c1">// increment the syscall counter</span>
+    <span class="n">proc</span><span class="o">-&gt;</span><span class="n">tf</span><span class="o">-&gt;</span><span class="n">eax</span> <span class="o">=</span> <span class="n">syscalls</span><span class="p">[</span><span class="n">num</span><span class="p">]();</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="n">cprintf</span><span class="p">(</span><span class="s">"%d %s: unknown sys call %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span>
+            <span class="n">proc</span><span class="o">-&gt;</span><span class="n">pid</span><span class="p">,</span> <span class="n">proc</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">,</span> <span class="n">num</span><span class="p">);</span>
+    <span class="n">proc</span><span class="o">-&gt;</span><span class="n">tf</span><span class="o">-&gt;</span><span class="n">eax</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>After that was done, the next few things that were needed to be done
+were fairly straight forward. We had to add an index number for the new
+system call in <code class="language-plaintext highlighter-rouge">syscall.h</code>, expose it to user proccesses via <code class="language-plaintext highlighter-rouge">user.h</code>,
+and add a new macro to <code class="language-plaintext highlighter-rouge">usys.S</code> that defines an asm routine that calls
+that specific system call, and change the makefile to facilitate our change
+. After doing so we had to write a userspace testing program to test our changes.</p>
+
+<p>The result after doing all this is below :)</p>
+
+<figure class="highlight"><pre><code class="language-sh" data-lang="sh">cpu1: starting
+cpu0: starting
+init: starting sh
+<span class="nv">$ </span><span class="nb">ls</span>
+<span class="nb">.</span>              1 1 512
+..             1 1 512
+README         2 2 2209
+<span class="nb">cat            </span>2 3 9725
+<span class="nb">echo           </span>2 4 9254
+forktest       2 5 5986
+<span class="nb">grep           </span>2 6 10873
+init           2 7 9579
+<span class="nb">kill           </span>2 8 9246
+<span class="nb">ln             </span>2 9 9240
+<span class="nb">ls             </span>2 10 10832
+<span class="nb">mkdir          </span>2 11 9315
+<span class="nb">rm             </span>2 12 9308
+sh             2 13 16600
+stressfs       2 14 9790
+usertests      2 15 37633
+<span class="nb">wc             </span>2 16 10207
+zombie         2 17 9028
+syscallnum     2 18 9144
+console        3 19 0
+<span class="nv">$ </span>syscallnum
+The total number of syscalls so far is 643
+<span class="nv">$ </span>syscallnum
+The total number of syscalls so far is 705
+<span class="nv">$ </span>syscallnum
+The total number of syscalls so far is 767
+<span class="nv">$ </span>syscallnum
+The total number of syscalls so far is 829</code></pre></figure>
+
+<h1>Epilogue</h1>
+
+<p>I usually end my blog posts with an epilogue. Although this is a post
+that doesn’t necesarilly need one, <strong>I wanted to write one just to say to you
+that you should try kernel hacking</strong>, <em>that is programming jargon for
+programming an operating system kernel</em>, because it’s an experience that
+undoubtedly will teach you a great deal of things about how your computer
+actually works.</p>
+
+<p>Last but not least, take a look at the ongoing work on <a href="https://github.com/NlightNFotis/Ensidia">Ensidia, my fork
+of xv6</a>. To see this particular
+work, take a look at the <code class="language-plaintext highlighter-rouge">syscall</code> branch.</p>
+
+<h2>References</h2>
+<ul>
+  <li><a href="http://zoo.cs.yale.edu/classes/cs422/2010/reference">CS422/522: Operating systems, Yale</a></li>
+  <li><a href="http://zoo.cs.yale.edu/classes/cs422/2010/xv6-book/fscall.pdf">Chapter 8, File System calls, xv6 reference, Yale</a></li>
+  <li><a href="http://zoo.cs.yale.edu/classes/cs422/2010/xv6-book/trap.pdf">Chapter 3, System calls, exceptions and interrupts, Yale</a></li>
+  <li><a href="http://pdos.csail.mit.edu/6.828/2012/xv6/book-rev7.pdf">xv6 Documentation, MIT csail</a></li>
+</ul>
+
+        </div>
+        
+      </li>
+    
+      
+      
+
+      <li>
+        <header class="post-header">
+          <h1 class="post-title">
+            
+              <a class="post-link" href="/2014/04/25/how-the-compiler/">How the compiler, the Library and the Kernel work - Part 2 </a>
+            
+          </h1>
+
+          <p class="post-meta">
+            Apr 25, 2014
+            
+              
+
+ •
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/compiler/">compiler</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/kernel/">kernel</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/libc/">libc</a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+
+            
+            
+          </p>
+        </header>
+
+        <div class="post-content">
+          <p>In the previous part of this little series, we talked about the compiler, and what it does 
+with the header files, in our attempt to demistify their usage. In this part, I want to show you
+what’s the compiler’s output, and how we create our file.</p>
+
+<h1>The compiler’s composition</h1>
+
+<p>Generally speaking, a <em>compiler</em> belongs to a family of software called <strong>translators</strong>. 
+A translator’s job is to read some source code in a source language, and generate (translate it to) 
+some source code in a target language.</p>
+
+<p>Now, you might think that most compilers you know don’t do that. You input a (source code) file, 
+and you get a binary file, ready to run when you want it to. Yes that’s what it does, but it’s not
+the compiler that does all this. If you remember from the last installment of this series,
+when you call the compiler like <code class="language-plaintext highlighter-rouge">gcc some_file.c</code> or <code class="language-plaintext highlighter-rouge">clang some_file.c</code>, in essence you are
+calling the compilation driver, with the file as a parameter. The compilation driver then calls
+1) the preprocessor, 2) the (actual) compiler, 3) the assembler and last but not least the linker.
+At least when it comes to gcc, these pieces of software are called <code class="language-plaintext highlighter-rouge">cpp</code>, <code class="language-plaintext highlighter-rouge">cc1</code>, 
+<code class="language-plaintext highlighter-rouge">gas</code> (executable name is <code class="language-plaintext highlighter-rouge">as</code>)  and <code class="language-plaintext highlighter-rouge">collect2</code> (executable name is <code class="language-plaintext highlighter-rouge">ld</code>) respectively.</p>
+
+<p>From that little software collection up top, that we call the compiler, we can easily take notice
+of at least 3 (yeah, that’s right) translators, that act as we mentioned earlier, 
+that is take some input in a source language, and produce some output to a target language.</p>
+
+<p>The first is the preprocessor. The preprocessor accepts source code in C as a source language,
+and produces source code again in C (as a target language), but with the output having various
+elements of the source code resolved, such as header file inclusion, macro expansion, etc.</p>
+
+<p>The second is the compiler. The compiler accepts (in our case) C source code, as a source language,
+and translates it to some architecture’s assembly language. In my case, when I talk about the 
+compiler, I’m gonna assume that it produces x86 assembly.</p>
+
+<p>The last one, is the assembler, which accepts as input some machine’s architecture assembly
+language, and produces what’s called binary, or object representation of it, that is it translates
+the assembly mnemonics directly to the bytes they correspond to, in the target architecture.</p>
+
+<p>At this point, one could also argue that the linker is also a translator, accepting binary, and 
+translating it to an executable file, that is, resolving references, and fitting the binary code
+on the segments of the file that is to be produced. For example, on a typical GNU/Linux system,
+this phase produces the executable ELF file.</p>
+
+<h1>The (actual) compiler’s output: x86 assembly.</h1>
+
+<p>Before we go any further, I would like to show you what the compiler really creates:</p>
+
+<p>For the typical hello world program we demonstrated in our first installment, the compiler
+will output the following assembly code:</p>
+
+<figure class="highlight"><pre><code class="language-gas" data-lang="gas">	.file	"hello.c"
+	.section	.rodata
+.LC0:
+	.string	"Hello world!"
+	.text
+	.globl	main
+	.type	main, @function
+main:
+	pushq	%rbp
+	movq	%rsp, %rbp
+	subq	$16, %rsp
+	movl	%edi, -4(%rbp)
+	movq	%rsi, -16(%rbp)
+	movl	$.LC0, %edi
+	call	puts
+	movl	$0, %eax
+	leave
+	ret
+	.size	main, .-main
+	.ident	"GCC: (GNU) 4.8.2 20131212 (Red Hat 4.8.2-7)"
+	.section	.note.GNU-stack,"",@progbits</code></pre></figure>
+
+<p>To produce the above file, we had to use the following gcc invocation command:
+<code class="language-plaintext highlighter-rouge">gcc -S -fno-asynchronous-unwind-tables -o hello.S hello.c</code>. 
+We used <code class="language-plaintext highlighter-rouge">-fno-asynchronous-unwind-tables</code> to remove <code class="language-plaintext highlighter-rouge">.cfi</code> directives, which tell <code class="language-plaintext highlighter-rouge">gas</code> 
+(the gnu assembler) to emit Dwarf Call Frame Information tags, which are used to reconstruct
+a stack backtrace when a frame pointer is missing.</p>
+
+<p>For more usefull compilation flags, to control the intermediary compilation flow, try these:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">-E</code>: stop after preprocessing, and produce a *.i file</li>
+  <li><code class="language-plaintext highlighter-rouge">-S</code>: we used this, stop after the compiler, and produce a *.s file</li>
+  <li><code class="language-plaintext highlighter-rouge">-c</code>: stop after the assembler, and produce a *.o file.</li>
+</ul>
+
+<p>The default behaviour is to use none, and stop after the linker has run. If you want to run a 
+full compilation and keep all the intermediate files, use the <code class="language-plaintext highlighter-rouge">-save-temps</code> flag.</p>
+
+<h1>From source to binary: the assembler.</h1>
+
+<p>The next part of the compilation process, is the assembler. We have already discussed what
+the assembler does, so here we are going to see it in practice. If you have followed so far,
+you should have two files, a <code class="language-plaintext highlighter-rouge">hello.c</code>, which is the hello world’s C source code file,
+and a <code class="language-plaintext highlighter-rouge">hello.S</code> which is what we created earlier, the compiler’s (x86) assembly output.</p>
+
+<p>The assembler operates on that last file as you can imagine, and to see it running, and emit
+binary, we need to invoke it like this: <code class="language-plaintext highlighter-rouge">as -o hello.bin hello.S</code>, and produces this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ELF\00\00\00\00\00\00\00\00\00\00&gt;\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\F0\00\00\00\00\00\00\00\00\00\00\00@\00\00\00\00\00@\00\00\00UH\89\E5H\83\EC\89}\FCH\89u\F0\BF\00\00\00\00\E8\00\00\00\00\B8\00\00\00\00\C9\C3Hello world!\00\00GCC: (GNU) 4.8.2 20131212 (Red Hat 4.8.2-7)\00\00.symtab\00.strtab\00.shstrtab\00.rela.text\00.data\00.bss\00.rodata\00.comment\00.note.GNU-stack\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00 \00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00@\00\00\00\00\00\00\00 \00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\B8\00\00\00\00\00\000\00\00\00\00\00\00\00	\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00&amp;\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00`\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00,\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00`\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\001\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00`\00\00\00\00\00\00\00
+\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\009\00\00\00\00\00\000\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00m\00\00\00\00\00\00\00-\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00B\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\9A\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\9A\00\00\00\00\00\00\00R\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\B0\00\00\00\00\00\00\F0\00\00\00\00\00\00\00
+\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00	\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\A0\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\F1\FF\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00	\00\00\00\00\00\00\00\00\00\00\00\00\00 \00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00hello.c\00main\00puts\00\00\00\00\00\00\00\00\00\00\00\00\00
+\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00	\00\00\00\FC\FF\FF\FF\FF\FF\FF\FF
+</code></pre></div></div>
+
+<h1>Last but not least: the linker</h1>
+
+<p>We saw what the assembler emits, which is to say, binary code. However, that binary code
+still needs further processing. To explain that, we need to go back a little.</p>
+
+<p>In our first installment of the series, we said that when you call a function like <code class="language-plaintext highlighter-rouge">printf()</code>,
+the compiler only needs its prototype to do type checking and ensure that you use it legally.
+For that you include the header file <code class="language-plaintext highlighter-rouge">stdio.h</code>. But since that contains the function prototype only,
+where is the source code for that function? Surely, it must be somewhere, since it executes 
+successfully to begin with, but we haven’t met the source code for printf so far, so where is it?</p>
+
+<p>The function’s source code is located in the <code class="language-plaintext highlighter-rouge">.so</code> (shared object) of the standard C library,
+which in my system (Fedora 19, x64) is <code class="language-plaintext highlighter-rouge">libc-2.17.so</code>. I don’t want to expand on that further,
+as I plan to do so on the next series installment, however, what we have said so far is enough
+for you to understand the linker’s usage:</p>
+
+<p>The linker resolves the undefined (thus far) reference to printf, by finding the reference to
+the printf symbol and (in layman’s talk) 
+making a pointer to point to it so that execution can jump to printf’s code
+when we have to do that during our program’s execution.</p>
+
+<p>To invoke the linker on our file, <a href="https://sourceware.org/binutils/docs-2.20/ld/Options.html#Options">at least according to it’s documentation</a>, 
+we should do the following: <code class="language-plaintext highlighter-rouge">ld -o hello.out /lib/crt0.o hello.bin -lc</code>. Then we should
+be able to run the file like this: <code class="language-plaintext highlighter-rouge">./hello.out</code>.</p>
+
+<h1>Epilogue</h1>
+
+<p>That’s this end of this part 2 of my series that explains how your code turns into binary, and how
+your computer (at least when it comes to the software side) runs it. In part 3, I am going to discuss
+in greater length, the C library, and the kernel.</p>
+
+<h2>References</h2>
+
+<ul>
+  <li><a href="http://stackoverflow.com/questions/3564752/what-is-cfi-and-lfe-in-assembly-code-produced-by-gcc-from-c-program">StackOverflow: What is .cfi and .LFE in assembly code produced by GCC from c++ program?</a></li>
+  <li><a href="http://blog.lxgcc.net/?p=181">GCC front-end (1): driver vs. compiler</a></li>
+  <li><a href="http://wiki.osdev.org/GAS">GAS</a></li>
+  <li><a href="https://sourceware.org/binutils/docs-2.20/ld/"> ld: Binutils documentation</a></li>
+</ul>
+
+        </div>
+        
+      </li>
+    
+      
+      
+
+      <li>
+        <header class="post-header">
+          <h1 class="post-title">
+            
+              <a class="post-link" href="/2014/02/23/my-linux-from-scratch-experience/">My Linux from Scratch Experience</a>
+            
+          </h1>
+
+          <p class="post-meta">
+            Feb 23, 2014
+            
+              
+
+ •
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/linux/">linux</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/lfs/">lfs</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/distribution/">distribution</a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+
+            
+            
+          </p>
+        </header>
+
+        <div class="post-content">
+          <p>The past two to three days, I have been busy with creating my very own Linux distribution
+using the well known <a href="http://www.linuxfromscratch.org">Linux from Scratch</a>. This post is 
+an accounting of my experience with the process, what I liked, what I did learn from that,
+what was surprising to me and more.</p>
+
+<h1>Linux from Scratch: An introduction</h1>
+
+<p>If you are here, then you most likely already know what <a href="http://www.linuxfromscratch.com/">linux from scratch</a>
+is, but for the sake of completeness (or in the case that you don’t know what it is, but are
+so keen on learning)  I will provide an introduction about it here.</p>
+
+<p>Linux from scratch is a book (from now on, <em>lfs</em>), providing a series of steps that guide you to the creation of
+a fully function GNU/Linux distribution. Although the original book creates a “barebones”
+distribution, with only fundamental tools in it, the distribution created provides a fine
+enviroment for further experimentation or customization.</p>
+
+<p>Apart from the basic book, the lfs project also has 3-4 books to read if you want to extend
+the basic system (such as blfs, Beyond Linux from Scratch) or if you want to automate the process,
+create a distribution that is more secure, or how to cross-compile an lfs system for different machines.</p>
+
+<h1>My experience with building LFS</h1>
+
+<h2>A small introduction about my background</h2>
+
+<p>I have been a UNIX (-like) systems (full-time) user for about 2.5 years now. During that time
+I had seen myself from being what you would call a Linux newbie, not knowing how to use
+a system without a GUI installed (have I mentioned that Ubuntu was my favourite distribution) to being an arguably experienced UNIX programmer, trying to learn more about the
+various aspects of UNIX systems, and delving deeper and deeper into them every day
+(while also feeling pain if using something other than a UNIX like system).</p>
+
+<p>During that time, I have learned about the Unix way of working with the system, using the shell and the system’s toolchain to write software and other wise manipulate the system. I
+ditched my old knowledge about IDEs and GUIs, and set out to master the command line and the associated tools (Anecdote: I remember, when I first came from to Unix from Windows, to searching the net for a C/C++ IDE to do development.) I remember reading about
+how people worked another way in Unix land, using an editor, and the shell to work, and I 
+decided to force myself to learn to work that way. I still remember trying to use vim and gcc, 
+and ending up liking this way better because it seemed a more natural way to interact with
+the software development process, than using a ide and pressing the equivalent of a “play”
+button, so that magic ensues for the next few seconds until I have a result.</p>
+
+<p>Time has passed since then, and going through hours and hours of reading and working with
+the system, I did learn quite a lot about it. My Google Summer of Code experience in 2013
+expanded my system knowledge even further (that’s what you get when you have to work
+with the system kernel, the C library and a compiler).</p>
+
+<p>But in all that time, of using Unix like systems, I never had the chance to create one myself.
+And although my background did allow me to know quite a few things of the inner workings
+of a system like that, I never actually saw all these software systems combining in front
+of my very eyes to create that beauty we know as a GNU/Linux distribution. And that left
+me a bad taste, because I knew what was happening, but I wanted to see it happen right 
+in front of my eyes.</p>
+
+<p>Knowing about the existence of lfs, and not actually going through it also made matters worse
+for me, as I knew that I could actually “patch” that knowledge gap of mine, but I never really
+tried to do that. I felt that I was missing on a lot, and that lfs would be instrumental to my
+understanding of a Linux system. Having gone through that some years ago, and getting
+stuck at the very beginning had also created an innate fear in me, that it was something
+that would be above my own powers.</p>
+
+<p>Until two days ago, when I said to myself: “You know what? I have seen and done a lot 
+of things in a UNIX system. I am now much more experienced than I was when I last did it.
+And I know I want to at least try it, even if it will only give me nothing but infinite confusion 
+Because if I do manage to get it, I will learn so many more things, or at least get assured
+that my preexisting knowledge was correct” And that thought was the greatest motive I had
+to do that in a fairly long time.</p>
+
+<p>So, I sat at my desk, grabbed a cup of coffee and off I went!</p>
+
+<h2>The process</h2>
+
+<h3>Preparation and the temporary toolchain</h3>
+
+<p>The book is itself several chapters long, each of which perform another “big step” in the
+creation of the distribution.</p>
+
+<p>The first few chapters are preparatory chapters, where you ensure the integrity of the 
+building environment, and download any building dependencies you may be lacking,
+create a new partition that will host the lfs system, and create the user account that
+will do the building of the temporary toolchain.</p>
+
+<p>The temporary toolchain building is a more exciting process. In essence
+you compile and collect several pieces of software that will later be used
+to compile the distribution’s toolchain and other software.</p>
+
+<p>You start of with building binutils, and that is to get a working assembler and linker. 
+After having a working assembler and linker, you proceed with compiling <code class="language-plaintext highlighter-rouge">gcc</code>.
+Next on is unpacking the linux headers, so that you can compile (and link against them)
+the glibc.</p>
+
+<p>Having the basic parts of the toolchain compiled, you then proceed with installing other
+software that is needed in the temporary toolchain, like <code class="language-plaintext highlighter-rouge">gawk</code>, <code class="language-plaintext highlighter-rouge">file</code>, <code class="language-plaintext highlighter-rouge">patch</code>, <code class="language-plaintext highlighter-rouge">perl</code>
+etc.</p>
+
+<h3>Building the main system</h3>
+
+<p>After getting done with the temporary toolchain, you then <code class="language-plaintext highlighter-rouge">chroot</code> into the lfs partition.
+You start of with creating the needed directories (like <code class="language-plaintext highlighter-rouge">/bin</code>, <code class="language-plaintext highlighter-rouge">/boot</code>, <code class="language-plaintext highlighter-rouge">/etc</code>, <code class="language-plaintext highlighter-rouge">/home</code> etc)
+and then continue with building the distribution software, utilising the temporary toolchain.
+For instance, you construct a new <code class="language-plaintext highlighter-rouge">gcc</code>, you compile <code class="language-plaintext highlighter-rouge">sed</code>, <code class="language-plaintext highlighter-rouge">grep</code>, <code class="language-plaintext highlighter-rouge">bzip</code>, the <code class="language-plaintext highlighter-rouge">shadow</code>
+utility that manages the handling of passwords etc, all while making sure that things don’t
+break, and running countless tests (that sometimes take longer than what the package
+took to compile) to ensure that what you build is functional and reliable.</p>
+
+<h3>Final configuration</h3>
+
+<p>Next one on the list, is the various configuration files that reside in <code class="language-plaintext highlighter-rouge">/etc</code>, and the setup
+of <code class="language-plaintext highlighter-rouge">sysvinit</code>, the distribution’s <code class="language-plaintext highlighter-rouge">init</code> system.</p>
+
+<p>Last, but not least, you are compiling the linux kernel and setting up grub so that the
+system is bootable.</p>
+
+<p>At this point, if all has gone well, and you reset, you should boot into your new lfs system.</p>
+
+<h1>What did I gain from that?</h1>
+
+<p>Building lfs was a very time consuming process for me. It must have taken about 7-8
+hours at the very least. Not so much because of the compilation and testing (I was compiling
+with <code class="language-plaintext highlighter-rouge">MAKEFLAGS='-j 4'</code> on a Core i5), but because I didn’t complete some steps
+correctly, and later needed to go back and redo them, along with everything that followed and the time it took to research some issues, programs or various other things
+before I did issue a command at the shell.</p>
+
+<p>Now if I were to answer the question “What did I gain from that”, my answer would be
+along the lines of “Infinite confusion, and some great insight at some points”.</p>
+
+<p>To elaborate on that,</p>
+
+<ul>
+  <li>lfs mostly served as a reassurance that indeed, what I did know
+about the system was mostly correct.</li>
+  <li>I did have the chance to see the distribution
+get built right before my eyes, which was something I longed for a great amount of time.</li>
+  <li>It did make me somewhat more familiar with the <code class="language-plaintext highlighter-rouge">configure &amp;&amp; make &amp;&amp; make install</code>
+cycle</li>
+  <li>It made me realise that the directories in the system are the simple result of a <code class="language-plaintext highlighter-rouge">mkdir</code> command, and that configuration files in the <code class="language-plaintext highlighter-rouge">/etc/folder</code> are handwritten plain files. (<em>yeah, I feel stupid about that one - I don’t know what I was expecting.</em> This was probably the result of the “magic involved” that the distro making process entailed for me)</li>
+  <li>I got to see the specific software that is needed to create a distribution, and demonstrate to me how I can build it, customize that build, or even change that software to my liking</li>
+  <li>And last but not least, something that nearly every lfs user says after a successful try:
+I knew that package managers did a great many things in order to maintain the system, and that much
+of the work I would normally have to do was done nearly automatically 
+but boy, was I underestimating them. After lfs, I developed a new appreciation for a
+good package manager.</li>
+</ul>
+
+<h1>Epilogue</h1>
+
+<p><em>Lfs was, for the most part, a great experience.</em> <strong>As a knowledge expander, it works great.</strong>
+<strong>As a system that you keep and continue to maintain? I don’t know.</strong> I know that people have
+done that in the past, but I decided against maintaining my build, as I figured it would be
+very time consuming, and that if I ever wanted to gain the experience of maintaining a distro,
+I would probably fork something like <a href="http://www.crux.nu">Crux</a>.</p>
+
+<p>In the end if you ask me if I can recommend that to you, I will say that I’m not so sure.
+<strong>It will provide you with some insight into the internals of a GNU/Linux distribution, but it 
+won’t make you a better programmer as some people claim</strong> (most of the process revolves
+around the <code class="language-plaintext highlighter-rouge">configure &amp;&amp; make &amp;&amp; make install</code> cycle, and some conf files handwriting).</p>
+
+<p><strong>In the end, it is yourself who you should ask. Do you want that knowledge? Is it worth the hassle for you?
+Do you want the bragging rights? Are you crazy enough to want to maintain it?</strong> 
+<em>These are all questions that you get as many answers to them as the people you ask.</em></p>
+
+        </div>
+        
+      </li>
+    
+      
+      
+
+      <li>
+        <header class="post-header">
+          <h1 class="post-title">
+            
+              <a class="post-link" href="/2013/12/12/how-the-compiler/">How the compiler, the Library and the kernel work - Part 1</a>
+            
+          </h1>
+
+          <p class="post-meta">
+            Dez 12, 2013
+            
+              
+
+ •
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/compiler/">compiler</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/kernel/">kernel</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/libc/">libc</a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+
+            
+            
+          </p>
+        </header>
+
+        <div class="post-content">
+          <p>Before we get any further, it might be good if we provided some context.</p>
+
+<h1>Hello world. Again.</h1>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span>
+<span class="kt">int</span>
+<span class="nf">main</span> <span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">printf</span> <span class="p">(</span><span class="s">"Hello world!</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Every user space (read: application) programmer, has written a hello world program. 
+Only god knows how many times this program has been written. Yet, 
+most programmers’ knowledge of the program is limited to something along the lines of:</p>
+
+<blockquote>
+  <ul>
+    <li>It sends the string passed as a parameter to the system to print.</li>
+    <li>It takes the printf function from stdio.h and prints the string</li>
+  </ul>
+</blockquote>
+
+<p>and various other things, which are anywhere between plain wrong, or partially correct.</p>
+
+<p>** So why not demistify the process? **</p>
+
+<h1>Enter the C preprocessor.</h1>
+
+<p>You may have heard of the C Preprocessor. It’s the first stage of a c or c++ file compilation,
+and it’s actually responsible for things such as:</p>
+
+<ul>
+  <li><strong>inclusion of header files</strong> (it does so by replacing
+<code class="language-plaintext highlighter-rouge">#include &lt;header.h&gt;</code> with the content of this file, and the file it includes recursively),</li>
+  <li><strong>macro expansion</strong>, such as the famous comparison of two numbers (a greater than b). In essence, if you define
+ the following macro <code class="language-plaintext highlighter-rouge">#define gt(a, b) ((a &gt; b) ? 1 : 0)</code>, then in a statement such as this:</li>
+</ul>
+
+<div lang="c" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> if (gt (5, 3)) printf ("The first parameter is greater than the second.\n");
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">gt (5, 3)</code> gets expanded to the macro definition, so after the preprocessor has run you end up with something like this:</p>
+
+<div lang="c" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> if (((5 &gt; 3) ? 1 : 0)) printf ("The first parameter is greater than the second.\n");
+</code></pre></div></div>
+
+<ul>
+  <li><strong>conditional compilation</strong> (things such as:</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#ifdef WIN32 
+</span>    <span class="n">printf</span> <span class="p">(</span><span class="s">"We are on windows</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span> 
+<span class="cp">#endif</span></code></pre></figure>
+
+<p>amongst others. You can see it for yourself. Write the hello world program, and pass it to cpp: <code class="language-plaintext highlighter-rouge">cpp hello_world.c</code></p>
+
+<p>So now that we know what it does it’s time to demistify a common myth regarding it: <em>Some people believe
+that the header files include the function to be called.</em>. <strong>That’s wrong.</strong> What it does include is 
+<strong>function prototypes</strong> (and some type definitions, etc) <strong>only</strong>. It doesn’t include the body of the function
+to be called.</p>
+
+<p>Some people find that fact quite surprising, though, it isn’t, if you get to understand what the compiler
+does with it.</p>
+
+<h1>Say hello to the compiler.</h1>
+
+<p>Here we are gonna unmask another pile of misconceptions. First of all, some people think that when they call 
+<code class="language-plaintext highlighter-rouge">gcc</code> on the command line they are actually calling the compiler. <strong>They are not.</strong> <em>In fact they are calling
+the software commonly called <strong>the compilation driver</strong>, whose job is to run all the software needed to fully
+turn source to binary, including preprocessors, the actual compiler, an assembler and finally the linker</em></p>
+
+<p>Having said that, the actual compiler that’s getting called when you call <code class="language-plaintext highlighter-rouge">gcc</code> is called <code class="language-plaintext highlighter-rouge">cc1</code>. You may have seen it some times when the driver reports errors. Wanna take a look at it, to make sure I’m not lying to you? 
+(Hint: I’m not!) Fair enough. Why don’t you type this in the command line: <code class="language-plaintext highlighter-rouge">gcc -print-prog-name=cc1</code>. It should tell you where the actual compiler is located in your system.</p>
+
+<p>So now that we have this (misconception) out of our minds, we can continue with our analysis. Last time we talked
+about it, we said that the header files include <strong>prototypes</strong> and not the whole function.</p>
+
+<p>You may know that in C, you usually declare a function, before you use it. The primary reason for doing this
+is to provide the compiler with the ability to perform <strong>type checking</strong>, that is to check that the arguments
+passed are correct, both in number, and in type, and to verify that the returned value (assuming there is one)
+is being used correctly. Below is a program that demonstrates the function prototype:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span>
+<span class="kt">int</span> <span class="nf">add_nums</span> <span class="p">(</span><span class="kt">int</span> <span class="n">first</span><span class="p">,</span> <span class="kt">int</span> <span class="n">second</span><span class="p">);</span>
+
+<span class="kt">int</span>
+<span class="nf">main</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">printf</span> <span class="p">(</span><span class="s">"5 + 5 results in %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">add_nums</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">));</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span>
+<span class="nf">add_nums</span> <span class="p">(</span><span class="kt">int</span> <span class="n">first</span><span class="p">,</span> <span class="kt">int</span> <span class="n">second</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">first</span> <span class="o">+</span> <span class="n">second</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>In this particular example, the prototype gives the compiler a wide variety of information. It tells it
+that function <code class="language-plaintext highlighter-rouge">add_nums</code> takes two int arguments and returns an integer to the calling function. Now the
+compiler can verify that I am passing correct arguments to it when I call it inside printf. If I don’t include
+the function prototype, and do something slightly evil such as calling <code class="language-plaintext highlighter-rouge">add_nums</code> with <code class="language-plaintext highlighter-rouge">float</code> arguments then 
+this might happen:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>5 + 4 results in 2054324224
+</code></pre></div></div>
+
+<p>Now that you know that the compiler (the real one) only needs the prototype and not the actual function code,
+you may be wondering how the compiler actually compiles it if it doesn’t know it’s code.</p>
+
+<p>Now is the time to bring down another missconception. The word <em>compiler</em> is just a fancy name for software
+otherwise known as <em>translators</em>. A <em>translator’s</em> job is to get input and turn it from one language (source language) to a second language (target language), whatever that may be. Most of the times, when you compile software,
+you compile it to run in your computer, which runs on a processor from the x86 architecture family of processors.
+A processor is typically associated with an assembly language for that architecture (which is just human friendly
+mnemonics for common processor tasks), so your <em>x86 computer runs x86 assembly</em> (ok that’s not 100% true, but for
+simplicity’s sake at the moment, it should serve. We will see why it’s not true later.) So the compiler 
+(in a typical translation) translates (compiles) your C source code to x86 assembly. 
+You can see this by compiling your hello world example and passing the compiler the <code class="language-plaintext highlighter-rouge">-S</code> (which asks it to stop,
+after x86 assembly is produced) parameter, likewise <code class="language-plaintext highlighter-rouge">gcc -S hello.c</code>.</p>
+
+<h1>Conclusion</h1>
+
+<p>At this part, we saw how the compiler and the preprocessor work with our code, in an attempt to demistify the 
+so called library calls. In the next part, we are going to study the assembler and the linker, and for the final
+part the loader and the kernel.</p>
+
+        </div>
+        
+      </li>
+    
+  </ul>
+
+  
+  <div class="pagination">
+    
+      <a class="previous" href="/posts/3/">&laquo; Older</a>
+    
+
+    
+      <a class="next" href="/">Newer &raquo;</a>
+    
+  </div>
+
+
+
+</div>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <p>
+      
+
+&copy; Fotis Koutoulakis - Powered by <a href="https://jekyllrb.com">Jekyll</a> &amp; <a href="https://github.com/yous/whiteglass">whiteglass</a> - Subscribe via <a href="https://nlightnfotis.github.io/feed.xml">RSS</a>
+
+    </p>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

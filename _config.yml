@@ -4,7 +4,7 @@ author: Fotis Koutoulakis
 description: >- # this means to ignore newlines until "baseurl:"
   Functional Programming, Proofs, Bioinformatics and more.
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "" # the base hostname & protocol for your site, e.g. http://example.com
+url: "https://nlightnfotis.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 lang: en-GB
 timezone: UTC
 exclude:
@@ -12,10 +12,6 @@ exclude:
   - Gemfile.lock
   - readme.md
   - .gitignore
-
-# Social media (for Whiteglass)
-twitter_username: NlightNFotis
-comments: false
 
 # Whiteglass theme configuration
 theme: jekyll-whiteglass
@@ -50,3 +46,7 @@ kramdown:
   smart_quotes: lsquo,rsquo,ldquo,rdquo
   toc_levels: 1..6
 excerpt_separator: "<!-- more -->"
+
+# Social media (for Whiteglass)
+twitter_username: NlightNFotis
+comments: false

@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  
+  
+  <title>Nucleotide Counting the TDD Way - A Bioinformatics Stronghold Story</title>
+  <meta name="description" content="A few days ago, I was going through my code archives and came across my old solutions of the Bioinformatics Stronghold by Project Rosalind. For those of you who don’t know, Project Rosalind is one of those problem-based skill development exercises, akin to Project Euler but aimed at nascent bioinformaticians. Coincidentally, I finished a book on Test-Driven Development (TDD) in Ruby around the same time. I particularly enjoyed TDD the way it was presented in the book, and I was looking for some problems to apply it to and the Stronghold Project is the perfect lab space for me to apply those new ideas (because of its relatively simple from an algorithmic perspective problems). My initial foray into the Stronghold project was in an attempt at comparative solutions, wherein I attempted the exercises in a number of different programming languages (Python, Go, OCaml, Racket, etc.) while observing any differences in the style I chose, refactoring them, benchmarking them, and all around having some good fun with those 😄 One thing I’m embarrassed to admit about that first attempt though, is that while my solutions worked (or so I can conveniently recall), they didn’t contain any reproducible documentation of their satisfying of the requirements of the exercise - there were no assertions, no tests, nothing. 😅 I can only attribute it to my enthusiasm in getting each solution done to move on to the next one. Bad me. I’m now revisiting these exercises to atone for my insolence. I’m going to go through the exercises again, but this time I’m going to be approaching them in a TDD/BDD style. But before I move on to actual code, what on Earth is TDD (and its cousin, BDD)? We already saw that TDD stands for Test-Driven Development. By that, we mean a programming approach that encourages writing tests for the feature code before the actual feature code is written, so that the tests guide the design of the code itself. Behaviour-Driven Development (BDD for short), is a sister approach to TDD, but for the purposes of this article, BDD is the approach of writing the tests in a way that they reflect prose specification of the behaviour of the module under test. Okay, are you ready now? Let’s roll. I’m going to start with the first exercise, which is about counting nucleotides in a DNA strand, which is given as an input of a string type. Now, if you visit the problem page, you will see that it also gives us a sample dataset, along with the expected output for that. (You may have noticed that the above sentence is just a particularly verbose way of describing a test case. 😉 ) Our implementation language for this exercise is going to be Ruby, for two reasons. 1) I started learning Ruby recently and I’ve been enjoying it a lot, and 2) Ruby comes with excellent built-in support for testing in the form of the Minitest library. Let’s quickly make a file called counting_nucleotides.rb, and add an empty test specification: require &#39;minitest/autorun&#39; describe &#39;nucleotide counting function&#39; do end At this point it’s worth having a pause to think about our test cases before we move forward. We already have been given a sample input, as we mentioned above, that we could use as our test case. The problem, however, with that particular input is that it describes the functionality of the module when it’s finished. That’s probably a bit too elaborate for us to use now that we start designing our function. We probably want something much simpler - indeed, this is what TDD as an approach is advocating. What might be simpler for us? What about a strand with a very small length? Say, 8 bases long? Sounds like it should work. require &#39;minitest/autorun&#39; describe &#39;nucleotide counting function&#39; do it &#39;returns a count of 2 2 2 2 for strand &quot;ATCGATCG&quot;&#39; do strand = &#39;ATCGATCG&#39; nucleotide_count = &#39;2 2 2 2&#39; result = count_nucleotides(strand) assert_equal nucleotide_count, result end end Looks good for a first test. Let’s run it and see what happens. $ ruby counting_nucleotides.rb Run options: --seed 64068 # Running: E Finished in 0.000265s, 3773.5860 runs/s, 0.0000 assertions/s. 1) Error: nucleotide counting function#test_0001_returns a count of 2 2 2 2 for strand &quot;ATCGATCG&quot;: NoMethodError: undefined method `count_nucleotides&#39; for #&amp;lt;#&amp;lt;Class:0x000000015e831da0&amp;gt;:0x000000015b940028&amp;gt; counting_nucleotides.rb:8:in `block (2 levels) in &amp;lt;main&amp;gt;&#39; 1 runs, 0 assertions, 0 failures, 1 errors, 0 skips Ahh, it complains that we “forgot” to define our function count_nucleotides. Easy to fix, let’s add a function called that, taking in one parameter, but with an empty body. require &#39;minitest/autorun&#39; def count_nucleotides(strand) end describe &#39;nucleotide counting function&#39; do it &#39;returns a count of 2 2 2 2 for strand &quot;ATCGATCG&quot;&#39; do strand = &#39;ATCGATCG&#39; nucleotide_count = &#39;2 2 2 2&#39; result = count_nucleotides(strand) assert_equal nucleotide_count, result end end Nice, let’s run it again, and see what we get. $ ruby counting_nucleotides.rb Run options: --seed 20901 # Running: F Finished in 0.000287s, 3484.3209 runs/s, 3484.3209 assertions/s. 1) Failure: nucleotide counting function#test_0001_returns a count of 2 2 2 2 for strand &quot;ATCGATCG&quot; [counting_nucleotides.rb:12]: Expected: &quot;2 2 2 2&quot; Actual: nil 1 runs, 1 assertions, 1 failures, 0 errors, 0 skips Okay, this seems a bit more intriguing. Now it doesn’t come back to us with an error. Rather, it comes back with a failure, indicating that the test got executed, but the expected and the actual results differ. In our case, we asserted in our test that we expect the result to be a string with the contents &quot;2 2 2 2&quot; in exactly that form (spaces and everything), but we got back nil from the actual execution. The reason for the nil in particular is that ruby is an expression-based language. In an expression-based language every program fragment is an expression, meaning that it will return a value upon execution of that program fragment (we call that, in more technical terms, expression evaluation). A function, thus, is also an expression, and will upon evaluation return the value of the last expression in its body. For a function with an empty body, there are no such expressions, so a default of nil is returned. Right, so we run our test, and got back nil for a return value. This is our clue that our test is executing the function as we expect, but our function is not yet implemented (does not contain a function body). Let’s crack on with that. In Ruby, there’s a very convenient method defined on the String type whose job is to count the presence of particular subsequences (substrings in our case). To no one’s suprise, it’s called count. Let’s use that to count the number of nucleotides and return that in a string format. def count_nucleotides(strand) strand.count(&#39;A&#39;) + strand.count(&#39;C&#39;) + strand.count(&#39;G&#39;) + strand.count(&#39;T&#39;) end Let’s run our test again. $ ruby counting_nucleotides.rb Run options: --seed 3996 # Running: F Finished in 0.000411s, 2433.0901 runs/s, 2433.0901 assertions/s. 1) Failure: nucleotide counting function#test_0001_returns a count of 2 2 2 2 for strand &quot;ATCGATCG&quot; [counting_nucleotides.rb:13]: Expected: &quot;2 2 2 2&quot; Actual: 8 1 runs, 1 assertions, 1 failures, 0 errors, 0 skips Whoops! That looks like it found the number of substrings correctly. However, because of a programming mistake, it looks like it added all the occurences together, instead of presenting them in a formatted string. Let’s do that in the easiest way that comes to mind - using string concatenation and casting the integer representing the count back to a string, while also adding some spaces (so that we get closer to the expected output): def count_nucleotides(strand) strand.count(&#39;A&#39;).to_s + &quot; &quot; + strand.count(&#39;C&#39;).to_s + &quot; &quot; + strand.count(&#39;G&#39;).to_s + &quot; &quot; + strand.count(&#39;T&#39;).to_s end Let’s see what happens now… $ ruby counting_nucleotides.rb Run options: --seed 37259 # Running: . Finished in 0.000321s, 3115.2648 runs/s, 3115.2648 assertions/s. 1 runs, 1 assertions, 0 failures, 0 errors, 0 skips It worked! I mean, our code is a bit atrocious could be better, but here we have our first version of it working. 🎉 Now that we have our first unit test passing, let’s think a bit more about the test cases we want. We want at least a representative sample of each of the following: Positive cases, Negative cases, Degenerate cases. Positive cases are cases in which we exercise the happy path - the code path we were most anticipating when we were designing our code. Negative cases are cases in which we divert away from the happy path, and try to exercise error conditions, etc. Degenerate cases are cases in which we test around boundary conditions, such as empty lists, strings, etc, to see if our function can handle these cases. We already have a test for a positive case, so right now, it might make more sense for us to test against a negative case. So what would be a negative case for us? We are being passed a strand in as a string. Given that a string can have a lot more characters than just the four representing nucleobases, what happens if we have a string that has characters that don’t represent a nucleotide base? What happens if we have something like ATCGW for a strand? Let’s see. it &#39;throws an exception if a non-base encoding character is found in the strand&#39; do strand = &#39;ATCGW&#39; assert_raises(ArgumentError) { count_nucleotides(strand) } end Let’s run it to see what happened this time. $ ruby counting_nucleotides.rb Run options: --seed 54524 # Running: .F Finished in 0.000506s, 3952.5692 runs/s, 3952.5692 assertions/s. 1) Failure: nucleotide counting function#test_0002_throws an exception if a non-base encoding character is found in the strand [counting_nucleotides.rb:19]: ArgumentError expected but nothing was raised. 2 runs, 2 assertions, 1 failures, 0 errors, 0 skips 😱 Yikes! We were expecting an exception to be raised, but none was raised. That means that our code had no issue handling the invalid string. Let’s fix that. Let’s fix that the simplest way we can: by defining a list of illegal characters for the strand string and seeing if they are present in the string. That gets us with the following version of count_nucleotides: def count_nucleotides(strand) illegal_chars = &#39;BDEFHIJKLNOPQRSUVWXYZ&#39; illegal_chars.split(&#39;&#39;).each do |char| if strand.include?(char) then raise ArgumentError.new(&#39;Illegal character in strand &#39; + char) end end strand.count(&#39;A&#39;).to_s + &quot; &quot; + strand.count(&#39;C&#39;).to_s + &quot; &quot; + strand.count(&#39;G&#39;).to_s + &quot; &quot; + strand.count(&#39;T&#39;).to_s end Let’s see where we stand now: $ ruby counting_nucleotides.rb Run options: --seed 25460 # Running: .. Finished in 0.000348s, 5747.1265 runs/s, 5747.1265 assertions/s. 2 runs, 2 assertions, 0 failures, 0 errors, 0 skips Nice. That works, so now both our positive case and our negative test cases pass. The only downside is that we are left with a counting_nucleotides function that looks a bit hard to read - not to mention a bit wasteful, too. (Aside: It loops through the string a lot more times than it needs to, as it loops once per every illegal character it’s looking for, and then once for every character it’s searching the count for.) At this point, it’s worth to pause, and reflect on where we are in the process so far. TDD is a loop of the following 3 steps: Write a failing test. Make the test pass. Refactor the implementation. (Refactoring is the reorganisation of the code with the aim of improving it with regard to some metric, say, robustness, readability, performance, etc) Up until this point, we have been focusing on the first two steps, but did none of the third one. We usually refactor once we get some of our implementation done, and all our tests are passing. In other words, now is as good time as any to refactor our code. Let’s have a look at our feature code, the count_nucleotides function. What if, instead of looping so many times, we looped just once, and collected both counts and watched out for any illegal character at the same time? That does sound like it should improve our performance, now, doesn’t it? Let’s go ahead and do this, and see what happens. def count_nucleotides(strand) count_a = 0 count_t = 0 count_c = 0 count_g = 0 strand.split(&#39;&#39;).each do |base| if base == &#39;A&#39; then count_a += 1 elsif base == &#39;T&#39; then count_t += 1 elsif base == &#39;C&#39; then count_c += 1 elsif base == &#39;G&#39; then count_g += 1 else raise ArgumentError.new(&#39;Invalid character in strand &#39; + base) end end &quot;#{count_a} #{count_t} #{count_c} #{count_g}&quot; end Looks simpler to me. Does it work, though? $ ruby counting_nucleotides.rb Run options: --seed 48449 # Running: .. Finished in 0.000378s, 5291.0053 runs/s, 5291.0053 assertions/s. 2 runs, 2 assertions, 0 failures, 0 errors, 0 skips It does. And just like this, we saw the massive benefit of having automated tests for this: we did some pretty significant structural changes to our function under test, but even so, we are confident that its observable behaviour remains unchanged given our tests and their coverage. Now that we have both the positive and negative tests, can we write a test for the degenerate case? Turns out we can. A degenerate case for us would be an empty string (&quot;&quot;), given that we anticipate the strand to exist (signified by a non-empty string). Before we go ahead and write our test case, let’s have a bit of a think around the behaviour of our function in the case of an empty string. Should it: Return a count of 0 0 0 0, or Raise an exception? Usually, in situations like this, a decision like this already forms part of our specification - but in our case, though, the exercise contains no indication as to what is considered canonical, so we can choose either. Let’s go with expecting a count of 0 0 0 0 for this one (there don’t appear to be any significant benefits whichever one we choose). it &#39;returns a count of 0 0 0 0 for a strand with zero bases (empty string)&#39; do strand = &#39;&#39; nucleotide_count = &#39;0 0 0 0&#39; result = count_nucleotides(strand) assert_equal nucleotide_count, result end Let’s check our function’s behaviour: $ ruby counting_nucleotides.rb Run options: --seed 33926 # Running: ... Finished in 0.000378s, 7936.5079 runs/s, 7936.5079 assertions/s. 3 runs, 3 assertions, 0 failures, 0 errors, 0 skips Very nice. Are we done, now? Not so fast. There’s a requirement in our specification that we have ignored so far: Given: A DNA string s of length at most 1000 nt. (Emphasis mine.) Let’s quickly add a test case with an invalid length (&amp;gt; 1000 nucleotides) to see how our code behaves with against this requirement: it &#39;throws an exception if a strand is more than 1000nt long&#39; do strand = &#39;A&#39; * 1005 assert_raises(ArgumentError) { count_nucleotides(strand) } end $ ruby counting_nucleotides.rb Run options: --seed 15834 # Running: ...F Finished in 0.000579s, 6908.4628 runs/s, 6908.4628 assertions/s. 1) Failure: nucleotide counting function#test_0004_throws an exception if a strand is more than 1000nt long [counting_nucleotides.rb:52]: ArgumentError expected but nothing was raised. 4 runs, 4 assertions, 1 failures, 0 errors, 0 skips The test fails, as we were anticipating an exception but none was raised. Let’s change our function to factor in this new requirement. def count_nucleotides(strand) count_a = 0 count_t = 0 count_c = 0 count_g = 0 if strand.length &amp;gt; 1000 then raise ArgumentError.new(&#39;A strand of at most 1000nt is expected&#39;) end strand.split(&#39;&#39;).each do |base| if base == &#39;A&#39; then count_a += 1 elsif base == &#39;T&#39; then count_t += 1 elsif base == &#39;C&#39; then count_c += 1 elsif base == &#39;G&#39; then count_g += 1 else raise ArgumentError.new(&#39;Invalid character in strand &#39; + base) end end &quot;#{count_a} #{count_t} #{count_c} #{count_g}&quot; end Let’s see how our test does now: $ ruby counting_nucleotides.rb Run options: --seed 14091 # Running: .... Finished in 0.000355s, 11267.6056 runs/s, 11267.6056 assertions/s. 4 runs, 4 assertions, 0 failures, 0 errors, 0 skips Very nice. Everything passes now. Before we wrap this up, let’s make one final addition to our test case. Do you remember how I mentioned that the exercise specification describes a test case already? We can incorporate this into our test cases. As a matter of fact, we can substitute this one for the simpler positive case we had. it &#39;returns a count of 20 12 17 21 for the specification strand&#39; do strand = &#39;AGCTTTTCATTCTGACTGCAACGGGCAATATGTCTCTGTGTGGATTAAAAAAAGAGTGTCTGATAGCAGC&#39; nucleotide_count = &#39;20 12 17 21&#39; result = count_nucleotides(strand) assert_equal nucleotide_count, result end Let’s see how we fare against the story test case (the one given to us in the specification). $ ruby counting_nucleotides.rb Run options: --seed 17159 # Running: ..... Finished in 0.000428s, 11682.2430 runs/s, 11682.2430 assertions/s. 5 runs, 5 assertions, 0 failures, 0 errors, 0 skips Looks like everything works as expected. 🎉 Before I wrap up, I would be remiss if I did not mention that this particular approach of designing code (Test-Driven Development) works very well when we know the expected output of our code (say, when we know a lot about the domain, or when our specification allows for examples that demonstrate expected input and output). It doesn’t work as great, however, when we don’t know what the output is (say, for instance, when we do exploratory programming, as in the case of exploring an API that’s given to us). The complete code for this small exercise is listed below: require &#39;minitest/autorun&#39; ## IMPLEMENTATION CODE def count_nucleotides(strand) count_a = 0 count_t = 0 count_c = 0 count_g = 0 if strand.length &amp;gt; 1000 then raise ArgumentError.new(&#39;A strand of at most 1000nt is expected&#39;) end strand.split(&#39;&#39;).each do |base| if base == &#39;A&#39; then count_a += 1 elsif base == &#39;T&#39; then count_t += 1 elsif base == &#39;C&#39; then count_c += 1 elsif base == &#39;G&#39; then count_g += 1 else raise ArgumentError.new(&#39;Invalid character in strand &#39; + base) end end &quot;#{count_a} #{count_c} #{count_g} #{count_t}&quot; end ## TEST CODE describe &#39;nucleotide counting function&#39; do # Positive case it &#39;returns a count of 20 12 17 21 for the specification strand&#39; do strand = &#39;AGCTTTTCATTCTGACTGCAACGGGCAATATGTCTCTGTGTGGATTAAAAAAAGAGTGTCTGATAGCAGC&#39; nucleotide_count = &#39;20 12 17 21&#39; result = count_nucleotides(strand) assert_equal nucleotide_count, result end # Negative cases it &#39;throws an exception if a non-base encoding character is found in the strand&#39; do strand = &#39;ATCGW&#39; assert_raises(ArgumentError) { count_nucleotides(strand) } end it &#39;throws an exception if a strand is more than 1000nt long&#39; do strand = &#39;A&#39; * 1005 assert_raises(ArgumentError) { count_nucleotides(strand) } end # Degenerate cases it &#39;returns a count of 0 0 0 0 for a strand with zero bases (empty string)&#39; do strand = &#39;&#39; nucleotide_count = &#39;0 0 0 0&#39; result = count_nucleotides(strand) assert_equal nucleotide_count, result end end">
+  
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://nlightnfotis.github.io/2022/03/28/bioinformatics-stronghold-nucleotide-counting/">
+  
+  
+  <link rel="alternate" type="application/rss+xml" title="Lambda reflections" href="https://nlightnfotis.github.io/feed.xml">
+
+  
+
+  
+  <meta property="og:title" content="Nucleotide Counting the TDD Way - A Bioinformatics Stronghold Story">
+  <meta property="og:site_name" content="Lambda reflections">
+  <meta property="og:url" content="https://nlightnfotis.github.io/2022/03/28/bioinformatics-stronghold-nucleotide-counting/">
+  <meta property="og:description" content="A few days ago, I was going through my code archives and came across my old solutions of the Bioinformatics Stronghold by Project Rosalind. For those of you who don’t know, Project Rosalind is one of those problem-based skill development exercises, akin to Project Euler but aimed at nascent bioinformaticians. Coincidentally, I finished a book on Test-Driven Development (TDD) in Ruby around the same time. I particularly enjoyed TDD the way it was presented in the book, and I was looking for some problems to apply it to and the Stronghold Project is the perfect lab space for me to apply those new ideas (because of its relatively simple from an algorithmic perspective problems). My initial foray into the Stronghold project was in an attempt at comparative solutions, wherein I attempted the exercises in a number of different programming languages (Python, Go, OCaml, Racket, etc.) while observing any differences in the style I chose, refactoring them, benchmarking them, and all around having some good fun with those 😄 One thing I’m embarrassed to admit about that first attempt though, is that while my solutions worked (or so I can conveniently recall), they didn’t contain any reproducible documentation of their satisfying of the requirements of the exercise - there were no assertions, no tests, nothing. 😅 I can only attribute it to my enthusiasm in getting each solution done to move on to the next one. Bad me. I’m now revisiting these exercises to atone for my insolence. I’m going to go through the exercises again, but this time I’m going to be approaching them in a TDD/BDD style. But before I move on to actual code, what on Earth is TDD (and its cousin, BDD)? We already saw that TDD stands for Test-Driven Development. By that, we mean a programming approach that encourages writing tests for the feature code before the actual feature code is written, so that the tests guide the design of the code itself. Behaviour-Driven Development (BDD for short), is a sister approach to TDD, but for the purposes of this article, BDD is the approach of writing the tests in a way that they reflect prose specification of the behaviour of the module under test. Okay, are you ready now? Let’s roll. I’m going to start with the first exercise, which is about counting nucleotides in a DNA strand, which is given as an input of a string type. Now, if you visit the problem page, you will see that it also gives us a sample dataset, along with the expected output for that. (You may have noticed that the above sentence is just a particularly verbose way of describing a test case. 😉 ) Our implementation language for this exercise is going to be Ruby, for two reasons. 1) I started learning Ruby recently and I’ve been enjoying it a lot, and 2) Ruby comes with excellent built-in support for testing in the form of the Minitest library. Let’s quickly make a file called counting_nucleotides.rb, and add an empty test specification: require &#39;minitest/autorun&#39; describe &#39;nucleotide counting function&#39; do end At this point it’s worth having a pause to think about our test cases before we move forward. We already have been given a sample input, as we mentioned above, that we could use as our test case. The problem, however, with that particular input is that it describes the functionality of the module when it’s finished. That’s probably a bit too elaborate for us to use now that we start designing our function. We probably want something much simpler - indeed, this is what TDD as an approach is advocating. What might be simpler for us? What about a strand with a very small length? Say, 8 bases long? Sounds like it should work. require &#39;minitest/autorun&#39; describe &#39;nucleotide counting function&#39; do it &#39;returns a count of 2 2 2 2 for strand &quot;ATCGATCG&quot;&#39; do strand = &#39;ATCGATCG&#39; nucleotide_count = &#39;2 2 2 2&#39; result = count_nucleotides(strand) assert_equal nucleotide_count, result end end Looks good for a first test. Let’s run it and see what happens. $ ruby counting_nucleotides.rb Run options: --seed 64068 # Running: E Finished in 0.000265s, 3773.5860 runs/s, 0.0000 assertions/s. 1) Error: nucleotide counting function#test_0001_returns a count of 2 2 2 2 for strand &quot;ATCGATCG&quot;: NoMethodError: undefined method `count_nucleotides&#39; for #&amp;lt;#&amp;lt;Class:0x000000015e831da0&amp;gt;:0x000000015b940028&amp;gt; counting_nucleotides.rb:8:in `block (2 levels) in &amp;lt;main&amp;gt;&#39; 1 runs, 0 assertions, 0 failures, 1 errors, 0 skips Ahh, it complains that we “forgot” to define our function count_nucleotides. Easy to fix, let’s add a function called that, taking in one parameter, but with an empty body. require &#39;minitest/autorun&#39; def count_nucleotides(strand) end describe &#39;nucleotide counting function&#39; do it &#39;returns a count of 2 2 2 2 for strand &quot;ATCGATCG&quot;&#39; do strand = &#39;ATCGATCG&#39; nucleotide_count = &#39;2 2 2 2&#39; result = count_nucleotides(strand) assert_equal nucleotide_count, result end end Nice, let’s run it again, and see what we get. $ ruby counting_nucleotides.rb Run options: --seed 20901 # Running: F Finished in 0.000287s, 3484.3209 runs/s, 3484.3209 assertions/s. 1) Failure: nucleotide counting function#test_0001_returns a count of 2 2 2 2 for strand &quot;ATCGATCG&quot; [counting_nucleotides.rb:12]: Expected: &quot;2 2 2 2&quot; Actual: nil 1 runs, 1 assertions, 1 failures, 0 errors, 0 skips Okay, this seems a bit more intriguing. Now it doesn’t come back to us with an error. Rather, it comes back with a failure, indicating that the test got executed, but the expected and the actual results differ. In our case, we asserted in our test that we expect the result to be a string with the contents &quot;2 2 2 2&quot; in exactly that form (spaces and everything), but we got back nil from the actual execution. The reason for the nil in particular is that ruby is an expression-based language. In an expression-based language every program fragment is an expression, meaning that it will return a value upon execution of that program fragment (we call that, in more technical terms, expression evaluation). A function, thus, is also an expression, and will upon evaluation return the value of the last expression in its body. For a function with an empty body, there are no such expressions, so a default of nil is returned. Right, so we run our test, and got back nil for a return value. This is our clue that our test is executing the function as we expect, but our function is not yet implemented (does not contain a function body). Let’s crack on with that. In Ruby, there’s a very convenient method defined on the String type whose job is to count the presence of particular subsequences (substrings in our case). To no one’s suprise, it’s called count. Let’s use that to count the number of nucleotides and return that in a string format. def count_nucleotides(strand) strand.count(&#39;A&#39;) + strand.count(&#39;C&#39;) + strand.count(&#39;G&#39;) + strand.count(&#39;T&#39;) end Let’s run our test again. $ ruby counting_nucleotides.rb Run options: --seed 3996 # Running: F Finished in 0.000411s, 2433.0901 runs/s, 2433.0901 assertions/s. 1) Failure: nucleotide counting function#test_0001_returns a count of 2 2 2 2 for strand &quot;ATCGATCG&quot; [counting_nucleotides.rb:13]: Expected: &quot;2 2 2 2&quot; Actual: 8 1 runs, 1 assertions, 1 failures, 0 errors, 0 skips Whoops! That looks like it found the number of substrings correctly. However, because of a programming mistake, it looks like it added all the occurences together, instead of presenting them in a formatted string. Let’s do that in the easiest way that comes to mind - using string concatenation and casting the integer representing the count back to a string, while also adding some spaces (so that we get closer to the expected output): def count_nucleotides(strand) strand.count(&#39;A&#39;).to_s + &quot; &quot; + strand.count(&#39;C&#39;).to_s + &quot; &quot; + strand.count(&#39;G&#39;).to_s + &quot; &quot; + strand.count(&#39;T&#39;).to_s end Let’s see what happens now… $ ruby counting_nucleotides.rb Run options: --seed 37259 # Running: . Finished in 0.000321s, 3115.2648 runs/s, 3115.2648 assertions/s. 1 runs, 1 assertions, 0 failures, 0 errors, 0 skips It worked! I mean, our code is a bit atrocious could be better, but here we have our first version of it working. 🎉 Now that we have our first unit test passing, let’s think a bit more about the test cases we want. We want at least a representative sample of each of the following: Positive cases, Negative cases, Degenerate cases. Positive cases are cases in which we exercise the happy path - the code path we were most anticipating when we were designing our code. Negative cases are cases in which we divert away from the happy path, and try to exercise error conditions, etc. Degenerate cases are cases in which we test around boundary conditions, such as empty lists, strings, etc, to see if our function can handle these cases. We already have a test for a positive case, so right now, it might make more sense for us to test against a negative case. So what would be a negative case for us? We are being passed a strand in as a string. Given that a string can have a lot more characters than just the four representing nucleobases, what happens if we have a string that has characters that don’t represent a nucleotide base? What happens if we have something like ATCGW for a strand? Let’s see. it &#39;throws an exception if a non-base encoding character is found in the strand&#39; do strand = &#39;ATCGW&#39; assert_raises(ArgumentError) { count_nucleotides(strand) } end Let’s run it to see what happened this time. $ ruby counting_nucleotides.rb Run options: --seed 54524 # Running: .F Finished in 0.000506s, 3952.5692 runs/s, 3952.5692 assertions/s. 1) Failure: nucleotide counting function#test_0002_throws an exception if a non-base encoding character is found in the strand [counting_nucleotides.rb:19]: ArgumentError expected but nothing was raised. 2 runs, 2 assertions, 1 failures, 0 errors, 0 skips 😱 Yikes! We were expecting an exception to be raised, but none was raised. That means that our code had no issue handling the invalid string. Let’s fix that. Let’s fix that the simplest way we can: by defining a list of illegal characters for the strand string and seeing if they are present in the string. That gets us with the following version of count_nucleotides: def count_nucleotides(strand) illegal_chars = &#39;BDEFHIJKLNOPQRSUVWXYZ&#39; illegal_chars.split(&#39;&#39;).each do |char| if strand.include?(char) then raise ArgumentError.new(&#39;Illegal character in strand &#39; + char) end end strand.count(&#39;A&#39;).to_s + &quot; &quot; + strand.count(&#39;C&#39;).to_s + &quot; &quot; + strand.count(&#39;G&#39;).to_s + &quot; &quot; + strand.count(&#39;T&#39;).to_s end Let’s see where we stand now: $ ruby counting_nucleotides.rb Run options: --seed 25460 # Running: .. Finished in 0.000348s, 5747.1265 runs/s, 5747.1265 assertions/s. 2 runs, 2 assertions, 0 failures, 0 errors, 0 skips Nice. That works, so now both our positive case and our negative test cases pass. The only downside is that we are left with a counting_nucleotides function that looks a bit hard to read - not to mention a bit wasteful, too. (Aside: It loops through the string a lot more times than it needs to, as it loops once per every illegal character it’s looking for, and then once for every character it’s searching the count for.) At this point, it’s worth to pause, and reflect on where we are in the process so far. TDD is a loop of the following 3 steps: Write a failing test. Make the test pass. Refactor the implementation. (Refactoring is the reorganisation of the code with the aim of improving it with regard to some metric, say, robustness, readability, performance, etc) Up until this point, we have been focusing on the first two steps, but did none of the third one. We usually refactor once we get some of our implementation done, and all our tests are passing. In other words, now is as good time as any to refactor our code. Let’s have a look at our feature code, the count_nucleotides function. What if, instead of looping so many times, we looped just once, and collected both counts and watched out for any illegal character at the same time? That does sound like it should improve our performance, now, doesn’t it? Let’s go ahead and do this, and see what happens. def count_nucleotides(strand) count_a = 0 count_t = 0 count_c = 0 count_g = 0 strand.split(&#39;&#39;).each do |base| if base == &#39;A&#39; then count_a += 1 elsif base == &#39;T&#39; then count_t += 1 elsif base == &#39;C&#39; then count_c += 1 elsif base == &#39;G&#39; then count_g += 1 else raise ArgumentError.new(&#39;Invalid character in strand &#39; + base) end end &quot;#{count_a} #{count_t} #{count_c} #{count_g}&quot; end Looks simpler to me. Does it work, though? $ ruby counting_nucleotides.rb Run options: --seed 48449 # Running: .. Finished in 0.000378s, 5291.0053 runs/s, 5291.0053 assertions/s. 2 runs, 2 assertions, 0 failures, 0 errors, 0 skips It does. And just like this, we saw the massive benefit of having automated tests for this: we did some pretty significant structural changes to our function under test, but even so, we are confident that its observable behaviour remains unchanged given our tests and their coverage. Now that we have both the positive and negative tests, can we write a test for the degenerate case? Turns out we can. A degenerate case for us would be an empty string (&quot;&quot;), given that we anticipate the strand to exist (signified by a non-empty string). Before we go ahead and write our test case, let’s have a bit of a think around the behaviour of our function in the case of an empty string. Should it: Return a count of 0 0 0 0, or Raise an exception? Usually, in situations like this, a decision like this already forms part of our specification - but in our case, though, the exercise contains no indication as to what is considered canonical, so we can choose either. Let’s go with expecting a count of 0 0 0 0 for this one (there don’t appear to be any significant benefits whichever one we choose). it &#39;returns a count of 0 0 0 0 for a strand with zero bases (empty string)&#39; do strand = &#39;&#39; nucleotide_count = &#39;0 0 0 0&#39; result = count_nucleotides(strand) assert_equal nucleotide_count, result end Let’s check our function’s behaviour: $ ruby counting_nucleotides.rb Run options: --seed 33926 # Running: ... Finished in 0.000378s, 7936.5079 runs/s, 7936.5079 assertions/s. 3 runs, 3 assertions, 0 failures, 0 errors, 0 skips Very nice. Are we done, now? Not so fast. There’s a requirement in our specification that we have ignored so far: Given: A DNA string s of length at most 1000 nt. (Emphasis mine.) Let’s quickly add a test case with an invalid length (&amp;gt; 1000 nucleotides) to see how our code behaves with against this requirement: it &#39;throws an exception if a strand is more than 1000nt long&#39; do strand = &#39;A&#39; * 1005 assert_raises(ArgumentError) { count_nucleotides(strand) } end $ ruby counting_nucleotides.rb Run options: --seed 15834 # Running: ...F Finished in 0.000579s, 6908.4628 runs/s, 6908.4628 assertions/s. 1) Failure: nucleotide counting function#test_0004_throws an exception if a strand is more than 1000nt long [counting_nucleotides.rb:52]: ArgumentError expected but nothing was raised. 4 runs, 4 assertions, 1 failures, 0 errors, 0 skips The test fails, as we were anticipating an exception but none was raised. Let’s change our function to factor in this new requirement. def count_nucleotides(strand) count_a = 0 count_t = 0 count_c = 0 count_g = 0 if strand.length &amp;gt; 1000 then raise ArgumentError.new(&#39;A strand of at most 1000nt is expected&#39;) end strand.split(&#39;&#39;).each do |base| if base == &#39;A&#39; then count_a += 1 elsif base == &#39;T&#39; then count_t += 1 elsif base == &#39;C&#39; then count_c += 1 elsif base == &#39;G&#39; then count_g += 1 else raise ArgumentError.new(&#39;Invalid character in strand &#39; + base) end end &quot;#{count_a} #{count_t} #{count_c} #{count_g}&quot; end Let’s see how our test does now: $ ruby counting_nucleotides.rb Run options: --seed 14091 # Running: .... Finished in 0.000355s, 11267.6056 runs/s, 11267.6056 assertions/s. 4 runs, 4 assertions, 0 failures, 0 errors, 0 skips Very nice. Everything passes now. Before we wrap this up, let’s make one final addition to our test case. Do you remember how I mentioned that the exercise specification describes a test case already? We can incorporate this into our test cases. As a matter of fact, we can substitute this one for the simpler positive case we had. it &#39;returns a count of 20 12 17 21 for the specification strand&#39; do strand = &#39;AGCTTTTCATTCTGACTGCAACGGGCAATATGTCTCTGTGTGGATTAAAAAAAGAGTGTCTGATAGCAGC&#39; nucleotide_count = &#39;20 12 17 21&#39; result = count_nucleotides(strand) assert_equal nucleotide_count, result end Let’s see how we fare against the story test case (the one given to us in the specification). $ ruby counting_nucleotides.rb Run options: --seed 17159 # Running: ..... Finished in 0.000428s, 11682.2430 runs/s, 11682.2430 assertions/s. 5 runs, 5 assertions, 0 failures, 0 errors, 0 skips Looks like everything works as expected. 🎉 Before I wrap up, I would be remiss if I did not mention that this particular approach of designing code (Test-Driven Development) works very well when we know the expected output of our code (say, when we know a lot about the domain, or when our specification allows for examples that demonstrate expected input and output). It doesn’t work as great, however, when we don’t know what the output is (say, for instance, when we do exploratory programming, as in the case of exploring an API that’s given to us). The complete code for this small exercise is listed below: require &#39;minitest/autorun&#39; ## IMPLEMENTATION CODE def count_nucleotides(strand) count_a = 0 count_t = 0 count_c = 0 count_g = 0 if strand.length &amp;gt; 1000 then raise ArgumentError.new(&#39;A strand of at most 1000nt is expected&#39;) end strand.split(&#39;&#39;).each do |base| if base == &#39;A&#39; then count_a += 1 elsif base == &#39;T&#39; then count_t += 1 elsif base == &#39;C&#39; then count_c += 1 elsif base == &#39;G&#39; then count_g += 1 else raise ArgumentError.new(&#39;Invalid character in strand &#39; + base) end end &quot;#{count_a} #{count_c} #{count_g} #{count_t}&quot; end ## TEST CODE describe &#39;nucleotide counting function&#39; do # Positive case it &#39;returns a count of 20 12 17 21 for the specification strand&#39; do strand = &#39;AGCTTTTCATTCTGACTGCAACGGGCAATATGTCTCTGTGTGGATTAAAAAAAGAGTGTCTGATAGCAGC&#39; nucleotide_count = &#39;20 12 17 21&#39; result = count_nucleotides(strand) assert_equal nucleotide_count, result end # Negative cases it &#39;throws an exception if a non-base encoding character is found in the strand&#39; do strand = &#39;ATCGW&#39; assert_raises(ArgumentError) { count_nucleotides(strand) } end it &#39;throws an exception if a strand is more than 1000nt long&#39; do strand = &#39;A&#39; * 1005 assert_raises(ArgumentError) { count_nucleotides(strand) } end # Degenerate cases it &#39;returns a count of 0 0 0 0 for a strand with zero bases (empty string)&#39; do strand = &#39;&#39; nucleotide_count = &#39;0 0 0 0&#39; result = count_nucleotides(strand) assert_equal nucleotide_count, result end end">
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="NlightNFotis">
+  <meta name="twitter:title" content="Nucleotide Counting the TDD Way - A Bioinformatics Stronghold Story">
+  <meta name="twitter:description" content="A few days ago, I was going through my code archives and came across my old solutions of the Bioinformatics Stronghold by Project Rosalind. For those of you who don’t know, Project Rosalind is one ...">
+  
+    <meta name="twitter:creator" content="NlightNFotis">
+  
+  
+
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet">
+
+  
+
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">Lambda reflections</a>
+
+    <nav class="site-nav">
+      
+        
+        <a class="page-link" href="/about/">About</a>
+      
+        
+        <a class="page-link" href="/archives/">Archives</a>
+      
+        
+        <a class="page-link" href="https://github.com/NlightNFotis">GitHub</a>
+      
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    
+      <h1 class="post-title" itemprop="name headline">Nucleotide Counting the TDD Way - A Bioinformatics Stronghold Story</h1>
+    
+    <p class="post-meta"><time datetime="2022-03-28T18:04:00+00:00" itemprop="datePublished">Mar 28, 2022</time>
+
+ •
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/ruby/">ruby</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/bioinformatics/">bioinformatics</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/tdd/">tdd</a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+</p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>A few days ago, I was going through my code archives and came across my old solutions
+of the <a href="https://rosalind.info/problems/list-view/">Bioinformatics Stronghold</a> by
+<a href="https://rosalind.info/problems/locations/">Project Rosalind</a>. For those of you who
+don’t know, <em>Project Rosalind</em> is one of those problem-based skill development exercises,
+akin to <a href="https://projecteuler.net">Project Euler</a> but aimed at nascent bioinformaticians.</p>
+
+<p>Coincidentally, I finished a <a href="https://www.goodreads.com/book/show/33527186-test-driven-development-in-ruby">book on Test-Driven Development (TDD) in Ruby</a>
+around the same time. I particularly enjoyed TDD the way it was presented in
+the book, and I was looking for some problems to apply it to and the Stronghold
+Project is the perfect lab space for me to apply those new ideas (because of
+its relatively simple from an algorithmic perspective problems).</p>
+
+<hr />
+
+<p>My initial foray into the Stronghold project was in an attempt at comparative solutions,
+wherein I attempted the exercises in a number of different programming languages
+(Python, Go, OCaml, Racket, etc.) while observing any differences in the style I
+chose, refactoring them, benchmarking them, and all around having some good fun
+with those 😄</p>
+
+<p>One thing I’m embarrassed to admit about that first attempt though, is that while
+my solutions worked (or so I can conveniently recall), they didn’t contain any
+reproducible documentation of their satisfying of the requirements of the
+exercise - there were no assertions, no tests, nothing. 😅 I can only attribute it
+to my enthusiasm in getting each solution done to move on to the next one.</p>
+
+<p>Bad me.</p>
+
+<p>I’m now revisiting these exercises to atone for my insolence. I’m going to go through
+the exercises again, but this time I’m going to be approaching them in a TDD/BDD style.</p>
+
+<p>But before I move on to actual code, what on Earth is TDD (and its cousin, BDD)? We
+already saw that <em>TDD</em> stands for <em>Test-Driven Development</em>. By that, we mean a
+programming approach that encourages writing tests for the feature code <strong>before</strong>
+the actual feature code is written, so that the tests guide the design of the code
+itself.</p>
+
+<p><em>Behaviour-Driven Development</em> (BDD for short), is a sister approach to TDD, but for
+the purposes of this article, BDD is the approach of <em>writing the tests in a way
+that they reflect prose specification of the behaviour of the module</em> under test.</p>
+
+<p>Okay, are you ready now? Let’s roll.</p>
+
+<hr />
+
+<p>I’m going to start with the <a href="https://rosalind.info/problems/dna/">first exercise</a>,
+which is about counting nucleotides in a DNA strand, which is given as an input of
+a <code class="language-plaintext highlighter-rouge">string</code> type.</p>
+
+<p>Now, if you visit the problem page, you will see that it also gives us a sample
+dataset, along with the expected output for that.</p>
+
+<p>(You may have noticed that the above sentence is just a particularly verbose way
+of describing a <em>test case</em>. 😉 )</p>
+
+<p>Our implementation language for this exercise is going to be Ruby, for two reasons.</p>
+
+<p>1) I started learning Ruby recently and I’ve been enjoying it a lot, and
+2) Ruby comes with excellent built-in support for testing in the form of the <code class="language-plaintext highlighter-rouge">Minitest</code>
+   library.</p>
+
+<p>Let’s quickly make a file called <code class="language-plaintext highlighter-rouge">counting_nucleotides.rb</code>, and add an empty test
+specification:</p>
+
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s1">'minitest/autorun'</span>
+
+<span class="n">describe</span> <span class="s1">'nucleotide counting function'</span> <span class="k">do</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>At this point it’s worth having a pause to think about our test cases before we move
+forward.</p>
+
+<p>We already have been given a sample input, as we mentioned above, that we could use
+as our test case. The problem, however, with that particular input is that it describes
+the functionality of the module when it’s finished.</p>
+
+<p>That’s probably a bit <em>too</em> elaborate for us to use now that we start designing our
+function.</p>
+
+<p>We probably want something much simpler - indeed, this is what TDD as an approach
+is advocating. What might be simpler for us?</p>
+
+<p>What about a strand with a very small length? Say, 8 bases long?</p>
+
+<p>Sounds like it <em>should</em> work.</p>
+
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s1">'minitest/autorun'</span>
+
+<span class="n">describe</span> <span class="s1">'nucleotide counting function'</span> <span class="k">do</span>
+  <span class="n">it</span> <span class="s1">'returns a count of 2 2 2 2 for strand "ATCGATCG"'</span> <span class="k">do</span>
+    <span class="n">strand</span> <span class="o">=</span> <span class="s1">'ATCGATCG'</span>
+    <span class="n">nucleotide_count</span> <span class="o">=</span> <span class="s1">'2 2 2 2'</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span>
+
+    <span class="n">assert_equal</span> <span class="n">nucleotide_count</span><span class="p">,</span> <span class="n">result</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>Looks good for a first test. Let’s run it and see what happens.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ruby counting_nucleotides.rb
+Run options: <span class="nt">--seed</span> 64068
+
+<span class="c"># Running:</span>
+
+E
+
+Finished <span class="k">in </span>0.000265s, 3773.5860 runs/s, 0.0000 assertions/s.
+
+  1<span class="o">)</span> Error:
+nucleotide counting <span class="k">function</span><span class="c">#test_0001_returns a count of 2 2 2 2 for strand "ATCGATCG":</span>
+NoMethodError: undefined method <span class="sb">`</span>count_nucleotides<span class="s1">' for #&lt;#&lt;Class:0x000000015e831da0&gt;:0x000000015b940028&gt;
+    counting_nucleotides.rb:8:in `block (2 levels) in &lt;main&gt;'</span>
+
+1 runs, 0 assertions, 0 failures, 1 errors, 0 skips
+</code></pre></div></div>
+
+<p>Ahh, it complains that we “forgot” to define our function <code class="language-plaintext highlighter-rouge">count_nucleotides</code>.
+Easy to fix, let’s add a function called that, taking in one parameter, but
+with an empty body.</p>
+
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s1">'minitest/autorun'</span>
+
+<span class="k">def</span> <span class="nf">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="n">describe</span> <span class="s1">'nucleotide counting function'</span> <span class="k">do</span>
+  <span class="n">it</span> <span class="s1">'returns a count of 2 2 2 2 for strand "ATCGATCG"'</span> <span class="k">do</span>
+    <span class="n">strand</span> <span class="o">=</span> <span class="s1">'ATCGATCG'</span>
+    <span class="n">nucleotide_count</span> <span class="o">=</span> <span class="s1">'2 2 2 2'</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span>
+
+    <span class="n">assert_equal</span> <span class="n">nucleotide_count</span><span class="p">,</span> <span class="n">result</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>Nice, let’s run it again, and see what we get.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ruby counting_nucleotides.rb
+Run options: <span class="nt">--seed</span> 20901
+
+<span class="c"># Running:</span>
+
+F
+
+Finished <span class="k">in </span>0.000287s, 3484.3209 runs/s, 3484.3209 assertions/s.
+
+  1<span class="o">)</span> Failure:
+nucleotide counting <span class="k">function</span><span class="c">#test_0001_returns a count of 2 2 2 2 for strand "ATCGATCG" [counting_nucleotides.rb:12]:</span>
+Expected: <span class="s2">"2 2 2 2"</span>
+  Actual: nil
+
+1 runs, 1 assertions, 1 failures, 0 errors, 0 skips
+</code></pre></div></div>
+
+<p>Okay, this seems a bit more intriguing. Now it doesn’t come back to us with an <strong>error</strong>.
+Rather, it comes back with a <strong>failure</strong>, indicating that the test got executed,
+but the expected and the actual results differ. In our case, we asserted in our test
+that we expect the result to be a string with the contents <code class="language-plaintext highlighter-rouge">"2 2 2 2"</code> in exactly
+that form (spaces and everything), but we got back <code class="language-plaintext highlighter-rouge">nil</code> from the actual execution.</p>
+
+<p>The reason for the <code class="language-plaintext highlighter-rouge">nil</code> in particular is that ruby is an <em>expression-based language</em>.</p>
+
+<p>In an expression-based language every program fragment is an <em>expression</em>, meaning
+that it will return a value upon execution of that program fragment (we call that,
+in more technical terms, <em>expression evaluation</em>).</p>
+
+<p>A function, thus, is also an expression, and will upon evaluation return the value
+of the last expression in its body. For a function with an empty body, there are no
+such expressions, so a default of <code class="language-plaintext highlighter-rouge">nil</code> is returned.</p>
+
+<hr />
+
+<p>Right, so we run our test, and got back <code class="language-plaintext highlighter-rouge">nil</code> for a return value. This is our clue
+that our test is executing the function as we expect, but our function is not yet
+implemented (does not contain a function body). Let’s crack on with that.</p>
+
+<p>In Ruby, there’s a very convenient method defined on the <code class="language-plaintext highlighter-rouge">String</code> type whose job
+is to count the presence of particular subsequences (substrings in our case).</p>
+
+<p>To no one’s suprise, it’s called <code class="language-plaintext highlighter-rouge">count</code>.</p>
+
+<p>Let’s use that to count the number of nucleotides and return that in a string format.</p>
+
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span>
+    <span class="n">strand</span><span class="p">.</span><span class="nf">count</span><span class="p">(</span><span class="s1">'A'</span><span class="p">)</span> <span class="o">+</span> <span class="n">strand</span><span class="p">.</span><span class="nf">count</span><span class="p">(</span><span class="s1">'C'</span><span class="p">)</span> <span class="o">+</span> <span class="n">strand</span><span class="p">.</span><span class="nf">count</span><span class="p">(</span><span class="s1">'G'</span><span class="p">)</span> <span class="o">+</span> <span class="n">strand</span><span class="p">.</span><span class="nf">count</span><span class="p">(</span><span class="s1">'T'</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>Let’s run our test again.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ruby counting_nucleotides.rb
+Run options: <span class="nt">--seed</span> 3996
+
+<span class="c"># Running:</span>
+
+F
+
+Finished <span class="k">in </span>0.000411s, 2433.0901 runs/s, 2433.0901 assertions/s.
+
+  1<span class="o">)</span> Failure:
+nucleotide counting <span class="k">function</span><span class="c">#test_0001_returns a count of 2 2 2 2 for strand "ATCGATCG" [counting_nucleotides.rb:13]:</span>
+Expected: <span class="s2">"2 2 2 2"</span>
+  Actual: 8
+
+1 runs, 1 assertions, 1 failures, 0 errors, 0 skips
+</code></pre></div></div>
+
+<p>Whoops!</p>
+
+<p>That looks like it found the number of substrings correctly. However, because
+of a programming mistake, it looks like it added all the occurences together,
+instead of presenting them in a formatted string.</p>
+
+<p>Let’s do that in the easiest way that comes to mind - using string concatenation
+and casting the <code class="language-plaintext highlighter-rouge">integer</code> representing the count back to a <code class="language-plaintext highlighter-rouge">string</code>, while also
+adding some spaces (so that we get closer to the expected output):</p>
+
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span>
+    <span class="n">strand</span><span class="p">.</span><span class="nf">count</span><span class="p">(</span><span class="s1">'A'</span><span class="p">).</span><span class="nf">to_s</span> <span class="o">+</span> <span class="s2">" "</span> <span class="o">+</span> <span class="n">strand</span><span class="p">.</span><span class="nf">count</span><span class="p">(</span><span class="s1">'C'</span><span class="p">).</span><span class="nf">to_s</span> <span class="o">+</span> <span class="s2">" "</span> <span class="o">+</span> <span class="n">strand</span><span class="p">.</span><span class="nf">count</span><span class="p">(</span><span class="s1">'G'</span><span class="p">).</span><span class="nf">to_s</span> <span class="o">+</span> <span class="s2">" "</span> <span class="o">+</span> <span class="n">strand</span><span class="p">.</span><span class="nf">count</span><span class="p">(</span><span class="s1">'T'</span><span class="p">).</span><span class="nf">to_s</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>Let’s see what happens now…</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ruby counting_nucleotides.rb
+Run options: <span class="nt">--seed</span> 37259
+
+<span class="c"># Running:</span>
+
+<span class="nb">.</span>
+
+Finished <span class="k">in </span>0.000321s, 3115.2648 runs/s, 3115.2648 assertions/s.
+
+1 runs, 1 assertions, 0 failures, 0 errors, 0 skips
+</code></pre></div></div>
+
+<p>It worked! I mean, our code <del>is a bit atrocious</del> could be better, but here
+we have our first version of it working. 🎉</p>
+
+<hr />
+
+<p>Now that we have our first unit test passing, let’s think a bit more about
+the test cases we want.</p>
+
+<p>We want at least a representative sample of each of the following:</p>
+
+<ul>
+  <li>Positive cases,</li>
+  <li>Negative cases,</li>
+  <li>Degenerate cases.</li>
+</ul>
+
+<p><em>Positive cases</em> are cases in which we exercise the <em>happy path</em> - the code path we
+were most anticipating when we were designing our code.</p>
+
+<p><em>Negative cases</em> are cases in which we divert away from the happy path, and
+try to exercise error conditions, etc.</p>
+
+<p><em>Degenerate cases</em> are cases in which we test around boundary conditions, such as
+empty lists, strings, etc, to see if our function can handle these cases.</p>
+
+<p>We already have a test for a positive case, so right now, it might make more sense
+for us to test against a negative case. So what would be a negative case for us?</p>
+
+<p>We are being passed a strand in as a <code class="language-plaintext highlighter-rouge">string</code>. Given that a <code class="language-plaintext highlighter-rouge">string</code> can have a
+lot more characters than just the four representing nucleobases, what happens if we
+have a string that has characters that don’t represent a nucleotide base? What happens
+if we have something like <code class="language-plaintext highlighter-rouge">ATCGW</code> for a <code class="language-plaintext highlighter-rouge">strand</code>? Let’s see.</p>
+
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">it</span> <span class="s1">'throws an exception if a non-base encoding character is found in the strand'</span> <span class="k">do</span>
+    <span class="n">strand</span> <span class="o">=</span> <span class="s1">'ATCGW'</span>
+    
+    <span class="n">assert_raises</span><span class="p">(</span><span class="no">ArgumentError</span><span class="p">)</span> <span class="p">{</span> <span class="n">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span> <span class="p">}</span>
+  <span class="k">end</span>
+</code></pre></div></div>
+
+<p>Let’s run it to see what happened this time.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ruby counting_nucleotides.rb
+Run options: <span class="nt">--seed</span> 54524
+
+<span class="c"># Running:</span>
+
+.F
+
+Finished <span class="k">in </span>0.000506s, 3952.5692 runs/s, 3952.5692 assertions/s.
+
+  1<span class="o">)</span> Failure:
+nucleotide counting <span class="k">function</span><span class="c">#test_0002_throws an exception if a non-base encoding character is found in the strand [counting_nucleotides.rb:19]:</span>
+ArgumentError expected but nothing was raised.
+
+2 runs, 2 assertions, 1 failures, 0 errors, 0 skips
+</code></pre></div></div>
+
+<p>😱</p>
+
+<p>Yikes! We were expecting an exception to be raised, but none was raised.
+That means that our code had no issue handling the invalid string. Let’s fix that.</p>
+
+<p>Let’s fix that the simplest way we can: by defining a list of illegal characters
+for the strand string and seeing if they are present in the string.</p>
+
+<p>That gets us with the following version of <code class="language-plaintext highlighter-rouge">count_nucleotides</code>:</p>
+
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span>
+    <span class="n">illegal_chars</span> <span class="o">=</span> <span class="s1">'BDEFHIJKLNOPQRSUVWXYZ'</span>
+    <span class="n">illegal_chars</span><span class="p">.</span><span class="nf">split</span><span class="p">(</span><span class="s1">''</span><span class="p">).</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">char</span><span class="o">|</span>
+        <span class="k">if</span> <span class="n">strand</span><span class="p">.</span><span class="nf">include?</span><span class="p">(</span><span class="n">char</span><span class="p">)</span> <span class="k">then</span>
+            <span class="k">raise</span> <span class="no">ArgumentError</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="s1">'Illegal character in strand '</span> <span class="o">+</span> <span class="n">char</span><span class="p">)</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+    <span class="n">strand</span><span class="p">.</span><span class="nf">count</span><span class="p">(</span><span class="s1">'A'</span><span class="p">).</span><span class="nf">to_s</span> <span class="o">+</span> <span class="s2">" "</span> <span class="o">+</span> <span class="n">strand</span><span class="p">.</span><span class="nf">count</span><span class="p">(</span><span class="s1">'C'</span><span class="p">).</span><span class="nf">to_s</span> <span class="o">+</span> <span class="s2">" "</span> <span class="o">+</span> <span class="n">strand</span><span class="p">.</span><span class="nf">count</span><span class="p">(</span><span class="s1">'G'</span><span class="p">).</span><span class="nf">to_s</span> <span class="o">+</span> <span class="s2">" "</span> <span class="o">+</span> <span class="n">strand</span><span class="p">.</span><span class="nf">count</span><span class="p">(</span><span class="s1">'T'</span><span class="p">).</span><span class="nf">to_s</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>Let’s see where we stand now:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ruby counting_nucleotides.rb
+Run options: <span class="nt">--seed</span> 25460
+
+<span class="c"># Running:</span>
+
+..
+
+Finished <span class="k">in </span>0.000348s, 5747.1265 runs/s, 5747.1265 assertions/s.
+
+2 runs, 2 assertions, 0 failures, 0 errors, 0 skips
+</code></pre></div></div>
+
+<p>Nice. That works, so now both our positive case and our negative test cases pass.</p>
+
+<p>The only downside is that we are left with a <code class="language-plaintext highlighter-rouge">counting_nucleotides</code> function that
+looks a bit hard to read - not to mention a bit wasteful, too.</p>
+
+<p>(Aside: It loops through the string a lot more times than it needs to, as it loops
+once per every illegal character it’s looking for, and then once for every character
+it’s searching the count for.)</p>
+
+<hr />
+
+<p>At this point, it’s worth to pause, and reflect on where we are in the process so far.</p>
+
+<p>TDD is a loop of the following 3 steps:</p>
+
+<ol>
+  <li>Write a <em>failing test</em>.</li>
+  <li>Make the test <em>pass</em>.</li>
+  <li><em>Refactor</em> the implementation.</li>
+</ol>
+
+<p>(Refactoring is the reorganisation of the code with the aim of improving it with
+regard to some metric, say, robustness, readability, performance, etc)</p>
+
+<p>Up until this point, we have been focusing on the first two steps, but did none
+of the third one.</p>
+
+<p>We usually refactor once we get some of our implementation done, and <strong>all our
+tests are passing</strong>.</p>
+
+<p>In other words, now is as good time as any to refactor our code.</p>
+
+<hr />
+
+<p>Let’s have a look at our feature code, the <code class="language-plaintext highlighter-rouge">count_nucleotides</code> function.</p>
+
+<p>What if, instead of looping so many times, we looped just once, and collected
+both counts and watched out for any illegal character at the same time?</p>
+
+<p>That does sound like it should improve our performance, now, doesn’t it?</p>
+
+<p>Let’s go ahead and do this, and see what happens.</p>
+
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span>
+    <span class="n">count_a</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">count_t</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">count_c</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">count_g</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">strand</span><span class="p">.</span><span class="nf">split</span><span class="p">(</span><span class="s1">''</span><span class="p">).</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">base</span><span class="o">|</span>
+        <span class="k">if</span> <span class="n">base</span> <span class="o">==</span> <span class="s1">'A'</span> <span class="k">then</span>
+            <span class="n">count_a</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">elsif</span> <span class="n">base</span> <span class="o">==</span> <span class="s1">'T'</span> <span class="k">then</span>
+            <span class="n">count_t</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">elsif</span> <span class="n">base</span> <span class="o">==</span> <span class="s1">'C'</span> <span class="k">then</span>
+            <span class="n">count_c</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">elsif</span> <span class="n">base</span> <span class="o">==</span> <span class="s1">'G'</span> <span class="k">then</span>
+            <span class="n">count_g</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span>
+            <span class="k">raise</span> <span class="no">ArgumentError</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="s1">'Invalid character in strand '</span> <span class="o">+</span> <span class="n">base</span><span class="p">)</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+
+    <span class="s2">"</span><span class="si">#{</span><span class="n">count_a</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">count_t</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">count_c</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">count_g</span><span class="si">}</span><span class="s2">"</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>Looks simpler to me. Does it work, though?</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ruby counting_nucleotides.rb
+Run options: <span class="nt">--seed</span> 48449
+
+<span class="c"># Running:</span>
+
+..
+
+Finished <span class="k">in </span>0.000378s, 5291.0053 runs/s, 5291.0053 assertions/s.
+
+2 runs, 2 assertions, 0 failures, 0 errors, 0 skips
+</code></pre></div></div>
+
+<p>It does.</p>
+
+<p>And just like this, we saw the massive benefit of having automated tests for this:
+we did some pretty significant <em>structural changes</em> to our function under test,
+but even so, we are confident that its observable behaviour remains unchanged
+given our tests and their coverage.</p>
+
+<hr />
+
+<p>Now that we have both the positive and negative tests, can we write a test for
+the degenerate case?</p>
+
+<p>Turns out we can.</p>
+
+<p>A degenerate case for us would be an <strong>empty string</strong> (<code class="language-plaintext highlighter-rouge">""</code>), given that we anticipate
+the <code class="language-plaintext highlighter-rouge">strand</code> to exist (signified by a non-empty string).</p>
+
+<p>Before we go ahead and write our test case, let’s have a bit of a think around
+the behaviour of our function in the case of an empty string. Should it:</p>
+
+<ol>
+  <li>Return a count of <code class="language-plaintext highlighter-rouge">0 0 0 0</code>, or</li>
+  <li>Raise an exception?</li>
+</ol>
+
+<p>Usually, in situations like this, a decision like this already forms part of
+our specification - but in our case, though, the exercise contains no indication
+as to what is considered canonical, so we can choose either.</p>
+
+<p>Let’s go with expecting a count of <code class="language-plaintext highlighter-rouge">0 0 0 0</code> for this one (there don’t appear to
+be any significant benefits whichever one we choose).</p>
+
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">it</span> <span class="s1">'returns a count of 0 0 0 0 for a strand with zero bases (empty string)'</span> <span class="k">do</span>
+    <span class="n">strand</span> <span class="o">=</span> <span class="s1">''</span>
+    <span class="n">nucleotide_count</span> <span class="o">=</span> <span class="s1">'0 0 0 0'</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span>
+
+    <span class="n">assert_equal</span> <span class="n">nucleotide_count</span><span class="p">,</span> <span class="n">result</span>
+  <span class="k">end</span>
+</code></pre></div></div>
+
+<p>Let’s check our function’s behaviour:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ruby counting_nucleotides.rb
+Run options: <span class="nt">--seed</span> 33926
+
+<span class="c"># Running:</span>
+
+...
+
+Finished <span class="k">in </span>0.000378s, 7936.5079 runs/s, 7936.5079 assertions/s.
+
+3 runs, 3 assertions, 0 failures, 0 errors, 0 skips
+</code></pre></div></div>
+
+<p>Very nice.</p>
+
+<hr />
+
+<p>Are we done, now?</p>
+
+<p>Not so fast.</p>
+
+<p>There’s a requirement in our specification that we have ignored so far:</p>
+
+<blockquote>
+  <p>Given: A DNA string s of length <em>at most 1000 nt</em>.</p>
+</blockquote>
+
+<p>(Emphasis mine.)</p>
+
+<p>Let’s quickly add a test case with an invalid length (&gt; 1000 nucleotides) to see
+how our code behaves with against this requirement:</p>
+
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">it</span> <span class="s1">'throws an exception if a strand is more than 1000nt long'</span> <span class="k">do</span>
+    <span class="n">strand</span> <span class="o">=</span> <span class="s1">'A'</span> <span class="o">*</span> <span class="mi">1005</span>
+
+    <span class="n">assert_raises</span><span class="p">(</span><span class="no">ArgumentError</span><span class="p">)</span> <span class="p">{</span> <span class="n">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span> <span class="p">}</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ruby counting_nucleotides.rb
+Run options: <span class="nt">--seed</span> 15834
+
+<span class="c"># Running:</span>
+
+...F
+
+Finished <span class="k">in </span>0.000579s, 6908.4628 runs/s, 6908.4628 assertions/s.
+
+  1<span class="o">)</span> Failure:
+nucleotide counting <span class="k">function</span><span class="c">#test_0004_throws an exception if a strand is more than 1000nt long [counting_nucleotides.rb:52]:</span>
+ArgumentError expected but nothing was raised.
+
+4 runs, 4 assertions, 1 failures, 0 errors, 0 skips
+</code></pre></div></div>
+
+<p>The test fails, as we were anticipating an exception but none was raised.</p>
+
+<p>Let’s change our function to factor in this new requirement.</p>
+
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span>
+    <span class="n">count_a</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">count_t</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">count_c</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">count_g</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="n">strand</span><span class="p">.</span><span class="nf">length</span> <span class="o">&gt;</span> <span class="mi">1000</span> <span class="k">then</span>
+        <span class="k">raise</span> <span class="no">ArgumentError</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="s1">'A strand of at most 1000nt is expected'</span><span class="p">)</span>
+    <span class="k">end</span>
+
+    <span class="n">strand</span><span class="p">.</span><span class="nf">split</span><span class="p">(</span><span class="s1">''</span><span class="p">).</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">base</span><span class="o">|</span>
+        <span class="k">if</span> <span class="n">base</span> <span class="o">==</span> <span class="s1">'A'</span> <span class="k">then</span>
+            <span class="n">count_a</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">elsif</span> <span class="n">base</span> <span class="o">==</span> <span class="s1">'T'</span> <span class="k">then</span>
+            <span class="n">count_t</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">elsif</span> <span class="n">base</span> <span class="o">==</span> <span class="s1">'C'</span> <span class="k">then</span>
+            <span class="n">count_c</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">elsif</span> <span class="n">base</span> <span class="o">==</span> <span class="s1">'G'</span> <span class="k">then</span>
+            <span class="n">count_g</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span>
+            <span class="k">raise</span> <span class="no">ArgumentError</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="s1">'Invalid character in strand '</span> <span class="o">+</span> <span class="n">base</span><span class="p">)</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+
+    <span class="s2">"</span><span class="si">#{</span><span class="n">count_a</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">count_t</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">count_c</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">count_g</span><span class="si">}</span><span class="s2">"</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>Let’s see how our test does now:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ruby counting_nucleotides.rb
+Run options: <span class="nt">--seed</span> 14091
+
+<span class="c"># Running:</span>
+
+....
+
+Finished <span class="k">in </span>0.000355s, 11267.6056 runs/s, 11267.6056 assertions/s.
+
+4 runs, 4 assertions, 0 failures, 0 errors, 0 skips
+</code></pre></div></div>
+
+<p>Very nice. Everything passes now.</p>
+
+<hr />
+
+<p>Before we wrap this up, let’s make one final addition to our test case.</p>
+
+<p>Do you remember how I mentioned that the exercise specification describes
+a test case already?</p>
+
+<p>We can incorporate this into our test cases. As a matter of fact, we can
+substitute this one for the simpler positive case we had.</p>
+
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">it</span> <span class="s1">'returns a count of 20 12 17 21 for the specification strand'</span> <span class="k">do</span>
+    <span class="n">strand</span> <span class="o">=</span> <span class="s1">'AGCTTTTCATTCTGACTGCAACGGGCAATATGTCTCTGTGTGGATTAAAAAAAGAGTGTCTGATAGCAGC'</span>
+    <span class="n">nucleotide_count</span> <span class="o">=</span> <span class="s1">'20 12 17 21'</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span>
+
+    <span class="n">assert_equal</span> <span class="n">nucleotide_count</span><span class="p">,</span> <span class="n">result</span>
+  <span class="k">end</span>
+</code></pre></div></div>
+
+<p>Let’s see how we fare against the story test case (the one given to us in
+the specification).</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ruby counting_nucleotides.rb
+Run options: <span class="nt">--seed</span> 17159
+
+<span class="c"># Running:</span>
+
+.....
+
+Finished <span class="k">in </span>0.000428s, 11682.2430 runs/s, 11682.2430 assertions/s.
+
+5 runs, 5 assertions, 0 failures, 0 errors, 0 skips
+</code></pre></div></div>
+
+<p>Looks like everything works as expected. 🎉</p>
+
+<hr />
+
+<p>Before I wrap up, I would be remiss if I did not mention that this particular
+approach of designing code (<em>Test-Driven Development</em>) works very well when we
+know the expected output of our code (say, when we know a lot about the domain,
+or when our specification allows for examples that demonstrate expected input
+and output).</p>
+
+<p>It doesn’t work as great, however, when we don’t know what the output is (say,
+for instance, when we do exploratory programming, as in the case of exploring
+an API that’s given to us).</p>
+
+<p>The complete code for this small exercise is listed below:</p>
+
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s1">'minitest/autorun'</span>
+
+<span class="c1">## IMPLEMENTATION CODE</span>
+
+<span class="k">def</span> <span class="nf">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span>
+    <span class="n">count_a</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">count_t</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">count_c</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">count_g</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="n">strand</span><span class="p">.</span><span class="nf">length</span> <span class="o">&gt;</span> <span class="mi">1000</span> <span class="k">then</span>
+        <span class="k">raise</span> <span class="no">ArgumentError</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="s1">'A strand of at most 1000nt is expected'</span><span class="p">)</span>
+    <span class="k">end</span>
+
+    <span class="n">strand</span><span class="p">.</span><span class="nf">split</span><span class="p">(</span><span class="s1">''</span><span class="p">).</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">base</span><span class="o">|</span>
+        <span class="k">if</span> <span class="n">base</span> <span class="o">==</span> <span class="s1">'A'</span> <span class="k">then</span>
+            <span class="n">count_a</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">elsif</span> <span class="n">base</span> <span class="o">==</span> <span class="s1">'T'</span> <span class="k">then</span>
+            <span class="n">count_t</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">elsif</span> <span class="n">base</span> <span class="o">==</span> <span class="s1">'C'</span> <span class="k">then</span>
+            <span class="n">count_c</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">elsif</span> <span class="n">base</span> <span class="o">==</span> <span class="s1">'G'</span> <span class="k">then</span>
+            <span class="n">count_g</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span>
+            <span class="k">raise</span> <span class="no">ArgumentError</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="s1">'Invalid character in strand '</span> <span class="o">+</span> <span class="n">base</span><span class="p">)</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+
+    <span class="s2">"</span><span class="si">#{</span><span class="n">count_a</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">count_c</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">count_g</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">count_t</span><span class="si">}</span><span class="s2">"</span>
+<span class="k">end</span>
+
+
+<span class="c1">## TEST CODE</span>
+
+<span class="n">describe</span> <span class="s1">'nucleotide counting function'</span> <span class="k">do</span>
+  <span class="c1"># Positive case</span>
+  <span class="n">it</span> <span class="s1">'returns a count of 20 12 17 21 for the specification strand'</span> <span class="k">do</span>
+    <span class="n">strand</span> <span class="o">=</span> <span class="s1">'AGCTTTTCATTCTGACTGCAACGGGCAATATGTCTCTGTGTGGATTAAAAAAAGAGTGTCTGATAGCAGC'</span>
+    <span class="n">nucleotide_count</span> <span class="o">=</span> <span class="s1">'20 12 17 21'</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span>
+
+    <span class="n">assert_equal</span> <span class="n">nucleotide_count</span><span class="p">,</span> <span class="n">result</span>
+  <span class="k">end</span>
+
+  <span class="c1"># Negative cases</span>
+  <span class="n">it</span> <span class="s1">'throws an exception if a non-base encoding character is found in the strand'</span> <span class="k">do</span>
+    <span class="n">strand</span> <span class="o">=</span> <span class="s1">'ATCGW'</span>
+    
+    <span class="n">assert_raises</span><span class="p">(</span><span class="no">ArgumentError</span><span class="p">)</span> <span class="p">{</span> <span class="n">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span> <span class="p">}</span>
+  <span class="k">end</span>
+
+  <span class="n">it</span> <span class="s1">'throws an exception if a strand is more than 1000nt long'</span> <span class="k">do</span>
+    <span class="n">strand</span> <span class="o">=</span> <span class="s1">'A'</span> <span class="o">*</span> <span class="mi">1005</span>
+
+    <span class="n">assert_raises</span><span class="p">(</span><span class="no">ArgumentError</span><span class="p">)</span> <span class="p">{</span> <span class="n">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span> <span class="p">}</span>
+  <span class="k">end</span>
+
+  <span class="c1"># Degenerate cases</span>
+  <span class="n">it</span> <span class="s1">'returns a count of 0 0 0 0 for a strand with zero bases (empty string)'</span> <span class="k">do</span>
+    <span class="n">strand</span> <span class="o">=</span> <span class="s1">''</span>
+    <span class="n">nucleotide_count</span> <span class="o">=</span> <span class="s1">'0 0 0 0'</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">count_nucleotides</span><span class="p">(</span><span class="n">strand</span><span class="p">)</span>
+
+    <span class="n">assert_equal</span> <span class="n">nucleotide_count</span><span class="p">,</span> <span class="n">result</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+  </div>
+
+  
+
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <p>
+      
+
+&copy; Fotis Koutoulakis - Powered by <a href="https://jekyllrb.com">Jekyll</a> &amp; <a href="https://github.com/yous/whiteglass">whiteglass</a> - Subscribe via <a href="https://nlightnfotis.github.io/feed.xml">RSS</a>
+
+    </p>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
