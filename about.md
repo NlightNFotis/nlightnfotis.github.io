@@ -26,7 +26,7 @@ personal-development (across all facets of my life).
 
 You can connect with me by:
 
-* [Email](mailto:fotis@hey.com)
+* [Email](mailto:fotis.koutoulakis@gmail.com)
 * [Twitter](https://twitter.com/NlightNFotis)
 * [Goodreads](https://www.goodreads.com/nlightnfotis)
 
