@@ -5,7 +5,7 @@
   
   <link href="https://nlightnfotis.github.io/feed.xml" rel="self" type="application/atom+xml" />
   <link href="https://nlightnfotis.github.io/" rel="alternate" type="text/html" hreflang="en-GB" />
-  <updated>2022-07-17T16:08:02+00:00</updated>
+  <updated>2023-01-15T10:44:55+00:00</updated>
   <id>https://nlightnfotis.github.io//</id>
 
   
@@ -24,6 +24,481 @@
     </author>
   
 
+  
+  
+    <entry>
+      
+      <title type="html">A Year In Review: 2022</title>
+      
+      
+      <link href="https://nlightnfotis.github.io/2023/01/14/year-in-review-2022/" rel="alternate" type="text/html" title="A Year In Review: 2022" />
+      
+      <published>2023-01-14T00:00:00+00:00</published>
+      <updated>2023-01-14T00:00:00+00:00</updated>
+      <id>https://nlightnfotis.github.io/2023/01/14/year-in-review-2022</id>
+      <content type="html" xml:base="https://nlightnfotis.github.io/2023/01/14/year-in-review-2022/">&lt;h2&gt;Progress Review&lt;/h2&gt;
+
+&lt;p&gt;Another year has come to a close, and so this time I decided to try a new
+experiment - I’ll author a public review of my year.&lt;/p&gt;
+
+&lt;p&gt;The yearly review is not a new concept for me (if you recall from hints in previous
+posts, I’m hugely into quantified self and various metrics and reflection processes).
+But a public one (sharing where I am in real time) is new.&lt;/p&gt;
+
+&lt;p&gt;The experimental side of it is based on the fact that by laying my progress bare,
+I hope that I can connect with other people on a similar journey, or at the very
+least provide a template for other people who may be inspired to set out on a similar
+journey (I have been inspired by others in various subdomains in the past, and
+hope to pay it forward this way).&lt;/p&gt;
+
+&lt;p&gt;I will run through this in the same way that I go about my usual yearly reviews, enlisting
+various accomplishments into various buckets that I call &lt;em&gt;“progress subdomains”&lt;/em&gt;,
+which are various domains in which I want to broadly improve (and which align with
+my long-term vision for myself).&lt;/p&gt;
+
+&lt;p&gt;I will also be providing some background as we go through the various buckets,
+to help contextualise both the aims and the activities surrounding these buckets.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Highlights&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;1409&lt;/strong&gt; total self improvement hours, new yearly record&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.goodreads.com/user_challenges/31040356&quot;&gt;&lt;strong&gt;78&lt;/strong&gt; books read during the year&lt;/a&gt;,
+new yearly record&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;4&lt;/strong&gt; new programming languages engaged with&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;What went well&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Significant progress in self-improvement capacity, afforded by the greater focus
+allowed by leaving alone for the first time in a while in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;o2.Flutter&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;On the same note, managed to clock in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;1409&lt;/code&gt; hours of self improvement,
+against &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;1290&lt;/code&gt; hours in 2021, which was already a record year on its own.&lt;/li&gt;
+  &lt;li&gt;Significant time spent on improving CS skills, while also improving rapidly
+across Biology/Chemistry.&lt;/li&gt;
+  &lt;li&gt;Uptake of musical capacity, spending significant time on practicing singing,
+guitar, piano and learning music theory.&lt;/li&gt;
+  &lt;li&gt;Reinitiation of my dancing training - this time through &lt;a href=&quot;https://www.steezy.co&quot;&gt;Steezy&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Furnishing &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;o2.Flutter&lt;/code&gt; is 95% complete.&lt;/li&gt;
+  &lt;li&gt;Improvements in financial posturing throughout the year.&lt;/li&gt;
+  &lt;li&gt;Delivered above expectations at work, setting expectations for promotions/salary
+increases in 2023.&lt;/li&gt;
+  &lt;li&gt;Recommitted in Q1/22 to improve my Spanish knowledge, and managed to clock in
+over 50 hours of study during the year.&lt;/li&gt;
+  &lt;li&gt;Improved processes for managing my time, including running my personal life
+in terms of sprints.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;What didn’t go well&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Acquisition of R&amp;amp;G facility &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;o2.Flutter&lt;/code&gt; had initially caused significant
+financial strain, applying a lot of liquidity pressure in early 2022, and
+acquiring significant debt load in attempt to rapidly furnish it.&lt;/li&gt;
+  &lt;li&gt;Financial markets turmoil materialised after the closing of the acquisition
+of the R&amp;amp;G facility, but this meant that while I was spared the brunt of the
+market decline marking losses on my assets, I also didn’t go very far in terms
+of net worth growth, as asset prices declined while I was committing more
+money in the markets.&lt;/li&gt;
+  &lt;li&gt;Most of my acquantainces leaving Oxford during the 2020 pandemic meant that
+I now find myself with a significantly diminished (in terms of size) social circle
+in Oxford. This hasn’t presented itself as a major challenge yet, and some
+measures have been taken to ameliorate any future risks here, but I’m mindful of it.&lt;/li&gt;
+  &lt;li&gt;I’m not a huge club person, but I appeared in one earlier this year, begrudgingly
+brought by some newly acquired set of acquaintances. I was a &lt;em&gt;stick&lt;/em&gt; - unable
+to move at all. This was &lt;em&gt;unacceptable&lt;/em&gt; for two reasons: 1) I spent 3 years doing
+latin dancing very dilligently, and 2) I intend to become a pop singer in the
+future and dancing is a huge part of stage presence.
+    &lt;ul&gt;
+      &lt;li&gt;(This was what prompted my getting into dancing again as highlighted in the
+list above.)&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;In Greater Detail&lt;/h2&gt;
+
+&lt;h2&gt;o2.Flutter&lt;/h2&gt;
+
+&lt;p&gt;In late 2021, I closed on a transaction to acquire a new appartment in Oxford,
+to use as my new base of operation (work from home, practicing music, studying, etc).&lt;/p&gt;
+
+&lt;p&gt;Bases of operation are technically categorised as &lt;em&gt;Research &amp;amp; Growth Facilities&lt;/em&gt; by
+me (because I’m a nerd, and because I like to mentally picture them as labs/facilities
+for improvement rather than a place for being chillaxed and tardy), so this one has
+been symbollically codenamed &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;o2.Flutter&lt;/code&gt;. &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;o2&lt;/code&gt; is a nod to this being the second place
+in Oxford that I expect to spend quite some time in, and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Flutter&lt;/code&gt; is symbolising
+that this is going to allow me to fly higher. :)&lt;/p&gt;
+
+&lt;p&gt;After closing, I quickly flew to Greece for some administrative work there, which
+meant that I moved in when I came back some time in early 2022.&lt;/p&gt;
+
+&lt;p&gt;This was easily one of the best moves I’ve done in my life thus far, for a variety
+of reasons:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;I’m a bit unusual (in lack of a better word) in a lot of way, which means
+that it made it harder for me to live with others in a houseshare.
+    &lt;ul&gt;
+      &lt;li&gt;This had become such a big issue for me, as I was in my late 20s and living
+with students in houseshares, who… have a different lifestyle. This means
+that living with them as a working professional, especially one working from
+home is untenable, to the point where I had an internal deadline of solving
+the housing problem before I hit my 30 year birthday or I would leave Oxford
+(and potentially England) for good.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;The appartment is a new-built, with all the goodies these come with, and especially:
+&lt;em&gt;soundproofing&lt;/em&gt;. This means that I can practice my music without bothering anyone.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;I have a room dedicated to being the &lt;em&gt;home office&lt;/em&gt;. This is a huge part of what I
+want from my R&amp;amp;G facilities going forward. It ended up being amazing in synergy
+with the fact that both the company I work at and the industry at large are moving
+towards a more permanent &lt;em&gt;Work From Home&lt;/em&gt; regime.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;It’s also great in that compared to the work office, I can zone in and become focused
+on a task at hand at a much more rapid pace, skyrocketing my productivity both
+at work and at self-improvement endeavours, like reading for information.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;It’s also great to have an enclosed space which I can shape up however I want,
+and can apply my standards to. No more kitchen in a mess because someone else
+cooked and couldn’t be arsed to clean up because he had to play some video games :)
+    &lt;ul&gt;
+      &lt;li&gt;This fact alone has contributed massively to my general lack of anger and
+tranquility that I enjoy these days.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;And, perhaps most importantly, the lack of distractions/commuting means that
+I can spend unreal amounts of time engaging with self-improvement activities
+(practicing instruments, reading books, practicing programming, working out
+at home, etc), that is further compounding my general level of happiness/direction/fulfilment.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Of course, buying a house, especially in Oxford, comes with a whole swath
+of new challenges, including:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;There’s a significant financial outlay in the beginning. Not only for the property
+itself, but paying conveyancers, mortgage arrangement fees, taxes, etc.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;There’s also the problem of furnishing the place. It’s expensive. It’s even
+worse if you have to furnish a new (i.e. empty) house against the backdrop
+of a 10-year high inflationary spike, and severely disrupted supply chains
+(most of furniture ended up being delivered with a significant delay).&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;To afford a place that’s close to my specification for an R&amp;amp;G facility, I had
+to buy somewhere at the edges of Oxford, which means that the few times when
+I have to commute, commuting takes much longer now.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;It’s also generally much more expensive having a house - I’m now financially
+responsible for everything here (all bills, potential damage or substitution of
+devices, etc), which is something you don’t have to concern yourself with
+as much when renting.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Overall, the biggest challenge is that owning the facility itself has increased
+my outlay for housing costs by about 2x, but of course, for me personally, it
+was worth it (and then some) if I take into account all of the new capacity
+for self-improvement that it affords me.&lt;/p&gt;
+
+&lt;h2&gt;Intellectual Progress&lt;/h2&gt;
+
+&lt;p&gt;It’s hard to quantify my improvement in terms of intellectual prowess,
+seeing as it doesn’t lend itself easily to any sort of quantification, at least
+not one that is broad within different subdomains (I can’t say I became &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;x %&lt;/code&gt;
+better in Chemistry this year with accuracy).&lt;/p&gt;
+
+&lt;p&gt;But what I can do (and what I actually do) is measure what I call &lt;em&gt;mini-achievements&lt;/em&gt;,
+which are more or less what it sounds like: micro-checkpoints across the larger roadmap,
+which show me that while I’m not there yet, I’m moving in the right direction. The
+thinking behind this is that after accumulating a lot of those within a subdomain,
+I should have enough obvious progress (say, if you’ve read a number of books in Chemistry,
+in a focused and mindful way, over time your Chemistry knowledge is bound to accumulate).&lt;/p&gt;
+
+&lt;h3&gt;Programming/CS&lt;/h3&gt;
+
+&lt;p&gt;Let’s start with my primary subdomain of focus: &lt;strong&gt;Programming/CS&lt;/strong&gt;. This is because
+I spend a relatively large amount of time reading/practicing/improving my skills in
+Programming every year - well, it is how I make the majority of my living these days
+in any case.&lt;/p&gt;
+
+&lt;p&gt;(I lump Programming/CS in the same bucket, not because they are the same, but because
+they fall within the same self-improvement bucket for me, so I’m studying both interchangeably
+enough that I can consider them one thing).&lt;/p&gt;
+
+&lt;p&gt;In 2022, I spent about &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;347&lt;/code&gt; hours studying CS, representing about 25% of the total
+time spent self-improving in 2022. In that time, I did the following:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Engaged with four new languages during the year, &lt;em&gt;Ruby&lt;/em&gt;, &lt;em&gt;Clojure&lt;/em&gt;, &lt;em&gt;Haskell&lt;/em&gt; and &lt;em&gt;Rust&lt;/em&gt;.
+    &lt;ul&gt;
+      &lt;li&gt;Parts of this work immediately paid off - I engaged with a relatively big
+piece of work in Rust at work, which was to build to expose a Rust-based
+API for CBMC. The first PR is at &lt;a href=&quot;https://github.com/diffblue/cbmc/pull/7410&quot;&gt;cbmc#7410&lt;/a&gt;.
+        &lt;ul&gt;
+          &lt;li&gt;I’m especially proud of my work in this project - the code represents my early
+understanding of Rust, which I’m bound to look back over time and cringe, but
+it was FFI work (i.e. very hard to debug) in a language that I had a cursory
+understanding of, delivered in a very tight deadline (less than two sprints).&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Improved my understanding of testing, diving deeper into &lt;em&gt;TDD&lt;/em&gt; and &lt;em&gt;Property-based testing&lt;/em&gt;.&lt;/li&gt;
+  &lt;li&gt;Improved my understanding of &lt;em&gt;functional-design&lt;/em&gt; and &lt;em&gt;object-oriented design&lt;/em&gt;,
+picking up on a couple of software-engineering and software-architecture books.&lt;/li&gt;
+  &lt;li&gt;Worked on a few compilers/interpreters written in a variety of languages
+(Go, F# and C spring to mind).&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;Chemistry/Biology&lt;/h3&gt;
+
+&lt;p&gt;My long term aspirations is to found a biotech company. To that end, in 2022
+I took big action towards advancing my scientific understanding of &lt;strong&gt;Biology&lt;/strong&gt;.
+That was accompanied by a lot of time spent studying &lt;strong&gt;Chemistry&lt;/strong&gt; as well - the
+fields seem to have a similar relationship to each other as do Computer Science
+and Maths.&lt;/p&gt;
+
+&lt;p&gt;In &lt;em&gt;2022&lt;/em&gt; I spent about &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;166&lt;/code&gt; hours studying Biology and Chemistry (about 12% of
+total self-improvement time) and in that time I:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;/2022/05/12/reflections-on-learning-how-to-grow-almost-anything/&quot;&gt;Attended a synthetic biology course by MIT&lt;/a&gt;,
+which forced me to read and pick up a lot on molecular biology/chemistry at an
+accelerated timeframe.
+    &lt;ul&gt;
+      &lt;li&gt;In the course’s final project, I focused on immunology, which is another subfield
+of biology I ended up being fascinated of. Expect to hear more on this from me.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;This was accompanied by a lot of hours spent on Khan Academy’s Chemistry/Biology
+courses, as well as on Youtube, watching educational videos such as the ones by
+the &lt;a href=&quot;https://www.youtube.com/@AmoebaSisters&quot;&gt;Amoeba Sisters&lt;/a&gt;.
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;p&gt;As an aside, up until last year, I underestimated the value of Youtube, having
+it associated with music/gamers/memes/lolcats in my mind, thinking it to be worthless
+for any serious pursuit.&lt;/p&gt;
+
+        &lt;p&gt;Turns out I was wrong, and there’s some serious content creators there that
+make your life significantly easier as you try to wrap yourself around some
+complicated concepts. I wish I had discovered that earlier, though there’s only
+myself to blame in this case.&lt;/p&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;Economics/Investing&lt;/h3&gt;
+
+&lt;p&gt;I started self-studying &lt;strong&gt;Economics&lt;/strong&gt; and investing when I first moved to England,
+some 5 years ago. I started studying it at that point because I felt like my
+future job aspirations (Biotech founder) couldn’t be fulfilled without at least
+a rudimentary understanding of economics, as I felt of a company as an entity
+not existing within a vaccuum, but as something existing within a larger context,
+the economy.&lt;/p&gt;
+
+&lt;p&gt;Years later, while I definitely feel that it’s true that a company is tied
+to a macroeconomic context (much like Closures in programming are bound to the
+enclosing environment), I’m not sure how much of an economics science understanding
+a founder actually needs - but it turned out great for me personally, because I
+found the way of thinking that economics promotes to have great synergy with my
+CS/engineering education, along with how I like to think naturally.&lt;/p&gt;
+
+&lt;p&gt;At this point, I feel like my understanding of Economics is very robust (I would
+like to think that I’m approaching, if I haven’t surpassed, the understanding of
+a Economics undergraduate).&lt;/p&gt;
+
+&lt;p&gt;Despite this, I continue reading books and articles (which I haven’t been dilligent
+in tracking, to be honest) in an effort to make my Economics mental models be
+more robust.&lt;/p&gt;
+
+&lt;p&gt;Of course, it’s hard to study Economics without being at least made aware of
+a sister field, &lt;strong&gt;Investing&lt;/strong&gt;. This is my second love, in par with Economics. Because
+of their close relationship, and how I utilise my knowledge within these fields
+in my life right now, I consider them to fall within the same bucket.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Got a number of books read on Investing/Economics this year.&lt;/li&gt;
+  &lt;li&gt;Read an innumerable amount of articles on various media forms (papers, blog posts, etc).&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;Spanish&lt;/h3&gt;
+
+&lt;p&gt;Part of my self-improvement regime demands that I learn new languages, for a
+number of reasons:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;They help me become a more cultured and sophisticated person,&lt;/li&gt;
+  &lt;li&gt;They build me into a more round and multifaceted person instead of being
+a one trick pony.&lt;/li&gt;
+  &lt;li&gt;Being able to speak multiple languages is an emblem of prowess in the self-improvement
+circle - compared to other more superficial things, like say, wealth, noone can give
+you a foreign language. You have to put in the work to learn it. Hundreds of hours.
+This (to me and others) commands a lot of respect, and generates a lot of confidence
+and self respect.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;I had started with Spanish some years ago, primarily because my native tongue is Greek
+and Spanish is very closely, both from a phoneme (people mistake me for a Spaniard when I
+do speak the little that I speak) and from a grammar standpoint.&lt;/p&gt;
+
+&lt;p&gt;This year I committed to take it further, and I started learning Spanish again sometime
+in Q1/22, and took the habit across all of 2022, spending a total of about 57 hours total
+(about 4% of total) learning in a variety of ways (primarily through &lt;a href=&quot;https://www.duolingo.com/profile/FotisKoutoulakis&quot;&gt;Duolingo&lt;/a&gt;,
+but also using books and going to language exchange meetups.)&lt;/p&gt;
+
+&lt;h3&gt;Mathematics/Philosophy&lt;/h3&gt;
+
+&lt;p&gt;These two don’t fall within the same bucket for me from a self-improvement standpoint,
+but I list them this way here because I’m at a point where I’m studying these purely
+from an intellectual standpoint (I don’t do philosophy in any professional capacity,
+and I appear to know enough Maths to get by professionally - though I’m always keen
+to learn more.)&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;In both of these areas, many books/papers/exercises were read/done.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;Music&lt;/h2&gt;
+
+&lt;p&gt;I keep no secret that one of my “side quests” in life is developing my musical
+capabilities to the point where I could pursue a career as a professional musician.&lt;/p&gt;
+
+&lt;p&gt;This was a dream of mine ever since I was a teenager, and even though I was
+taking singing lessons in the past, I never looked at music seriously enough
+as a pursuit.&lt;/p&gt;
+
+&lt;p&gt;That was, until about 2020 and the beginning of the pandemic, when I bought
+myself a small space piano just as the initial lockdowns were announced in
+the U.K.&lt;/p&gt;
+
+&lt;p&gt;Ever since I have been spending a significant amount of time in developing
+my music skills every year (about 20% of total), but in 2022 and going forward,
+I want more time spent so that improvement is coming at an accelerated pace.&lt;/p&gt;
+
+&lt;p&gt;Highlights for 2022 include:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Establishment of more consistent practice habits for guitar and singing.&lt;/li&gt;
+  &lt;li&gt;Continuation of my piano practice.&lt;/li&gt;
+  &lt;li&gt;Deeper diving into music theory and a small initial foray into composition.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;Fitness&lt;/h2&gt;
+
+&lt;p&gt;In terms of &lt;strong&gt;Fitness&lt;/strong&gt;, 2022 was an about average year. No significant weight
+swings, with my mass being in the range of 63-64kg, and I managed to keep a
+relatively lean physique, of about 13-10% body fat ratio throughout the year
+(with a kilo gain between some holiday periods, when I let myself loose for
+a week or two).&lt;/p&gt;
+
+&lt;p&gt;In terms of the average day, both my diet and my fitness regime can be characterised
+as &lt;em&gt;robust&lt;/em&gt;, or at least &lt;em&gt;adequate&lt;/em&gt; for my long term vision. Despite this,
+however, a small effort had been put in enhancing my understanding and knowledge
+around sports science and nutrition, with an aim of bringing a small improvement
+on a going forward basis.&lt;/p&gt;
+
+&lt;p&gt;Given that my regime is robust as it stands, any improvements are not directly
+observable, not at this point at least.&lt;/p&gt;
+
+&lt;h2&gt;Financial posture&lt;/h2&gt;
+
+&lt;p&gt;I opened 2022 having just closed (at the end of Dec 2021) a significant transaction
+to acquire R&amp;amp;G &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Flutter&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;While this allowed for a number of benefits (as I have outlined in previous paragraphs),
+it also had an unfortunate side effect of requiring massive capital outlays (at least
+for my finances) and depleting liquidity sources, getting me to experience significant
+cash crunches in early 2022.&lt;/p&gt;
+
+&lt;p&gt;Thankfully those subsided over time, as I adjusted to the new cash outflow regime, and
+my cash flows improved due to a variety of reasons (raises at work, U.K government energy
+subsidy-support, etc).&lt;/p&gt;
+
+&lt;p&gt;However, I also had to finance some furniture which ended up requiring significant percentage
+of my cash flows into servicing debt in 2022. This has now subsided somewhat, primarilly
+because the brunt of it has been paid, but there’s still some long term debt that’s not
+completely of my books yet, and probably won’t be for the next 2-3 years.&lt;/p&gt;
+
+&lt;p&gt;I will also remiss not to mention that I did actually observe the inflationary spike eating
+a bit into my discretionary income, around the summer time and onwards, which added some
+further pressure.&lt;/p&gt;
+
+&lt;p&gt;In terms of other portfolios I had, despite having liquidated the majority of my holdings
+to acquire &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Flutter&lt;/code&gt;, there was still exposure to the market conditions from some portfolios
+that I can’t touch (say Workplace Pension, etc) and some illiquid portfolios (private holdings
+through Crowdcube for instance), I was still a bit affected over the year in terms of total
+net worth, which for the year remained flat (under most reasonable assumptions/mark to model).&lt;/p&gt;
+
+&lt;p&gt;This was a bit disappointing, as my finances are a relatively chunky picture of my life, and
+one that I’m personally very proud of, but it would be naive not to expect some down years,
+and to be completely honest, I have to be thankful that it remained this way and didn’t experience
+significant losses.&lt;/p&gt;
+
+&lt;p&gt;On the plus side, the lack of progress on a financial front was counterbalanced by my
+progress in other areas, so there was no psychological impact on me as well.&lt;/p&gt;
+
+&lt;p&gt;2022 was a colourful year as far as my financial posturing is concerned, with the following
+highlights&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Got depleted liquidity sources to be back up to a level considered adequate.&lt;/li&gt;
+  &lt;li&gt;Got to the point where I can start outlaying some cash for investments again.&lt;/li&gt;
+  &lt;li&gt;Started contributing more (%-wise) of my income to pension accounts.&lt;/li&gt;
+  &lt;li&gt;Started directing future investments into cash-flow producing assets, with
+an aim to medium/long term have a dividend portfolio.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;This has been a long one, and I probably have to cut it short somewhere around here,
+to preserve the interest of any reader and not bore them with details about my life.&lt;/p&gt;
+
+&lt;p&gt;All in all, I would call 2022 a fairly productive year, despite some of the headwinds
+observed in some of the progress subdomains.&lt;/p&gt;
+
+&lt;p&gt;I will probably author another post laying out my aims for the year ahead.&lt;/p&gt;
+
+&lt;p&gt;For now, so long, and wish both you and me a most productive/successful 2023.&lt;/p&gt;</content>
+
+      
+      
+      
+      
+      
+
+      
+        <author>
+            <name>Fotis Koutoulakis</name>
+          
+          
+        </author>
+      
+
+      
+
+      
+        <category term="year-in-review" />
+      
+
+      
+        <summary type="html">Progress Review Another year has come to a close, and so this time I decided to try a new experiment - I’ll author a public review of my year. The yearly review is not a new concept for me (if you recall from hints in previous posts, I’m hugely into quantified self and various metrics and reflection processes). But a public one (sharing where I am in real time) is new. The experimental side of it is based on the fact that by laying my progress bare, I hope that I can connect with other people on a similar journey, or at the very least provide a template for other people who may be inspired to set out on a similar journey (I have been inspired by others in various subdomains in the past, and hope to pay it forward this way). I will run through this in the same way that I go about my usual yearly reviews, enlisting various accomplishments into various buckets that I call “progress subdomains”, which are various domains in which I want to broadly improve (and which align with my long-term vision for myself). I will also be providing some background as we go through the various buckets, to help contextualise both the aims and the activities surrounding these buckets. Highlights 1409 total self improvement hours, new yearly record 78 books read during the year, new yearly record 4 new programming languages engaged with What went well Significant progress in self-improvement capacity, afforded by the greater focus allowed by leaving alone for the first time in a while in o2.Flutter. On the same note, managed to clock in 1409 hours of self improvement, against 1290 hours in 2021, which was already a record year on its own. Significant time spent on improving CS skills, while also improving rapidly across Biology/Chemistry. Uptake of musical capacity, spending significant time on practicing singing, guitar, piano and learning music theory. Reinitiation of my dancing training - this time through Steezy Furnishing o2.Flutter is 95% complete. Improvements in financial posturing throughout the year. Delivered above expectations at work, setting expectations for promotions/salary increases in 2023. Recommitted in Q1/22 to improve my Spanish knowledge, and managed to clock in over 50 hours of study during the year. Improved processes for managing my time, including running my personal life in terms of sprints. What didn’t go well Acquisition of R&amp;amp;G facility o2.Flutter had initially caused significant financial strain, applying a lot of liquidity pressure in early 2022, and acquiring significant debt load in attempt to rapidly furnish it. Financial markets turmoil materialised after the closing of the acquisition of the R&amp;amp;G facility, but this meant that while I was spared the brunt of the market decline marking losses on my assets, I also didn’t go very far in terms of net worth growth, as asset prices declined while I was committing more money in the markets. Most of my acquantainces leaving Oxford during the 2020 pandemic meant that I now find myself with a significantly diminished (in terms of size) social circle in Oxford. This hasn’t presented itself as a major challenge yet, and some measures have been taken to ameliorate any future risks here, but I’m mindful of it. I’m not a huge club person, but I appeared in one earlier this year, begrudgingly brought by some newly acquired set of acquaintances. I was a stick - unable to move at all. This was unacceptable for two reasons: 1) I spent 3 years doing latin dancing very dilligently, and 2) I intend to become a pop singer in the future and dancing is a huge part of stage presence. (This was what prompted my getting into dancing again as highlighted in the list above.) In Greater Detail o2.Flutter In late 2021, I closed on a transaction to acquire a new appartment in Oxford, to use as my new base of operation (work from home, practicing music, studying, etc). Bases of operation are technically categorised as Research &amp;amp; Growth Facilities by me (because I’m a nerd, and because I like to mentally picture them as labs/facilities for improvement rather than a place for being chillaxed and tardy), so this one has been symbollically codenamed o2.Flutter. o2 is a nod to this being the second place in Oxford that I expect to spend quite some time in, and Flutter is symbolising that this is going to allow me to fly higher. :) After closing, I quickly flew to Greece for some administrative work there, which meant that I moved in when I came back some time in early 2022. This was easily one of the best moves I’ve done in my life thus far, for a variety of reasons: I’m a bit unusual (in lack of a better word) in a lot of way, which means that it made it harder for me to live with others in a houseshare. This had become such a big issue for me, as I was in my late 20s and living with students in houseshares, who… have a different lifestyle. This means that living with them as a working professional, especially one working from home is untenable, to the point where I had an internal deadline of solving the housing problem before I hit my 30 year birthday or I would leave Oxford (and potentially England) for good. The appartment is a new-built, with all the goodies these come with, and especially: soundproofing. This means that I can practice my music without bothering anyone. I have a room dedicated to being the home office. This is a huge part of what I want from my R&amp;amp;G facilities going forward. It ended up being amazing in synergy with the fact that both the company I work at and the industry at large are moving towards a more permanent Work From Home regime. It’s also great in that compared to the work office, I can zone in and become focused on a task at hand at a much more rapid pace, skyrocketing my productivity both at work and at self-improvement endeavours, like reading for information. It’s also great to have an enclosed space which I can shape up however I want, and can apply my standards to. No more kitchen in a mess because someone else cooked and couldn’t be arsed to clean up because he had to play some video games :) This fact alone has contributed massively to my general lack of anger and tranquility that I enjoy these days. And, perhaps most importantly, the lack of distractions/commuting means that I can spend unreal amounts of time engaging with self-improvement activities (practicing instruments, reading books, practicing programming, working out at home, etc), that is further compounding my general level of happiness/direction/fulfilment. Of course, buying a house, especially in Oxford, comes with a whole swath of new challenges, including: There’s a significant financial outlay in the beginning. Not only for the property itself, but paying conveyancers, mortgage arrangement fees, taxes, etc. There’s also the problem of furnishing the place. It’s expensive. It’s even worse if you have to furnish a new (i.e. empty) house against the backdrop of a 10-year high inflationary spike, and severely disrupted supply chains (most of furniture ended up being delivered with a significant delay). To afford a place that’s close to my specification for an R&amp;amp;G facility, I had to buy somewhere at the edges of Oxford, which means that the few times when I have to commute, commuting takes much longer now. It’s also generally much more expensive having a house - I’m now financially responsible for everything here (all bills, potential damage or substitution of devices, etc), which is something you don’t have to concern yourself with as much when renting. Overall, the biggest challenge is that owning the facility itself has increased my outlay for housing costs by about 2x, but of course, for me personally, it was worth it (and then some) if I take into account all of the new capacity for self-improvement that it affords me. Intellectual Progress It’s hard to quantify my improvement in terms of intellectual prowess, seeing as it doesn’t lend itself easily to any sort of quantification, at least not one that is broad within different subdomains (I can’t say I became x % better in Chemistry this year with accuracy). But what I can do (and what I actually do) is measure what I call mini-achievements, which are more or less what it sounds like: micro-checkpoints across the larger roadmap, which show me that while I’m not there yet, I’m moving in the right direction. The thinking behind this is that after accumulating a lot of those within a subdomain, I should have enough obvious progress (say, if you’ve read a number of books in Chemistry, in a focused and mindful way, over time your Chemistry knowledge is bound to accumulate). Programming/CS Let’s start with my primary subdomain of focus: Programming/CS. This is because I spend a relatively large amount of time reading/practicing/improving my skills in Programming every year - well, it is how I make the majority of my living these days in any case. (I lump Programming/CS in the same bucket, not because they are the same, but because they fall within the same self-improvement bucket for me, so I’m studying both interchangeably enough that I can consider them one thing). In 2022, I spent about 347 hours studying CS, representing about 25% of the total time spent self-improving in 2022. In that time, I did the following: Engaged with four new languages during the year, Ruby, Clojure, Haskell and Rust. Parts of this work immediately paid off - I engaged with a relatively big piece of work in Rust at work, which was to build to expose a Rust-based API for CBMC. The first PR is at cbmc#7410. I’m especially proud of my work in this project - the code represents my early understanding of Rust, which I’m bound to look back over time and cringe, but it was FFI work (i.e. very hard to debug) in a language that I had a cursory understanding of, delivered in a very tight deadline (less than two sprints). Improved my understanding of testing, diving deeper into TDD and Property-based testing. Improved my understanding of functional-design and object-oriented design, picking up on a couple of software-engineering and software-architecture books. Worked on a few compilers/interpreters written in a variety of languages (Go, F# and C spring to mind). Chemistry/Biology My long term aspirations is to found a biotech company. To that end, in 2022 I took big action towards advancing my scientific understanding of Biology. That was accompanied by a lot of time spent studying Chemistry as well - the fields seem to have a similar relationship to each other as do Computer Science and Maths. In 2022 I spent about 166 hours studying Biology and Chemistry (about 12% of total self-improvement time) and in that time I: Attended a synthetic biology course by MIT, which forced me to read and pick up a lot on molecular biology/chemistry at an accelerated timeframe. In the course’s final project, I focused on immunology, which is another subfield of biology I ended up being fascinated of. Expect to hear more on this from me. This was accompanied by a lot of hours spent on Khan Academy’s Chemistry/Biology courses, as well as on Youtube, watching educational videos such as the ones by the Amoeba Sisters. As an aside, up until last year, I underestimated the value of Youtube, having it associated with music/gamers/memes/lolcats in my mind, thinking it to be worthless for any serious pursuit. Turns out I was wrong, and there’s some serious content creators there that make your life significantly easier as you try to wrap yourself around some complicated concepts. I wish I had discovered that earlier, though there’s only myself to blame in this case. Economics/Investing I started self-studying Economics and investing when I first moved to England, some 5 years ago. I started studying it at that point because I felt like my future job aspirations (Biotech founder) couldn’t be fulfilled without at least a rudimentary understanding of economics, as I felt of a company as an entity not existing within a vaccuum, but as something existing within a larger context, the economy. Years later, while I definitely feel that it’s true that a company is tied to a macroeconomic context (much like Closures in programming are bound to the enclosing environment), I’m not sure how much of an economics science understanding a founder actually needs - but it turned out great for me personally, because I found the way of thinking that economics promotes to have great synergy with my CS/engineering education, along with how I like to think naturally. At this point, I feel like my understanding of Economics is very robust (I would like to think that I’m approaching, if I haven’t surpassed, the understanding of a Economics undergraduate). Despite this, I continue reading books and articles (which I haven’t been dilligent in tracking, to be honest) in an effort to make my Economics mental models be more robust. Of course, it’s hard to study Economics without being at least made aware of a sister field, Investing. This is my second love, in par with Economics. Because of their close relationship, and how I utilise my knowledge within these fields in my life right now, I consider them to fall within the same bucket. Got a number of books read on Investing/Economics this year. Read an innumerable amount of articles on various media forms (papers, blog posts, etc). Spanish Part of my self-improvement regime demands that I learn new languages, for a number of reasons: They help me become a more cultured and sophisticated person, They build me into a more round and multifaceted person instead of being a one trick pony. Being able to speak multiple languages is an emblem of prowess in the self-improvement circle - compared to other more superficial things, like say, wealth, noone can give you a foreign language. You have to put in the work to learn it. Hundreds of hours. This (to me and others) commands a lot of respect, and generates a lot of confidence and self respect. I had started with Spanish some years ago, primarily because my native tongue is Greek and Spanish is very closely, both from a phoneme (people mistake me for a Spaniard when I do speak the little that I speak) and from a grammar standpoint. This year I committed to take it further, and I started learning Spanish again sometime in Q1/22, and took the habit across all of 2022, spending a total of about 57 hours total (about 4% of total) learning in a variety of ways (primarily through Duolingo, but also using books and going to language exchange meetups.) Mathematics/Philosophy These two don’t fall within the same bucket for me from a self-improvement standpoint, but I list them this way here because I’m at a point where I’m studying these purely from an intellectual standpoint (I don’t do philosophy in any professional capacity, and I appear to know enough Maths to get by professionally - though I’m always keen to learn more.) In both of these areas, many books/papers/exercises were read/done. Music I keep no secret that one of my “side quests” in life is developing my musical capabilities to the point where I could pursue a career as a professional musician. This was a dream of mine ever since I was a teenager, and even though I was taking singing lessons in the past, I never looked at music seriously enough as a pursuit. That was, until about 2020 and the beginning of the pandemic, when I bought myself a small space piano just as the initial lockdowns were announced in the U.K. Ever since I have been spending a significant amount of time in developing my music skills every year (about 20% of total), but in 2022 and going forward, I want more time spent so that improvement is coming at an accelerated pace. Highlights for 2022 include: Establishment of more consistent practice habits for guitar and singing. Continuation of my piano practice. Deeper diving into music theory and a small initial foray into composition. Fitness In terms of Fitness, 2022 was an about average year. No significant weight swings, with my mass being in the range of 63-64kg, and I managed to keep a relatively lean physique, of about 13-10% body fat ratio throughout the year (with a kilo gain between some holiday periods, when I let myself loose for a week or two). In terms of the average day, both my diet and my fitness regime can be characterised as robust, or at least adequate for my long term vision. Despite this, however, a small effort had been put in enhancing my understanding and knowledge around sports science and nutrition, with an aim of bringing a small improvement on a going forward basis. Given that my regime is robust as it stands, any improvements are not directly observable, not at this point at least. Financial posture I opened 2022 having just closed (at the end of Dec 2021) a significant transaction to acquire R&amp;amp;G Flutter. While this allowed for a number of benefits (as I have outlined in previous paragraphs), it also had an unfortunate side effect of requiring massive capital outlays (at least for my finances) and depleting liquidity sources, getting me to experience significant cash crunches in early 2022. Thankfully those subsided over time, as I adjusted to the new cash outflow regime, and my cash flows improved due to a variety of reasons (raises at work, U.K government energy subsidy-support, etc). However, I also had to finance some furniture which ended up requiring significant percentage of my cash flows into servicing debt in 2022. This has now subsided somewhat, primarilly because the brunt of it has been paid, but there’s still some long term debt that’s not completely of my books yet, and probably won’t be for the next 2-3 years. I will also remiss not to mention that I did actually observe the inflationary spike eating a bit into my discretionary income, around the summer time and onwards, which added some further pressure. In terms of other portfolios I had, despite having liquidated the majority of my holdings to acquire Flutter, there was still exposure to the market conditions from some portfolios that I can’t touch (say Workplace Pension, etc) and some illiquid portfolios (private holdings through Crowdcube for instance), I was still a bit affected over the year in terms of total net worth, which for the year remained flat (under most reasonable assumptions/mark to model). This was a bit disappointing, as my finances are a relatively chunky picture of my life, and one that I’m personally very proud of, but it would be naive not to expect some down years, and to be completely honest, I have to be thankful that it remained this way and didn’t experience significant losses. On the plus side, the lack of progress on a financial front was counterbalanced by my progress in other areas, so there was no psychological impact on me as well. 2022 was a colourful year as far as my financial posturing is concerned, with the following highlights Got depleted liquidity sources to be back up to a level considered adequate. Got to the point where I can start outlaying some cash for investments again. Started contributing more (%-wise) of my income to pension accounts. Started directing future investments into cash-flow producing assets, with an aim to medium/long term have a dividend portfolio. Conclusion This has been a long one, and I probably have to cut it short somewhere around here, to preserve the interest of any reader and not bore them with details about my life. All in all, I would call 2022 a fairly productive year, despite some of the headwinds observed in some of the progress subdomains. I will probably author another post laying out my aims for the year ahead. For now, so long, and wish both you and me a most productive/successful 2023.</summary>
+      
+
+      
+      
+    </entry>
+  
   
   
     <entry>

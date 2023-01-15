@@ -89,6 +89,362 @@
         <header class="post-header">
           <h1 class="post-title">
             
+              <a class="post-link" href="/2013/12/12/how-the-compiler/">How the compiler, the Library and the kernel work - Part 1</a>
+            
+          </h1>
+
+          <p class="post-meta">
+            Dez 12, 2013
+            
+              
+
+ •
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/compiler/">compiler</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/kernel/">kernel</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/libc/">libc</a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+
+            
+            
+          </p>
+        </header>
+
+        <div class="post-content">
+          <p>Before we get any further, it might be good if we provided some context.</p>
+
+<h1>Hello world. Again.</h1>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span>
+<span class="kt">int</span>
+<span class="nf">main</span> <span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">printf</span> <span class="p">(</span><span class="s">"Hello world!</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Every user space (read: application) programmer, has written a hello world program. 
+Only god knows how many times this program has been written. Yet, 
+most programmers’ knowledge of the program is limited to something along the lines of:</p>
+
+<blockquote>
+  <ul>
+    <li>It sends the string passed as a parameter to the system to print.</li>
+    <li>It takes the printf function from stdio.h and prints the string</li>
+  </ul>
+</blockquote>
+
+<p>and various other things, which are anywhere between plain wrong, or partially correct.</p>
+
+<p>** So why not demistify the process? **</p>
+
+<h1>Enter the C preprocessor.</h1>
+
+<p>You may have heard of the C Preprocessor. It’s the first stage of a c or c++ file compilation,
+and it’s actually responsible for things such as:</p>
+
+<ul>
+  <li><strong>inclusion of header files</strong> (it does so by replacing
+<code class="language-plaintext highlighter-rouge">#include &lt;header.h&gt;</code> with the content of this file, and the file it includes recursively),</li>
+  <li><strong>macro expansion</strong>, such as the famous comparison of two numbers (a greater than b). In essence, if you define
+ the following macro <code class="language-plaintext highlighter-rouge">#define gt(a, b) ((a &gt; b) ? 1 : 0)</code>, then in a statement such as this:</li>
+</ul>
+
+<div lang="c" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> if (gt (5, 3)) printf ("The first parameter is greater than the second.\n");
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">gt (5, 3)</code> gets expanded to the macro definition, so after the preprocessor has run you end up with something like this:</p>
+
+<div lang="c" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> if (((5 &gt; 3) ? 1 : 0)) printf ("The first parameter is greater than the second.\n");
+</code></pre></div></div>
+
+<ul>
+  <li><strong>conditional compilation</strong> (things such as:</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#ifdef WIN32 
+</span>    <span class="n">printf</span> <span class="p">(</span><span class="s">"We are on windows</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span> 
+<span class="cp">#endif</span></code></pre></figure>
+
+<p>amongst others. You can see it for yourself. Write the hello world program, and pass it to cpp: <code class="language-plaintext highlighter-rouge">cpp hello_world.c</code></p>
+
+<p>So now that we know what it does it’s time to demistify a common myth regarding it: <em>Some people believe
+that the header files include the function to be called.</em>. <strong>That’s wrong.</strong> What it does include is 
+<strong>function prototypes</strong> (and some type definitions, etc) <strong>only</strong>. It doesn’t include the body of the function
+to be called.</p>
+
+<p>Some people find that fact quite surprising, though, it isn’t, if you get to understand what the compiler
+does with it.</p>
+
+<h1>Say hello to the compiler.</h1>
+
+<p>Here we are gonna unmask another pile of misconceptions. First of all, some people think that when they call 
+<code class="language-plaintext highlighter-rouge">gcc</code> on the command line they are actually calling the compiler. <strong>They are not.</strong> <em>In fact they are calling
+the software commonly called <strong>the compilation driver</strong>, whose job is to run all the software needed to fully
+turn source to binary, including preprocessors, the actual compiler, an assembler and finally the linker</em></p>
+
+<p>Having said that, the actual compiler that’s getting called when you call <code class="language-plaintext highlighter-rouge">gcc</code> is called <code class="language-plaintext highlighter-rouge">cc1</code>. You may have seen it some times when the driver reports errors. Wanna take a look at it, to make sure I’m not lying to you? 
+(Hint: I’m not!) Fair enough. Why don’t you type this in the command line: <code class="language-plaintext highlighter-rouge">gcc -print-prog-name=cc1</code>. It should tell you where the actual compiler is located in your system.</p>
+
+<p>So now that we have this (misconception) out of our minds, we can continue with our analysis. Last time we talked
+about it, we said that the header files include <strong>prototypes</strong> and not the whole function.</p>
+
+<p>You may know that in C, you usually declare a function, before you use it. The primary reason for doing this
+is to provide the compiler with the ability to perform <strong>type checking</strong>, that is to check that the arguments
+passed are correct, both in number, and in type, and to verify that the returned value (assuming there is one)
+is being used correctly. Below is a program that demonstrates the function prototype:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span>
+<span class="kt">int</span> <span class="nf">add_nums</span> <span class="p">(</span><span class="kt">int</span> <span class="n">first</span><span class="p">,</span> <span class="kt">int</span> <span class="n">second</span><span class="p">);</span>
+
+<span class="kt">int</span>
+<span class="nf">main</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">printf</span> <span class="p">(</span><span class="s">"5 + 5 results in %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">add_nums</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">));</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span>
+<span class="nf">add_nums</span> <span class="p">(</span><span class="kt">int</span> <span class="n">first</span><span class="p">,</span> <span class="kt">int</span> <span class="n">second</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">first</span> <span class="o">+</span> <span class="n">second</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>In this particular example, the prototype gives the compiler a wide variety of information. It tells it
+that function <code class="language-plaintext highlighter-rouge">add_nums</code> takes two int arguments and returns an integer to the calling function. Now the
+compiler can verify that I am passing correct arguments to it when I call it inside printf. If I don’t include
+the function prototype, and do something slightly evil such as calling <code class="language-plaintext highlighter-rouge">add_nums</code> with <code class="language-plaintext highlighter-rouge">float</code> arguments then 
+this might happen:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>5 + 4 results in 2054324224
+</code></pre></div></div>
+
+<p>Now that you know that the compiler (the real one) only needs the prototype and not the actual function code,
+you may be wondering how the compiler actually compiles it if it doesn’t know it’s code.</p>
+
+<p>Now is the time to bring down another missconception. The word <em>compiler</em> is just a fancy name for software
+otherwise known as <em>translators</em>. A <em>translator’s</em> job is to get input and turn it from one language (source language) to a second language (target language), whatever that may be. Most of the times, when you compile software,
+you compile it to run in your computer, which runs on a processor from the x86 architecture family of processors.
+A processor is typically associated with an assembly language for that architecture (which is just human friendly
+mnemonics for common processor tasks), so your <em>x86 computer runs x86 assembly</em> (ok that’s not 100% true, but for
+simplicity’s sake at the moment, it should serve. We will see why it’s not true later.) So the compiler 
+(in a typical translation) translates (compiles) your C source code to x86 assembly. 
+You can see this by compiling your hello world example and passing the compiler the <code class="language-plaintext highlighter-rouge">-S</code> (which asks it to stop,
+after x86 assembly is produced) parameter, likewise <code class="language-plaintext highlighter-rouge">gcc -S hello.c</code>.</p>
+
+<h1>Conclusion</h1>
+
+<p>At this part, we saw how the compiler and the preprocessor work with our code, in an attempt to demistify the 
+so called library calls. In the next part, we are going to study the assembler and the linker, and for the final
+part the loader and the kernel.</p>
+
+        </div>
+        
+      </li>
+    
+      
+      
+
+      <li>
+        <header class="post-header">
+          <h1 class="post-title">
+            
               <a class="post-link" href="/2013/09/02/gsoc-week-11-report/">GSOC Week 11 report</a>
             
           </h1>
@@ -106,6 +462,8 @@
     
       
         <a href="/tags/gcc/">gcc</a>,
+      
+    
       
     
       
@@ -225,11 +583,15 @@
     
       
     
+      
+    
   
     
     
       
         <a href="/tags/gsoc/">gsoc</a>
+      
+    
       
     
       
@@ -609,6 +971,8 @@ that might be vital to finding the problem.</p>
     
       
     
+      
+    
   
     
     
@@ -616,6 +980,8 @@ that might be vital to finding the problem.</p>
     
       
         <a href="/tags/gcc/">gcc</a>,
+      
+    
       
     
       
@@ -681,6 +1047,8 @@ that might be vital to finding the problem.</p>
     
       
         <a href="/tags/golang/">golang</a>
+      
+    
       
     
       
@@ -942,6 +1310,8 @@ many the goruntime reports)</p>
     
       
     
+      
+    
   
     
     
@@ -1005,11 +1375,15 @@ many the goruntime reports)</p>
     
       
     
+      
+    
   
     
     
       
         <a href="/tags/gsoc/">gsoc</a>
+      
+    
       
     
       
@@ -1308,6 +1682,8 @@ report on what exactly it is that causes the bug.</p>
     
       
     
+      
+    
   
     
     
@@ -1371,6 +1747,8 @@ report on what exactly it is that causes the bug.</p>
     
       
     
+      
+    
   
     
     
@@ -1378,6 +1756,8 @@ report on what exactly it is that causes the bug.</p>
     
       
         <a href="/tags/gcc/">gcc</a>
+      
+    
       
     
       
@@ -1577,393 +1957,6 @@ root@debian:~/Software/Experiments/go#</code></pre></figure>
 
 <p>I will continue reading through the go runtime for some clues. On the more active size, I am writing a custom test case for goroutine testing under the Hurd, while also doing some analysis
 on the programs that run there (currently studying the assembly generated for these programs) to see how they differ and why we get this particular behavior.</p>
-
-        </div>
-        
-      </li>
-    
-      
-      
-
-      <li>
-        <header class="post-header">
-          <h1 class="post-title">
-            
-              <a class="post-link" href="/2013/08/05/gsoc-partial-week-7-report/">GSOC (Partial) Week 7 report</a>
-            
-          </h1>
-
-          <p class="post-meta">
-            Aug 5, 2013
-            
-               •
-  
-    
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-        <a href="/categories/gsoc/">gsoc</a>,
-      
-    
-      
-    
-      
-    
-  
-    
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-        <a href="/categories/golang/">golang</a>,
-      
-    
-      
-    
-  
-    
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-        <a href="/categories/gcc/">gcc</a>
-      
-    
-  
-
-
-
-
-            
-            
-          </p>
-        </header>
-
-        <div class="post-content">
-          <h1>An exciting week.</h1>
-
-<p>This week was exciting. Spending it on learning about the go runtime was the reason for this. As insightfull as it was however,
-it also confused me a little bit. Before this goes any further, I should state that this is a partial report on my research
-and my findings. My aims for this week were the following: <strong>To investigate the behavior of go programs under the Hurd, to
-study the go runtime, and possibly modify it to see if the goroutine issues are libpthread’s issue or the go’s runtime issue</strong>.</p>
-
-<h1>Presenting my findings.</h1>
-
-<p>Most of my time was spent studying the gcc go frontend, libgo and the go runtime. Fortunatelly, I can say (gladly) that it was
-time well spent. What I got from it were some nice pieces of insight, but also some slight confusion and doubts.</p>
-
-<p>The first interesting thing in my findings was this:</p>
-
-<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">struct</span>	<span class="n">G</span>
-<span class="p">{</span>
-	<span class="n">Defer</span><span class="o">*</span>	<span class="n">defer</span><span class="p">;</span>
-	<span class="n">Panic</span><span class="o">*</span>	<span class="n">panic</span><span class="p">;</span>
-	<span class="kt">void</span><span class="o">*</span>	<span class="n">exception</span><span class="p">;</span>	<span class="c1">// current exception being thrown</span>
-	<span class="n">bool</span>	<span class="n">is_foreign</span><span class="p">;</span>	<span class="c1">// whether current exception from other language</span>
-	<span class="kt">void</span>	<span class="o">*</span><span class="n">gcstack</span><span class="p">;</span>	<span class="c1">// if status==Gsyscall, gcstack = stackbase to use during gc</span>
-	<span class="n">uintptr</span>	<span class="n">gcstack_size</span><span class="p">;</span>
-	<span class="kt">void</span><span class="o">*</span>	<span class="n">gcnext_segment</span><span class="p">;</span>
-	<span class="kt">void</span><span class="o">*</span>	<span class="n">gcnext_sp</span><span class="p">;</span>
-	<span class="kt">void</span><span class="o">*</span>	<span class="n">gcinitial_sp</span><span class="p">;</span>
-	<span class="n">ucontext_t</span> <span class="n">gcregs</span><span class="p">;</span>
-	<span class="n">byte</span><span class="o">*</span>	<span class="n">entry</span><span class="p">;</span>		<span class="c1">// initial function</span>
-	<span class="n">G</span><span class="o">*</span>	<span class="n">alllink</span><span class="p">;</span>	<span class="c1">// on allg</span>
-	<span class="kt">void</span><span class="o">*</span>	<span class="n">param</span><span class="p">;</span>		<span class="c1">// passed parameter on wakeup</span>
-	<span class="n">bool</span>	<span class="n">fromgogo</span><span class="p">;</span>	<span class="c1">// reached from gogo</span>
-	<span class="n">int16</span>	<span class="n">status</span><span class="p">;</span>
-	<span class="n">int64</span>	<span class="n">goid</span><span class="p">;</span>
-	<span class="n">uint32</span>	<span class="n">selgen</span><span class="p">;</span>		<span class="c1">// valid sudog pointer</span>
-	<span class="k">const</span> <span class="kt">char</span><span class="o">*</span>	<span class="n">waitreason</span><span class="p">;</span>	<span class="c1">// if status==Gwaiting</span>
-	<span class="n">G</span><span class="o">*</span>	<span class="n">schedlink</span><span class="p">;</span>
-	<span class="n">bool</span>	<span class="n">readyonstop</span><span class="p">;</span>
-	<span class="n">bool</span>	<span class="n">ispanic</span><span class="p">;</span>
-	<span class="n">bool</span>	<span class="n">issystem</span><span class="p">;</span>
-	<span class="n">int8</span>	<span class="n">raceignore</span><span class="p">;</span> <span class="c1">// ignore race detection events</span>
-	<span class="n">M</span><span class="o">*</span>	<span class="n">m</span><span class="p">;</span>		<span class="c1">// for debuggers, but offset not hard-coded</span>
-	<span class="n">M</span><span class="o">*</span>	<span class="n">lockedm</span><span class="p">;</span>
-	<span class="n">M</span><span class="o">*</span>	<span class="n">idlem</span><span class="p">;</span>
-	<span class="n">int32</span>	<span class="n">sig</span><span class="p">;</span>
-	<span class="n">int32</span>	<span class="n">writenbuf</span><span class="p">;</span>
-	<span class="n">byte</span><span class="o">*</span>	<span class="n">writebuf</span><span class="p">;</span>
-	<span class="c1">// DeferChunk	*dchunk;</span>
-	<span class="c1">// DeferChunk	*dchunknext;</span>
-	<span class="n">uintptr</span>	<span class="n">sigcode0</span><span class="p">;</span>
-	<span class="n">uintptr</span>	<span class="n">sigcode1</span><span class="p">;</span>
-	<span class="c1">// uintptr	sigpc;</span>
-	<span class="n">uintptr</span>	<span class="n">gopc</span><span class="p">;</span>	<span class="c1">// pc of go statement that created this goroutine</span>
-
-	<span class="n">int32</span>	<span class="n">ncgo</span><span class="p">;</span>
-	<span class="n">CgoMal</span><span class="o">*</span>	<span class="n">cgomal</span><span class="p">;</span>
-
-	<span class="n">Traceback</span><span class="o">*</span> <span class="n">traceback</span><span class="p">;</span>
-
-	<span class="n">ucontext_t</span>	<span class="n">context</span><span class="p">;</span>
-	<span class="kt">void</span><span class="o">*</span>		<span class="n">stack_context</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
-<span class="p">};</span></code></pre></figure>
-
-<p>Yep. This is the code that resembles a (yeah, you guessed it, a <strong>goroutine</strong>). I was pretty surprised at first to see that a thread is resembled as a struct. But then again,
-taking a closer look at it, it makes perfect sense. The next one though was a <em>lot trickier</em>:</p>
-
-<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">struct</span>	<span class="n">M</span>
-<span class="p">{</span>
-	<span class="n">G</span><span class="o">*</span>	<span class="n">g0</span><span class="p">;</span>		<span class="c1">// goroutine with scheduling stack</span>
-	<span class="n">G</span><span class="o">*</span>	<span class="n">gsignal</span><span class="p">;</span>	<span class="c1">// signal-handling G</span>
-	<span class="n">G</span><span class="o">*</span>	<span class="n">curg</span><span class="p">;</span>		<span class="c1">// current running goroutine</span>
-	<span class="n">int32</span>	<span class="n">id</span><span class="p">;</span>
-	<span class="n">int32</span>	<span class="n">mallocing</span><span class="p">;</span>
-	<span class="n">int32</span>	<span class="n">throwing</span><span class="p">;</span>
-	<span class="n">int32</span>	<span class="n">gcing</span><span class="p">;</span>
-	<span class="n">int32</span>	<span class="n">locks</span><span class="p">;</span>
-	<span class="n">int32</span>	<span class="n">nomemprof</span><span class="p">;</span>
-	<span class="n">int32</span>	<span class="n">waitnextg</span><span class="p">;</span>
-	<span class="n">int32</span>	<span class="n">dying</span><span class="p">;</span>
-	<span class="n">int32</span>	<span class="n">profilehz</span><span class="p">;</span>
-	<span class="n">int32</span>	<span class="n">helpgc</span><span class="p">;</span>
-	<span class="n">uint32</span>	<span class="n">fastrand</span><span class="p">;</span>
-	<span class="n">uint64</span>	<span class="n">ncgocall</span><span class="p">;</span>	<span class="c1">// number of cgo calls in total</span>
-	<span class="n">Note</span>	<span class="n">havenextg</span><span class="p">;</span>
-	<span class="n">G</span><span class="o">*</span>	<span class="n">nextg</span><span class="p">;</span>
-	<span class="n">M</span><span class="o">*</span>	<span class="n">alllink</span><span class="p">;</span>	<span class="c1">// on allm</span>
-	<span class="n">M</span><span class="o">*</span>	<span class="n">schedlink</span><span class="p">;</span>
-	<span class="n">MCache</span>	<span class="o">*</span><span class="n">mcache</span><span class="p">;</span>
-	<span class="n">G</span><span class="o">*</span>	<span class="n">lockedg</span><span class="p">;</span>
-	<span class="n">G</span><span class="o">*</span>	<span class="n">idleg</span><span class="p">;</span>
-	<span class="n">Location</span> <span class="n">createstack</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>	<span class="c1">// Stack that created this thread.</span>
-	<span class="n">M</span><span class="o">*</span>	<span class="n">nextwaitm</span><span class="p">;</span>	<span class="c1">// next M waiting for lock</span>
-	<span class="n">uintptr</span>	<span class="n">waitsema</span><span class="p">;</span>	<span class="c1">// semaphore for parking on locks</span>
-	<span class="n">uint32</span>	<span class="n">waitsemacount</span><span class="p">;</span>
-	<span class="n">uint32</span>	<span class="n">waitsemalock</span><span class="p">;</span>
-	<span class="n">GCStats</span>	<span class="n">gcstats</span><span class="p">;</span>
-	<span class="n">bool</span>	<span class="n">racecall</span><span class="p">;</span>
-	<span class="kt">void</span><span class="o">*</span>	<span class="n">racepc</span><span class="p">;</span>
-
-	<span class="n">uintptr</span>	<span class="n">settype_buf</span><span class="p">[</span><span class="mi">1024</span><span class="p">];</span>
-	<span class="n">uintptr</span>	<span class="n">settype_bufsize</span><span class="p">;</span>
-
-	<span class="n">uintptr</span>	<span class="n">end</span><span class="p">[];</span>
-<span class="p">};</span></code></pre></figure>
-
-<p>This was a source of endless confusion at the beginning. It does have some hints reassuring the fact that G’s are indeed goroutines, but nothing that really helps to describe what an M is.
-It’s structure is identical to that of the G however, which means that it might have something to do with a thread. And indeed it is. Further study of the source code
-made me speculate that <strong>M’s must be the real operating system scheduled (kernel) threads, while G’s (goroutines) must be the lightweight threads managed by the go runtime.</strong></p>
-
-<p>I was more than happy to find comments that reassured that position of mine.</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// The go scheduler's job is to match ready-to-run goroutines (`g's)
-// with waiting-for-work schedulers (`m's)
-</code></pre></div></div>
-
-<p>Another cool finding was the go (runtime) scheduler - from which the above comment originates:</p>
-
-<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">Sched</span> <span class="p">{</span>
-	<span class="n">Lock</span><span class="p">;</span>
-
-	<span class="n">G</span> <span class="o">*</span><span class="n">gfree</span><span class="p">;</span>	<span class="c1">// available g's (status == Gdead)</span>
-	<span class="n">int64</span> <span class="n">goidgen</span><span class="p">;</span>
-
-	<span class="n">G</span> <span class="o">*</span><span class="n">ghead</span><span class="p">;</span>	<span class="c1">// g's waiting to run</span>
-	<span class="n">G</span> <span class="o">*</span><span class="n">gtail</span><span class="p">;</span>
-	<span class="n">int32</span> <span class="n">gwait</span><span class="p">;</span>	<span class="c1">// number of g's waiting to run</span>
-	<span class="n">int32</span> <span class="n">gcount</span><span class="p">;</span>	<span class="c1">// number of g's that are alive</span>
-	<span class="n">int32</span> <span class="n">grunning</span><span class="p">;</span>	<span class="c1">// number of g's running on cpu or in syscall</span>
-
-	<span class="n">M</span> <span class="o">*</span><span class="n">mhead</span><span class="p">;</span>	<span class="c1">// m's waiting for work</span>
-	<span class="n">int32</span> <span class="n">mwait</span><span class="p">;</span>	<span class="c1">// number of m's waiting for work</span>
-	<span class="n">int32</span> <span class="n">mcount</span><span class="p">;</span>	<span class="c1">// number of m's that have been created</span>
-
-	<span class="k">volatile</span> <span class="n">uint32</span> <span class="n">atomic</span><span class="p">;</span>	<span class="c1">// atomic scheduling word (see below)</span>
-
-	<span class="n">int32</span> <span class="n">profilehz</span><span class="p">;</span>	<span class="c1">// cpu profiling rate</span>
-
-	<span class="n">bool</span> <span class="n">init</span><span class="p">;</span>  <span class="c1">// running initialization</span>
-	<span class="n">bool</span> <span class="n">lockmain</span><span class="p">;</span>  <span class="c1">// init called runtime.LockOSThread</span>
-
-	<span class="n">Note</span>	<span class="n">stopped</span><span class="p">;</span>	<span class="c1">// one g can set waitstop and wait here for m's to stop</span>
-<span class="p">};</span></code></pre></figure>
-
-<p>From that particular piece of code, without a doubt the most interesting line is: <code class="language-plaintext highlighter-rouge">G *gfree</code>. That is a pool of the go routines that are available to be used.
-There are also helper schedulling functions, from which, the most interesting (for my purposes), was the <code class="language-plaintext highlighter-rouge">static void gfput(G*);</code> which realeases a go routine (puts it to the gfree list)</p>
-
-<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="c1">// Put on gfree list.  Sched must be locked.</span>
-<span class="k">static</span> <span class="kt">void</span>
-<span class="nf">gfput</span><span class="p">(</span><span class="n">G</span> <span class="o">*</span><span class="n">gp</span><span class="p">)</span>
-<span class="p">{</span>
-	<span class="n">gp</span><span class="o">-&gt;</span><span class="n">schedlink</span> <span class="o">=</span> <span class="n">runtime_sched</span><span class="p">.</span><span class="n">gfree</span><span class="p">;</span>
-	<span class="n">runtime_sched</span><span class="p">.</span><span class="n">gfree</span> <span class="o">=</span> <span class="n">gp</span><span class="p">;</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>There are loads of other extremely interesting functions there, but for the sake of space I will not expand here more. However I will expand on what it is that is confusing me:</p>
-
-<h2>The source of confusion</h2>
-
-<p>My tests in this point are to include testing if removing thread destruction from the go runtime would result in difference in behavior.
-There are however (as far as go is concerned), two kinds of threads in the go runtime. <strong>Goroutines</strong> (G’s) and the <strong>kernel schedulable threads</strong> (M’s).</p>
-
-<p>Neither of which, seem to really be destroyed. From my understanding so far, G’s are never totally destroyed (I may be wrong here, I am still researching this bit). Whenever
-they are about to “destroyed”, they are added to the scheduler’s list of freeG’s to allow for reuse, as evidenced by the <code class="language-plaintext highlighter-rouge">gfput</code> and <code class="language-plaintext highlighter-rouge">gfget</code> functions. 
-M’s on the other hand (the kernel threads), also seem to not be destroyed. A comment in go’s scheduler seems to support this (<code class="language-plaintext highlighter-rouge">// For now, m's never go away.</code>) and as a 
-matter of fact I could not find any code that destroyed M’s (I am still researching this bit).</p>
-
-<p><strong>Since none of the two actually get destroyed, and seeing as thread creation alone should not be buggy, how come we are facing the specific bugs we are facing?</strong>
-I will try to provide with an interpretation: Either I am fairly wrong and M’s (or G’s or both) actually do get destroyed somewhere (possible and very much probable)
-or I looking for clues regarding the issue in the wrong place (might be possible but I don’t see it being very probable).</p>
 
         </div>
         

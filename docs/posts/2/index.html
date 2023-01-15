@@ -89,6 +89,650 @@
         <header class="post-header">
           <h1 class="post-title">
             
+              <a class="post-link" href="/2014/07/09/distro-forking-101/">Distro forking 101: How do you fork a Linux distro?</a>
+            
+          </h1>
+
+          <p class="post-meta">
+            Jul 9, 2014
+            
+              
+
+ •
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/linux/">linux</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/distro/">distro</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/fork/">fork</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/debian/">debian</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/arch/">arch</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/fedora/">fedora</a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+
+            
+            
+          </p>
+        </header>
+
+        <div class="post-content">
+          <h1>Defining the GNU/Linux distribution</h1>
+
+<p>If you are here, we can safely assume that you already know what a <strong>GNU/Linux software
+distribution</strong> is, but for completion’s sake, let’s just define so we all have the same context.</p>
+
+<p>A GNU/Linux distribution is a collection of system and application software, packaged together
+by the distribution’s developers, so that they are distributed in a nicely integrated bundle, ready
+to be used by users and developers alike. Software typically included in such a distribution
+ranges from a compiler toolchain, to the C library, to filesystem utilities to text editors.</p>
+
+<p>As you can imagine, from the existence of several different GNU/Linux distributions, there are 
+multiple ways that you could possibly combine all these different applications and their respective
+configurations, not to mention that you could include even more specialised software, depending
+on the target audience of the distribution (such as multimedia software for a distribution like 
+<a href="http://ubuntustudio.org/">Ubuntu Studio</a> or penetration testing tools for a distribution such as
+<a href="http://www.kali.org/">Kali Linux</a>)</p>
+
+<h1>The “f” word</h1>
+
+<p>But even with such a great number of different software collections and their respective configurations
+there still may not be one that appeals to your specific needs. That’s ok though, as you can still
+customize each and every distribution to your specific liking. Extensive customization is known to
+create a <em>differentiation point</em> known as a <strong>potential forking point</strong>.</p>
+
+<p>Forking is a term that has been known to carry negative connotations. <a href="http://en.wikipedia.org/wiki/Fork_%28software_development%29">As wikipedia puts it</a>,</p>
+
+<blockquote>
+  <p>the term often implies not merely a development branch, but a split in the developer community
+a form of schism.</p>
+</blockquote>
+
+<p>Historically, it has also been used as a leverage to coerce a project’s developers 
+into merging code into their master branches
+that they didn’t originally want to, or otherwise take a decision that they wouldn’t have taken
+if not under the pressure of a <em>“fork”</em>. But why is it so?</p>
+
+<p>You see, traditionally, forking a project meant a couple of things: For starters, there were now
+two, identical projects, competing in the same solution space. 
+Those two projects had different development hours and 
+features or bug fixes going into them, and eventually, one of the two ended up being obsolete.
+Apart from that forking also created an atmosphere of intense competition among the two projects.</p>
+
+<p>However, in 2014, and the advent of the distributed version control systems such as <a href="http://git-scm.com/">git</a> 
+and <a href="http://mercurial.selenic.com/">mercurial</a> and of the social coding websites such as <a href="http://www.github.com">Github</a> and <a href="http://www.bitbucket.org">Bitbucket</a>, the term is finally taking
+on a more lax meaning, as just another code repository that may or may not enjoy major 
+(or even minor, for that matter) development.</p>
+
+<h2>Forking a GNU/Linux distribution</h2>
+
+<p>So, up until now we have discussed what a GNU/Linux distribution is, and what a fork is. 
+However, we haven’t discussed yet what it means to fork a GNU/Linux distribution.</p>
+
+<p>You see, what differentiates each distro from the other ones, apart from the software collection 
+that they contain, is the way in which they provide (and deploy) that software. Yes, we are talking about software packages and their respective package managers. Distributions from the Debian
+(.deb) family are using <code class="language-plaintext highlighter-rouge">dpkg</code> along with <code class="language-plaintext highlighter-rouge">apt</code> or <code class="language-plaintext highlighter-rouge">synaptic</code> or <code class="language-plaintext highlighter-rouge">aptitude</code> or some other higher level
+tool. RPM (.rpm) based distributions may use <code class="language-plaintext highlighter-rouge">rpm</code> with <code class="language-plaintext highlighter-rouge">yum</code> or <code class="language-plaintext highlighter-rouge">dnf</code> or  <code class="language-plaintext highlighter-rouge">zypper</code> or another higher level tool. 
+Other distributions, not based on the aforementioned may choose to roll their own configuration
+of packages and package managers, with Arch Linux using its own <code class="language-plaintext highlighter-rouge">pacman</code>, Sabayon uses its <code class="language-plaintext highlighter-rouge">entropy</code>
+package manager, etc.</p>
+
+<p>Now, naturally, if you want to customize an application to your liking, you have many ways in which
+you could do that. One of them is downloading the tarball from the upstream’s website or ftp 
+server, <code class="language-plaintext highlighter-rouge">./configure</code> it and then <code class="language-plaintext highlighter-rouge">make</code> and <code class="language-plaintext highlighter-rouge">make install</code> it. But if you do start customizing
+lots of applications this way, it can become tedious and unwieldy too soon. After all, what did
+that <code class="language-plaintext highlighter-rouge">make install</code> install exactly? Will the new update replace those files? What were your
+configuration options? Did they replace the files the package manager installed?</p>
+
+<p>In this case, it really pays off to learn <strong>packaging</strong> software for your distribution of choice.
+What this means is to learn the format of packages your distribution’s package manager accepts
+as well as how you could produce them. This way, instead of the <code class="language-plaintext highlighter-rouge">./configure &amp;&amp; make &amp;&amp; make install</code> 
+cycle, you just have beautiful software packages, that you can control more tightly, you can 
+update more easily and you can also distribute them to your friends if you so desire. As an added
+bonus, now the package manager also knows about those files, and you can install, remove
+or update them much more easily. What’s not to like?</p>
+
+<p>After you have created some custom packages, you may also wish to create a repository
+to contain them and update straight from that. <strong>Congratulations, you have created your custom
+distribution, and a potential fork.</strong> While you are at it, if you really want to fork the distribution,
+you could as well take the distribution’s <code class="language-plaintext highlighter-rouge">base</code> packages, customize them, rebuild them, and then
+distribute them. <strong>Congratulations again, now you have your true GNU/Linux distribution fork</strong>.</p>
+
+<h1>That seems easy. More specifically?</h1>
+
+<p>Yes of course. Let’s take a look at how you might want to go about forking some well known
+GNU/Linux distribution.</p>
+
+<h2>Debian</h2>
+
+<p>In Debian, your usual procedure if you wish to customize a package is the below:</p>
+
+<ul>
+  <li>First, you make sure you have the essential building software installed. <code class="language-plaintext highlighter-rouge">apt-get install build-essential devscripts debhelper</code></li>
+  <li>Then you need to download the package’s build dependencies. <code class="language-plaintext highlighter-rouge">apt-get build-dep $package_name</code></li>
+  <li>Now it’s time to download it’s sources, via <code class="language-plaintext highlighter-rouge">apt-get source $package_name</code></li>
+  <li>Proceed with customizing it to your liking (update it, patch the sources, etc)</li>
+  <li>Now it’s time to rebuild it. <code class="language-plaintext highlighter-rouge">debuild -us -uc</code></li>
+</ul>
+
+<p>Assuming all went fine, you should now have an <code class="language-plaintext highlighter-rouge">$package_name.deb</code> file in your current 
+directory ready to be installed with <code class="language-plaintext highlighter-rouge">dpkg -i $package_name.deb</code>.</p>
+
+<p>Please take note that the above is not an extensive treatise into debian packaging by any means.
+If you want to build custom debian packages, here are some links:</p>
+
+<ul>
+  <li><a href="https://wiki.debian.org/IntroDebianPackaging">Debian wiki: intro to Debian packaging</a></li>
+  <li><a href="http://people.connexer.com/~roberto/howtos/debcustomize">Roberto C Sanchez: Debian package customization how to</a></li>
+  <li><a href="https://wiki.debian.org/HowToPackageForDebian">Debian wiki: How to package for Debian</a></li>
+</ul>
+
+<p>Now that you have your custom packages, it’s time to build a repository to contain them. There 
+are many tools you can use to do that, including the official debian package archiving tool
+known as <code class="language-plaintext highlighter-rouge">dak</code>, but if you want a personal repository without too much hassle, it’s better if you
+use <code class="language-plaintext highlighter-rouge">reprepro</code>. I won’t go to full length on that here, <a href="http://www.debian-administration.org/article/286/Setting_up_your_own_APT_repository_with_upload_support">but instead I will lead you to a very
+good guide to do so if you so desire</a></p>
+
+<h2>Fedora</h2>
+
+<p>Building packages for fedora is a procedure similar to the debian one. Fedora however is more
+convenient in one aspect: <a href="http://download.fedoraproject.org/pub/fedora/linux/releases/20/Fedora/source/iso/Fedora-20-source-DVD.iso">It allows you to download a DVD image with all the sources in <code class="language-plaintext highlighter-rouge">.rpm</code> form
+ready for you to customize and rebuild to your tastes.</a></p>
+
+<p>Apart from that, the usual procedure is the following:</p>
+
+<ul>
+  <li>Download the <code class="language-plaintext highlighter-rouge">SRPM</code> (source RPM) via any means. You could do that using the <code class="language-plaintext highlighter-rouge">yumdownloader</code> utility, likewise <code class="language-plaintext highlighter-rouge">yumdownloader $package_name</code>. To use <code class="language-plaintext highlighter-rouge">yumdownloader</code>, you need
+to have <code class="language-plaintext highlighter-rouge">yum-utils</code> installed.</li>
+  <li>After you have downloaded the <code class="language-plaintext highlighter-rouge">SRPM</code>, next you have to unpack it: <code class="language-plaintext highlighter-rouge">rpm -i $package_name</code></li>
+  <li>Next up, you customize the package to your liking (patch the sources, etc)</li>
+  <li>Finally, you <code class="language-plaintext highlighter-rouge">cd</code> to the <code class="language-plaintext highlighter-rouge">SPECS</code> folder, and then <code class="language-plaintext highlighter-rouge">rpmbuild -ba $package.spec</code></li>
+</ul>
+
+<p>Again the above mentioned steps may not be 100% correct. If you want to go down this route,
+see the following links for more information:</p>
+
+<ul>
+  <li><a href="http://wiki.centos.org/HowTos/RebuildSRPM">Centos wiki: Rebuild SRPM how-to</a></li>
+  <li><a href="http://www.cyberciti.biz/faq/yum-download-source-packages-from-rhn/">cyberciti: yum Download all Source Packages from RedHat</a></li>
+  <li><a href="http://bradthemad.org/tech/notes/patching_rpms.php">bradthemad.org: How to patch and rebuild an RPM package</a></li>
+  <li><a href="http://www.rpm.org/max-rpm/ch-rpm-build.html">rpm.org: Chapter 11. Building packages</a></li>
+  <li><a href="https://fedoraproject.org/wiki/How_to_create_an_RPM_package">Fedora wiki: How to create an RPM package</a></li>
+</ul>
+
+<p>Next up, is the repository creation step.</p>
+
+<ul>
+  <li>To create a yum repository, you need to <code class="language-plaintext highlighter-rouge">yum install createrepo</code>. 
+After that you need to create a directory to use as the repository, likewise
+<code class="language-plaintext highlighter-rouge">mkdir /var/ftp/repo/Fedora/19/{SRPMS, i386,x86_64)</code>.</li>
+  <li>After that you move your i386 packages to <code class="language-plaintext highlighter-rouge">/var/ftp/repo/Fedora/19/i386</code>, and the rest
+of the packages to their respective folders.</li>
+  <li>Next step is adding a configuration file to <code class="language-plaintext highlighter-rouge">/etc/yum.repos.d/</code> that describes your repository
+to yum.</li>
+</ul>
+
+<p>Again, not definitive, and for more information, take a look at these links:</p>
+
+<ul>
+  <li><a href="https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Deployment_Guide/sec-Yum_Repository.html">Redhat: Creating a yum repository</a></li>
+  <li><a href="http://www.techrepublic.com/blog/linux-and-open-source/create-your-own-yum-repository">techrepublic: Creating your own yum repository</a></li>
+  <li><a href="http://docs.fedoraproject.org/en-US/Fedora/14/html/Deployment_Guide/sec-Creating_a_Yum_Repository.html">Fedora documentation: Creating a yum repository</a></li>
+</ul>
+
+<h2>Arch Linux</h2>
+
+<p><a href="https://www.archlinux.org/">Arch Linux</a>, at least in comparison to <code class="language-plaintext highlighter-rouge">.deb</code> and <code class="language-plaintext highlighter-rouge">.rpm</code> package
+distribution families is very easy to customize to your liking. That’s to be expected though
+as Arch Linux is a distribution that sells itself of the customization capabilities it offers to its user.</p>
+
+<p>In essence, if you want to customize a package, the general process is this:</p>
+
+<ul>
+  <li>Download Arch tarball that contains the <code class="language-plaintext highlighter-rouge">PKGBUILD</code> file</li>
+  <li>untar the tarball</li>
+  <li>(Optional) download the upstream tarball referenced in the <code class="language-plaintext highlighter-rouge">PKGBUILD</code>, and modify it
+ to your liking</li>
+  <li>run <code class="language-plaintext highlighter-rouge">makepkg</code> in the folder containing the <code class="language-plaintext highlighter-rouge">PKGBUILD</code></li>
+  <li>install (using pacman) the <code class="language-plaintext highlighter-rouge">.xz</code> file produced after the whole process is finished.</li>
+</ul>
+
+<p>In order to download the official {core | extra | community} packages, you need to run as root
+<code class="language-plaintext highlighter-rouge">abs</code>. This will create a directory tree that contains the files required for building any package 
+in the official repositories.</p>
+
+<p>Next up, you can create a custom local repository with the <code class="language-plaintext highlighter-rouge">repo-add</code> tool, and then proceeding
+with editing <code class="language-plaintext highlighter-rouge">/etc/pacman.conf</code> and adding an entry for your repository there. For more information:</p>
+
+<ul>
+  <li><a href="http://arch-stable.blogspot.gr/2012/02/make-your-own-local-repo-for-arch-linux.html">arch-stable: make your own local repo for arch linux</a></li>
+  <li><a href="https://wiki.archlinux.org/index.php/makepkg">arch wiki: makepkg</a></li>
+  <li><a href="https://wiki.archlinux.org/index.php/Pacman_tips">arch wiki: pacman tips</a></li>
+  <li><a href="https://wiki.archlinux.org/index.php/Arch_Build_System">arch wiki: Arch Build System</a></li>
+  <li><a href="https://wiki.archlinux.org/index.php/Pacman#Repositories">arch wiki: Pacman#Repositories</a></li>
+</ul>
+
+<h1>To fork or not to fork?</h1>
+
+<p>Well, that’s not an easy question to answer. My opinion is that it’s extremely educational to
+do a <strong><em>soft</em></strong> fork, clone the distribution’s core repository, and for some time maintain your own
+distribution based on it, that is, update and customize all the repositories. Do that for some months,
+then go back to using your distribution of choice now that you are enlightened with how it works
+under the hood. The reason this is very educational is that it will teach you the ins and outs of
+your distribution, teach you about <strong>all</strong> the software in it, how it integrates, what its role is.
+It will teach you packaging which is a tremendously undervalued skill, as you can customize
+your experience to your liking, and it will make you appreciate the effort going into maintaining
+the distribution.</p>
+
+<p>As for doing a <strong>hard</strong> fork, that is creating your own distribution, that you commit to maintaining
+it for a long time, my opinion is that it’s simply not worth it. Maintaining a distribution, be it
+by yourself, or with your friends, is a tremendous amount of work, that’s not worth it unless
+you have other goals you want to achieve by that. If all you want to do is to customize your 
+distribution of choice to your liking, then go ahead, learn packaging for it, customize-package
+the applications you want, then create your own repo - but always track the upstream. Diverging
+too much from the upstream is not worth the hassle, as you will end up spending more time
+maintaining than using the distribution in the end.</p>
+
+<h2>tl;dr:</h2>
+
+<p>If you want to do a small scale, private fork in order to see what’s under the hood of your Linux
+distro; by all means go ahead.</p>
+
+<p>If you want to do a large scale, public fork, then take your time to calculate the effort, if it’s worth it,
+and if you could just help the upstream distribution implement the features you want.</p>
+
+        </div>
+        
+      </li>
+    
+      
+      
+
+      <li>
+        <header class="post-header">
+          <h1 class="post-title">
+            
               <a class="post-link" href="/2014/06/20/how-the-compiler/">How the Compiler, the Library and the Kernel work - Part 3</a>
             
           </h1>
@@ -110,6 +754,8 @@
     
       
         <a href="/tags/compiler/">compiler</a>,
+      
+    
       
     
       
@@ -225,6 +871,8 @@
     
       
     
+      
+    
   
     
     
@@ -240,6 +888,8 @@
     
       
         <a href="/tags/libc/">libc</a>
+      
+    
       
     
       
@@ -444,6 +1094,8 @@ always see the <a href="http://man7.org/linux/man-pages/man2/syscalls.2.html">ma
     
       
     
+      
+    
   
     
     
@@ -467,6 +1119,8 @@ always see the <a href="http://man7.org/linux/man-pages/man2/syscalls.2.html">ma
     
       
         <a href="/tags/ensidia/">ensidia</a>,
+      
+    
       
     
       
@@ -532,6 +1186,8 @@ always see the <a href="http://man7.org/linux/man-pages/man2/syscalls.2.html">ma
     
       
         <a href="/tags/xv6/">xv6</a>
+      
+    
       
     
       
@@ -899,6 +1555,8 @@ work, take a look at the <code class="language-plaintext highlighter-rouge">sysc
     
       
     
+      
+    
   
     
     
@@ -912,6 +1570,8 @@ work, take a look at the <code class="language-plaintext highlighter-rouge">sysc
     
       
         <a href="/tags/kernel/">kernel</a>,
+      
+    
       
     
       
@@ -977,6 +1637,8 @@ work, take a look at the <code class="language-plaintext highlighter-rouge">sysc
     
       
         <a href="/tags/libc/">libc</a>
+      
+    
       
     
       
@@ -1260,6 +1922,8 @@ in greater length, the C library, and the kernel.</p>
     
       
     
+      
+    
   
     
     
@@ -1279,6 +1943,8 @@ in greater length, the C library, and the kernel.</p>
     
       
         <a href="/tags/lfs/">lfs</a>,
+      
+    
       
     
       
@@ -1344,6 +2010,8 @@ in greater length, the C library, and the kernel.</p>
     
       
         <a href="/tags/distribution/">distribution</a>
+      
+    
       
     
       
@@ -1551,356 +2219,6 @@ around the <code class="language-plaintext highlighter-rouge">configure &amp;&am
 <p><strong>In the end, it is yourself who you should ask. Do you want that knowledge? Is it worth the hassle for you?
 Do you want the bragging rights? Are you crazy enough to want to maintain it?</strong> 
 <em>These are all questions that you get as many answers to them as the people you ask.</em></p>
-
-        </div>
-        
-      </li>
-    
-      
-      
-
-      <li>
-        <header class="post-header">
-          <h1 class="post-title">
-            
-              <a class="post-link" href="/2013/12/12/how-the-compiler/">How the compiler, the Library and the kernel work - Part 1</a>
-            
-          </h1>
-
-          <p class="post-meta">
-            Dez 12, 2013
-            
-              
-
- •
-  
-    
-    
-      
-    
-      
-    
-      
-    
-      
-        <a href="/tags/compiler/">compiler</a>,
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-  
-    
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-        <a href="/tags/kernel/">kernel</a>,
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-  
-    
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-        <a href="/tags/libc/">libc</a>
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-  
-
-
-            
-            
-          </p>
-        </header>
-
-        <div class="post-content">
-          <p>Before we get any further, it might be good if we provided some context.</p>
-
-<h1>Hello world. Again.</h1>
-
-<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
-</span>
-<span class="kt">int</span>
-<span class="nf">main</span> <span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="n">printf</span> <span class="p">(</span><span class="s">"Hello world!</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
-
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>Every user space (read: application) programmer, has written a hello world program. 
-Only god knows how many times this program has been written. Yet, 
-most programmers’ knowledge of the program is limited to something along the lines of:</p>
-
-<blockquote>
-  <ul>
-    <li>It sends the string passed as a parameter to the system to print.</li>
-    <li>It takes the printf function from stdio.h and prints the string</li>
-  </ul>
-</blockquote>
-
-<p>and various other things, which are anywhere between plain wrong, or partially correct.</p>
-
-<p>** So why not demistify the process? **</p>
-
-<h1>Enter the C preprocessor.</h1>
-
-<p>You may have heard of the C Preprocessor. It’s the first stage of a c or c++ file compilation,
-and it’s actually responsible for things such as:</p>
-
-<ul>
-  <li><strong>inclusion of header files</strong> (it does so by replacing
-<code class="language-plaintext highlighter-rouge">#include &lt;header.h&gt;</code> with the content of this file, and the file it includes recursively),</li>
-  <li><strong>macro expansion</strong>, such as the famous comparison of two numbers (a greater than b). In essence, if you define
- the following macro <code class="language-plaintext highlighter-rouge">#define gt(a, b) ((a &gt; b) ? 1 : 0)</code>, then in a statement such as this:</li>
-</ul>
-
-<div lang="c" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> if (gt (5, 3)) printf ("The first parameter is greater than the second.\n");
-</code></pre></div></div>
-
-<p><code class="language-plaintext highlighter-rouge">gt (5, 3)</code> gets expanded to the macro definition, so after the preprocessor has run you end up with something like this:</p>
-
-<div lang="c" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> if (((5 &gt; 3) ? 1 : 0)) printf ("The first parameter is greater than the second.\n");
-</code></pre></div></div>
-
-<ul>
-  <li><strong>conditional compilation</strong> (things such as:</li>
-</ul>
-
-<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#ifdef WIN32 
-</span>    <span class="n">printf</span> <span class="p">(</span><span class="s">"We are on windows</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span> 
-<span class="cp">#endif</span></code></pre></figure>
-
-<p>amongst others. You can see it for yourself. Write the hello world program, and pass it to cpp: <code class="language-plaintext highlighter-rouge">cpp hello_world.c</code></p>
-
-<p>So now that we know what it does it’s time to demistify a common myth regarding it: <em>Some people believe
-that the header files include the function to be called.</em>. <strong>That’s wrong.</strong> What it does include is 
-<strong>function prototypes</strong> (and some type definitions, etc) <strong>only</strong>. It doesn’t include the body of the function
-to be called.</p>
-
-<p>Some people find that fact quite surprising, though, it isn’t, if you get to understand what the compiler
-does with it.</p>
-
-<h1>Say hello to the compiler.</h1>
-
-<p>Here we are gonna unmask another pile of misconceptions. First of all, some people think that when they call 
-<code class="language-plaintext highlighter-rouge">gcc</code> on the command line they are actually calling the compiler. <strong>They are not.</strong> <em>In fact they are calling
-the software commonly called <strong>the compilation driver</strong>, whose job is to run all the software needed to fully
-turn source to binary, including preprocessors, the actual compiler, an assembler and finally the linker</em></p>
-
-<p>Having said that, the actual compiler that’s getting called when you call <code class="language-plaintext highlighter-rouge">gcc</code> is called <code class="language-plaintext highlighter-rouge">cc1</code>. You may have seen it some times when the driver reports errors. Wanna take a look at it, to make sure I’m not lying to you? 
-(Hint: I’m not!) Fair enough. Why don’t you type this in the command line: <code class="language-plaintext highlighter-rouge">gcc -print-prog-name=cc1</code>. It should tell you where the actual compiler is located in your system.</p>
-
-<p>So now that we have this (misconception) out of our minds, we can continue with our analysis. Last time we talked
-about it, we said that the header files include <strong>prototypes</strong> and not the whole function.</p>
-
-<p>You may know that in C, you usually declare a function, before you use it. The primary reason for doing this
-is to provide the compiler with the ability to perform <strong>type checking</strong>, that is to check that the arguments
-passed are correct, both in number, and in type, and to verify that the returned value (assuming there is one)
-is being used correctly. Below is a program that demonstrates the function prototype:</p>
-
-<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
-</span>
-<span class="kt">int</span> <span class="nf">add_nums</span> <span class="p">(</span><span class="kt">int</span> <span class="n">first</span><span class="p">,</span> <span class="kt">int</span> <span class="n">second</span><span class="p">);</span>
-
-<span class="kt">int</span>
-<span class="nf">main</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="n">printf</span> <span class="p">(</span><span class="s">"5 + 5 results in %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">add_nums</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">));</span>
-
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="kt">int</span>
-<span class="nf">add_nums</span> <span class="p">(</span><span class="kt">int</span> <span class="n">first</span><span class="p">,</span> <span class="kt">int</span> <span class="n">second</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="k">return</span> <span class="n">first</span> <span class="o">+</span> <span class="n">second</span><span class="p">;</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>In this particular example, the prototype gives the compiler a wide variety of information. It tells it
-that function <code class="language-plaintext highlighter-rouge">add_nums</code> takes two int arguments and returns an integer to the calling function. Now the
-compiler can verify that I am passing correct arguments to it when I call it inside printf. If I don’t include
-the function prototype, and do something slightly evil such as calling <code class="language-plaintext highlighter-rouge">add_nums</code> with <code class="language-plaintext highlighter-rouge">float</code> arguments then 
-this might happen:</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>5 + 4 results in 2054324224
-</code></pre></div></div>
-
-<p>Now that you know that the compiler (the real one) only needs the prototype and not the actual function code,
-you may be wondering how the compiler actually compiles it if it doesn’t know it’s code.</p>
-
-<p>Now is the time to bring down another missconception. The word <em>compiler</em> is just a fancy name for software
-otherwise known as <em>translators</em>. A <em>translator’s</em> job is to get input and turn it from one language (source language) to a second language (target language), whatever that may be. Most of the times, when you compile software,
-you compile it to run in your computer, which runs on a processor from the x86 architecture family of processors.
-A processor is typically associated with an assembly language for that architecture (which is just human friendly
-mnemonics for common processor tasks), so your <em>x86 computer runs x86 assembly</em> (ok that’s not 100% true, but for
-simplicity’s sake at the moment, it should serve. We will see why it’s not true later.) So the compiler 
-(in a typical translation) translates (compiles) your C source code to x86 assembly. 
-You can see this by compiling your hello world example and passing the compiler the <code class="language-plaintext highlighter-rouge">-S</code> (which asks it to stop,
-after x86 assembly is produced) parameter, likewise <code class="language-plaintext highlighter-rouge">gcc -S hello.c</code>.</p>
-
-<h1>Conclusion</h1>
-
-<p>At this part, we saw how the compiler and the preprocessor work with our code, in an attempt to demistify the 
-so called library calls. In the next part, we are going to study the assembler and the linker, and for the final
-part the loader and the kernel.</p>
 
         </div>
         
