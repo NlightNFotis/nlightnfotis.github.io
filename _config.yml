@@ -12,6 +12,7 @@ exclude:
   - Gemfile.lock
   - readme.md
   - .gitignore
+  - justfile
 
 # Whiteglass theme configuration
 theme: jekyll-whiteglass

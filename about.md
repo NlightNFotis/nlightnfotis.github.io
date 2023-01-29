@@ -7,15 +7,16 @@ permalink: /about/
 I am Fotis Koutoulakis (Φώτης Κουτουλάκης, in Greek), a Greek Scientist and Engineer
 residing in Oxford, England.
 
-I am currently working as a software engineer at [Diffblue](https://www.diffblue.com)'s
-open source team, working on maintaining [CBMC](https://github.com/diffblue/cbmc).
+I am currently working as a Senior Software Engineer at [Diffblue](https://www.diffblue.com)'s
+open source team, working on maintaining [CBMC](https://github.com/diffblue/cbmc). My
+day to day work is in C++ and Rust.
 
 My primary background in Computer Science is PLT (Programming Language Theory). I have
 also expanded into adjacent fields (Software Verification, Formal Methods, etc).
 
-My programming experience lies across multiple different languages, but I mostly prefer
-*functional programming*. I am especially fond of Lisp-like (especially Racket) languages
-and languages of the ML family (OCaml, F#, etc.).
+My programming experience lies across many different programming languages, but I
+mostly prefer *functional programming*. I am at my happiest though when I'm working with
+Rust, Ruby or F#/OCaml.
 
 Outside of computers, my interests are multidisciplinary and they lie across Mathematics,
 Biology, Economics, Cognitive Science and Philosophy.
