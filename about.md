@@ -14,9 +14,9 @@ day to day work is in C++ and Rust.
 My primary background in Computer Science is PLT (Programming Language Theory). I have
 also expanded into adjacent fields (Software Verification, Formal Methods, etc).
 
-My programming experience lies across many different programming languages, but I
-mostly prefer *functional programming*. I am at my happiest though when I'm working with
-Rust, Ruby or F#/OCaml.
+My programming experience lies across many different programming languages and paradigms,
+but I mostly prefer *functional programming*. I am at my happiest though when I'm working
+with Rust, Ruby or F#/OCaml.
 
 Outside of computers, my interests are multidisciplinary and they lie across Mathematics,
 Biology, Economics, Cognitive Science and Philosophy.
