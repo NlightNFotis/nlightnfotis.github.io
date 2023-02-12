@@ -89,6 +89,394 @@
         <header class="post-header">
           <h1 class="post-title">
             
+              <a class="post-link" href="/2014/02/23/my-linux-from-scratch-experience/">My Linux from Scratch Experience</a>
+            
+          </h1>
+
+          <p class="post-meta">
+            Feb 23, 2014
+            
+              
+
+ •
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/linux/">linux</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/lfs/">lfs</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/distribution/">distribution</a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+
+            
+            
+          </p>
+        </header>
+
+        <div class="post-content">
+          <p>The past two to three days, I have been busy with creating my very own Linux distribution
+using the well known <a href="http://www.linuxfromscratch.org">Linux from Scratch</a>. This post is 
+an accounting of my experience with the process, what I liked, what I did learn from that,
+what was surprising to me and more.</p>
+
+<h1>Linux from Scratch: An introduction</h1>
+
+<p>If you are here, then you most likely already know what <a href="http://www.linuxfromscratch.com/">linux from scratch</a>
+is, but for the sake of completeness (or in the case that you don’t know what it is, but are
+so keen on learning)  I will provide an introduction about it here.</p>
+
+<p>Linux from scratch is a book (from now on, <em>lfs</em>), providing a series of steps that guide you to the creation of
+a fully function GNU/Linux distribution. Although the original book creates a “barebones”
+distribution, with only fundamental tools in it, the distribution created provides a fine
+enviroment for further experimentation or customization.</p>
+
+<p>Apart from the basic book, the lfs project also has 3-4 books to read if you want to extend
+the basic system (such as blfs, Beyond Linux from Scratch) or if you want to automate the process,
+create a distribution that is more secure, or how to cross-compile an lfs system for different machines.</p>
+
+<h1>My experience with building LFS</h1>
+
+<h2>A small introduction about my background</h2>
+
+<p>I have been a UNIX (-like) systems (full-time) user for about 2.5 years now. During that time
+I had seen myself from being what you would call a Linux newbie, not knowing how to use
+a system without a GUI installed (have I mentioned that Ubuntu was my favourite distribution) to being an arguably experienced UNIX programmer, trying to learn more about the
+various aspects of UNIX systems, and delving deeper and deeper into them every day
+(while also feeling pain if using something other than a UNIX like system).</p>
+
+<p>During that time, I have learned about the Unix way of working with the system, using the shell and the system’s toolchain to write software and other wise manipulate the system. I
+ditched my old knowledge about IDEs and GUIs, and set out to master the command line and the associated tools (Anecdote: I remember, when I first came from to Unix from Windows, to searching the net for a C/C++ IDE to do development.) I remember reading about
+how people worked another way in Unix land, using an editor, and the shell to work, and I 
+decided to force myself to learn to work that way. I still remember trying to use vim and gcc, 
+and ending up liking this way better because it seemed a more natural way to interact with
+the software development process, than using a ide and pressing the equivalent of a “play”
+button, so that magic ensues for the next few seconds until I have a result.</p>
+
+<p>Time has passed since then, and going through hours and hours of reading and working with
+the system, I did learn quite a lot about it. My Google Summer of Code experience in 2013
+expanded my system knowledge even further (that’s what you get when you have to work
+with the system kernel, the C library and a compiler).</p>
+
+<p>But in all that time, of using Unix like systems, I never had the chance to create one myself.
+And although my background did allow me to know quite a few things of the inner workings
+of a system like that, I never actually saw all these software systems combining in front
+of my very eyes to create that beauty we know as a GNU/Linux distribution. And that left
+me a bad taste, because I knew what was happening, but I wanted to see it happen right 
+in front of my eyes.</p>
+
+<p>Knowing about the existence of lfs, and not actually going through it also made matters worse
+for me, as I knew that I could actually “patch” that knowledge gap of mine, but I never really
+tried to do that. I felt that I was missing on a lot, and that lfs would be instrumental to my
+understanding of a Linux system. Having gone through that some years ago, and getting
+stuck at the very beginning had also created an innate fear in me, that it was something
+that would be above my own powers.</p>
+
+<p>Until two days ago, when I said to myself: “You know what? I have seen and done a lot 
+of things in a UNIX system. I am now much more experienced than I was when I last did it.
+And I know I want to at least try it, even if it will only give me nothing but infinite confusion 
+Because if I do manage to get it, I will learn so many more things, or at least get assured
+that my preexisting knowledge was correct” And that thought was the greatest motive I had
+to do that in a fairly long time.</p>
+
+<p>So, I sat at my desk, grabbed a cup of coffee and off I went!</p>
+
+<h2>The process</h2>
+
+<h3>Preparation and the temporary toolchain</h3>
+
+<p>The book is itself several chapters long, each of which perform another “big step” in the
+creation of the distribution.</p>
+
+<p>The first few chapters are preparatory chapters, where you ensure the integrity of the 
+building environment, and download any building dependencies you may be lacking,
+create a new partition that will host the lfs system, and create the user account that
+will do the building of the temporary toolchain.</p>
+
+<p>The temporary toolchain building is a more exciting process. In essence
+you compile and collect several pieces of software that will later be used
+to compile the distribution’s toolchain and other software.</p>
+
+<p>You start of with building binutils, and that is to get a working assembler and linker. 
+After having a working assembler and linker, you proceed with compiling <code class="language-plaintext highlighter-rouge">gcc</code>.
+Next on is unpacking the linux headers, so that you can compile (and link against them)
+the glibc.</p>
+
+<p>Having the basic parts of the toolchain compiled, you then proceed with installing other
+software that is needed in the temporary toolchain, like <code class="language-plaintext highlighter-rouge">gawk</code>, <code class="language-plaintext highlighter-rouge">file</code>, <code class="language-plaintext highlighter-rouge">patch</code>, <code class="language-plaintext highlighter-rouge">perl</code>
+etc.</p>
+
+<h3>Building the main system</h3>
+
+<p>After getting done with the temporary toolchain, you then <code class="language-plaintext highlighter-rouge">chroot</code> into the lfs partition.
+You start of with creating the needed directories (like <code class="language-plaintext highlighter-rouge">/bin</code>, <code class="language-plaintext highlighter-rouge">/boot</code>, <code class="language-plaintext highlighter-rouge">/etc</code>, <code class="language-plaintext highlighter-rouge">/home</code> etc)
+and then continue with building the distribution software, utilising the temporary toolchain.
+For instance, you construct a new <code class="language-plaintext highlighter-rouge">gcc</code>, you compile <code class="language-plaintext highlighter-rouge">sed</code>, <code class="language-plaintext highlighter-rouge">grep</code>, <code class="language-plaintext highlighter-rouge">bzip</code>, the <code class="language-plaintext highlighter-rouge">shadow</code>
+utility that manages the handling of passwords etc, all while making sure that things don’t
+break, and running countless tests (that sometimes take longer than what the package
+took to compile) to ensure that what you build is functional and reliable.</p>
+
+<h3>Final configuration</h3>
+
+<p>Next one on the list, is the various configuration files that reside in <code class="language-plaintext highlighter-rouge">/etc</code>, and the setup
+of <code class="language-plaintext highlighter-rouge">sysvinit</code>, the distribution’s <code class="language-plaintext highlighter-rouge">init</code> system.</p>
+
+<p>Last, but not least, you are compiling the linux kernel and setting up grub so that the
+system is bootable.</p>
+
+<p>At this point, if all has gone well, and you reset, you should boot into your new lfs system.</p>
+
+<h1>What did I gain from that?</h1>
+
+<p>Building lfs was a very time consuming process for me. It must have taken about 7-8
+hours at the very least. Not so much because of the compilation and testing (I was compiling
+with <code class="language-plaintext highlighter-rouge">MAKEFLAGS='-j 4'</code> on a Core i5), but because I didn’t complete some steps
+correctly, and later needed to go back and redo them, along with everything that followed and the time it took to research some issues, programs or various other things
+before I did issue a command at the shell.</p>
+
+<p>Now if I were to answer the question “What did I gain from that”, my answer would be
+along the lines of “Infinite confusion, and some great insight at some points”.</p>
+
+<p>To elaborate on that,</p>
+
+<ul>
+  <li>lfs mostly served as a reassurance that indeed, what I did know
+about the system was mostly correct.</li>
+  <li>I did have the chance to see the distribution
+get built right before my eyes, which was something I longed for a great amount of time.</li>
+  <li>It did make me somewhat more familiar with the <code class="language-plaintext highlighter-rouge">configure &amp;&amp; make &amp;&amp; make install</code>
+cycle</li>
+  <li>It made me realise that the directories in the system are the simple result of a <code class="language-plaintext highlighter-rouge">mkdir</code> command, and that configuration files in the <code class="language-plaintext highlighter-rouge">/etc/folder</code> are handwritten plain files. (<em>yeah, I feel stupid about that one - I don’t know what I was expecting.</em> This was probably the result of the “magic involved” that the distro making process entailed for me)</li>
+  <li>I got to see the specific software that is needed to create a distribution, and demonstrate to me how I can build it, customize that build, or even change that software to my liking</li>
+  <li>And last but not least, something that nearly every lfs user says after a successful try:
+I knew that package managers did a great many things in order to maintain the system, and that much
+of the work I would normally have to do was done nearly automatically 
+but boy, was I underestimating them. After lfs, I developed a new appreciation for a
+good package manager.</li>
+</ul>
+
+<h1>Epilogue</h1>
+
+<p><em>Lfs was, for the most part, a great experience.</em> <strong>As a knowledge expander, it works great.</strong>
+<strong>As a system that you keep and continue to maintain? I don’t know.</strong> I know that people have
+done that in the past, but I decided against maintaining my build, as I figured it would be
+very time consuming, and that if I ever wanted to gain the experience of maintaining a distro,
+I would probably fork something like <a href="http://www.crux.nu">Crux</a>.</p>
+
+<p>In the end if you ask me if I can recommend that to you, I will say that I’m not so sure.
+<strong>It will provide you with some insight into the internals of a GNU/Linux distribution, but it 
+won’t make you a better programmer as some people claim</strong> (most of the process revolves
+around the <code class="language-plaintext highlighter-rouge">configure &amp;&amp; make &amp;&amp; make install</code> cycle, and some conf files handwriting).</p>
+
+<p><strong>In the end, it is yourself who you should ask. Do you want that knowledge? Is it worth the hassle for you?
+Do you want the bragging rights? Are you crazy enough to want to maintain it?</strong> 
+<em>These are all questions that you get as many answers to them as the people you ask.</em></p>
+
+        </div>
+        
+      </li>
+    
+      
+      
+
+      <li>
+        <header class="post-header">
+          <h1 class="post-title">
+            
               <a class="post-link" href="/2013/12/12/how-the-compiler/">How the compiler, the Library and the kernel work - Part 1</a>
             
           </h1>
@@ -110,6 +498,8 @@
     
       
         <a href="/tags/compiler/">compiler</a>,
+      
+    
       
     
       
@@ -229,6 +619,8 @@
     
       
     
+      
+    
   
     
     
@@ -244,6 +636,8 @@
     
       
         <a href="/tags/libc/">libc</a>
+      
+    
       
     
       
@@ -520,6 +914,8 @@ part the loader and the kernel.</p>
     
       
     
+      
+    
   
     
     
@@ -585,11 +981,15 @@ part the loader and the kernel.</p>
     
       
     
+      
+    
   
     
     
       
         <a href="/tags/gsoc/">gsoc</a>
+      
+    
       
     
       
@@ -973,6 +1373,8 @@ that might be vital to finding the problem.</p>
     
       
     
+      
+    
   
     
     
@@ -980,6 +1382,8 @@ that might be vital to finding the problem.</p>
     
       
         <a href="/tags/gcc/">gcc</a>,
+      
+    
       
     
       
@@ -1047,6 +1451,8 @@ that might be vital to finding the problem.</p>
     
       
         <a href="/tags/golang/">golang</a>
+      
+    
       
     
       
@@ -1312,6 +1718,8 @@ many the goruntime reports)</p>
     
       
     
+      
+    
   
     
     
@@ -1377,11 +1785,15 @@ many the goruntime reports)</p>
     
       
     
+      
+    
   
     
     
       
         <a href="/tags/gsoc/">gsoc</a>
+      
+    
       
     
       
@@ -1597,366 +2009,6 @@ to create another one.</li>
 <p>I have been following this course of path the last week. I presented
 some of my findings, and hope to soon be able to write an exhaustive
 report on what exactly it is that causes the bug.</p>
-
-        </div>
-        
-      </li>
-    
-      
-      
-
-      <li>
-        <header class="post-header">
-          <h1 class="post-title">
-            
-              <a class="post-link" href="/2013/08/12/gsoc-week-8-partial-report/">GSOC Week 8 (Partial) report</a>
-            
-          </h1>
-
-          <p class="post-meta">
-            Aug 12, 2013
-            
-              
-
- •
-  
-    
-    
-      
-        <a href="/tags/gsoc/">gsoc</a>,
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-  
-    
-    
-      
-    
-      
-    
-      
-        <a href="/tags/golang/">golang</a>,
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-  
-    
-    
-      
-    
-      
-        <a href="/tags/gcc/">gcc</a>
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-  
-
-
-            
-            
-          </p>
-        </header>
-
-        <div class="post-content">
-          <p>This week was spent studying the go language’s runtime and studying the behaviour of various go programs when executed under the Hurd. I learnt a variety of new things, and got some 
-new clues about the problem.</p>
-
-<h2>The new libgo clues</h2>
-
-<p>I already know that <em>M’s are the “real” kernel schedulable threads</em> and <em>G’s are the go runtime managed ones (goroutines)</em>. Last time I had gone through the go runtime’s code I had noticed that neither of them get created, so there must be an issue with thread creation. <strong>But since there is at least one of each created during the program’s initialization, how come
-most programs are able to run, and issues present themselves when we manually attempt to run a goroutine?</strong></p>
-
-<p>I will admit that the situation looks strange. So I decided to look more into it. Before we go any further, I have to embed the issues I had when I run goroutine powered programs under the Hurd.</p>
-
-<div lang="shell" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@debian:~/Software/Experiments/go# ./a.out
-a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&gt;kernel_thread == ktid;
-__mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })' failed.
-Aborted
-</code></pre></div></div>
-
-<p><code class="language-plaintext highlighter-rouge">__pthread_create_internal</code> is a libpthread function that gets called when a new posix thread is instanciated. So we know that when we call a goroutine, apart from the goroutine,
-there is at least one kernel thread created, otherwise, if a new goroutine was created, and not a new kernel thread (M) why wasn’t it matched with an existing kernel thread
-(remember there is at least one).</p>
-
-<p>That made me look into the go runtime some more. I found a lot of things, that I can not enumerate here, but amongst the most interesting ones, was the following piece of code:</p>
-
-<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="c1">// Create a new m.  It will start off with a call to runtime_mstart.</span>
-<span class="n">M</span><span class="o">*</span>
-<span class="nf">runtime_newm</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
-<span class="p">{</span>
-	<span class="n">M</span> <span class="o">*</span><span class="n">mp</span><span class="p">;</span>
-	<span class="n">pthread_attr_t</span> <span class="n">attr</span><span class="p">;</span>
-	<span class="n">pthread_t</span> <span class="n">tid</span><span class="p">;</span>
-	<span class="kt">size_t</span> <span class="n">stacksize</span><span class="p">;</span>
-	<span class="n">sigset_t</span> <span class="n">clear</span><span class="p">;</span>
-	<span class="n">sigset_t</span> <span class="n">old</span><span class="p">;</span>
-	<span class="kt">int</span> <span class="n">ret</span><span class="p">;</span>
-
-<span class="c">#if 0
-	static const Type *mtype;  // The Go type M
-	if(mtype == nil) {
-		Eface e;
-		runtime_gc_m_ptr(&amp;e);
-		mtype = ((const PtrType*)e.__type_descriptor)-&gt;__element_type;
-	}
-#endif
-</span>
-	<span class="n">mp</span> <span class="o">=</span> <span class="n">runtime_mal</span><span class="p">(</span><span class="k">sizeof</span> <span class="o">*</span><span class="n">mp</span><span class="p">);</span>
-	<span class="n">mcommoninit</span><span class="p">(</span><span class="n">mp</span><span class="p">);</span>
-	<span class="n">mp</span><span class="o">-&gt;</span><span class="n">g0</span> <span class="o">=</span> <span class="n">runtime_malg</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">nil</span><span class="p">,</span> <span class="n">nil</span><span class="p">);</span>
-
-	<span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
-		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_attr_init"</span><span class="p">);</span>
-	<span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_setdetachstate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">PTHREAD_CREATE_DETACHED</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
-		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_attr_setdetachstate"</span><span class="p">);</span>
-
-	<span class="n">stacksize</span> <span class="o">=</span> <span class="n">PTHREAD_STACK_MIN</span><span class="p">;</span>
-
-	<span class="c1">// With glibc before version 2.16 the static TLS size is taken</span>
-	<span class="c1">// out of the stack size, and we get an error or a crash if</span>
-	<span class="c1">// there is not enough stack space left.  Add it back in if we</span>
-	<span class="c1">// can, in case the program uses a lot of TLS space.  FIXME:</span>
-	<span class="c1">// This can be disabled in glibc 2.16 and later, if the bug is</span>
-	<span class="c1">// indeed fixed then.</span>
-	<span class="n">stacksize</span> <span class="o">+=</span> <span class="n">tlssize</span><span class="p">;</span>
-
-	<span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_setstacksize</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">stacksize</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
-		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_attr_setstacksize"</span><span class="p">);</span>
-
-	<span class="c1">// Block signals during pthread_create so that the new thread</span>
-	<span class="c1">// starts with signals disabled.  It will enable them in minit.</span>
-	<span class="n">sigfillset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">clear</span><span class="p">);</span>
-
-<span class="cp">#ifdef SIGTRAP
-</span>	<span class="c1">// Blocking SIGTRAP reportedly breaks gdb on Alpha GNU/Linux.</span>
-	<span class="n">sigdelset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">clear</span><span class="p">,</span> <span class="n">SIGTRAP</span><span class="p">);</span>
-<span class="cp">#endif
-</span>
-	<span class="n">sigemptyset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">old</span><span class="p">);</span>
-	<span class="n">sigprocmask</span><span class="p">(</span><span class="n">SIG_BLOCK</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">clear</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">old</span><span class="p">);</span>
-	<span class="n">ret</span> <span class="o">=</span> <span class="n">pthread_create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tid</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">runtime_mstart</span><span class="p">,</span> <span class="n">mp</span><span class="p">);</span>
-	<span class="n">sigprocmask</span><span class="p">(</span><span class="n">SIG_SETMASK</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">old</span><span class="p">,</span> <span class="n">nil</span><span class="p">);</span>
-
-	<span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
-		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_create"</span><span class="p">);</span>
-
-	<span class="k">return</span> <span class="n">mp</span><span class="p">;</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>This is the code that creates a new kernel thread. Notice the line <code class="language-plaintext highlighter-rouge">ret = pthread_create(&amp;tid, &amp;attr, runtime_mstart, mp);</code>. It’s obvious that it creates a new kernel thread,
-so that explains why we get the specific error. But what is not explained is that since we do have at least one in program startup, why is this specific error only triggered when
-we manually create a go routine?</p>
-
-<h2>Go programs under the Hurd</h2>
-
-<p>Apart from studying Go’s runtime source code, I also run some experiments under the Hurd. I got some very weird results that I am investigating, but I would like to share nonetheless.
-Consider the following piece of code:</p>
-
-<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="k">package</span> <span class="n">main</span>
-
-<span class="k">import</span> <span class="s">"fmt"</span>
-
-<span class="k">func</span> <span class="n">say</span><span class="p">(</span><span class="n">s</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="m">5</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
-        <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">say</span><span class="p">(</span><span class="s">"world"</span><span class="p">)</span>
-    <span class="n">say</span><span class="p">(</span><span class="s">"hello"</span><span class="p">)</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>A very basic example that can demonstrate goroutines. Now, if we change <strong>one</strong> of the say functions inside main to a goroutine, this happens:</p>
-
-<div lang="shell" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@debian:~/Software/Experiments/go# ./a.out
-a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&gt;kernel_thread == ktid;
-__mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })' failed.
-Aborted
-</code></pre></div></div>
-
-<p><strong>BUT</strong> if we change <strong>BOTH</strong> of these functions to goroutines (<code class="language-plaintext highlighter-rouge">go say("world")</code>, <code class="language-plaintext highlighter-rouge">go say("hello")</code>), this happens:</p>
-
-<figure class="highlight"><pre><code class="language-sh" data-lang="sh">root@debian:~/Software/Experiments/go# ./a.out
-root@debian:~/Software/Experiments/go# </code></pre></figure>
-
-<p>Wait a minute. It can’t be! Did it execute correctly? Where is the output?</p>
-
-<figure class="highlight"><pre><code class="language-sh" data-lang="sh">root@debian:~/Software/Experiments/go# <span class="nb">echo</span> <span class="nv">$?</span>
-0
-root@debian:~/Software/Experiments/go#</code></pre></figure>
-
-<p>It reports that it has executed correctly. But there is no output.</p>
-
-<h2>What I am doing next</h2>
-
-<p>I will continue reading through the go runtime for some clues. On the more active size, I am writing a custom test case for goroutine testing under the Hurd, while also doing some analysis
-on the programs that run there (currently studying the assembly generated for these programs) to see how they differ and why we get this particular behavior.</p>
 
         </div>
         

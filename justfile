@@ -7,5 +7,7 @@ build:
     bundle exec jekyll build --destination docs/
 
 # Publish new page on Github blog
-publish: build
+publish message="Publish a new post": build
+    git add docs/
+    git commit -m {{message}}
     git push

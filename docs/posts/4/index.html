@@ -89,6 +89,372 @@
         <header class="post-header">
           <h1 class="post-title">
             
+              <a class="post-link" href="/2013/08/12/gsoc-week-8-partial-report/">GSOC Week 8 (Partial) report</a>
+            
+          </h1>
+
+          <p class="post-meta">
+            Aug 12, 2013
+            
+              
+
+ •
+  
+    
+    
+      
+        <a href="/tags/gsoc/">gsoc</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+        <a href="/tags/golang/">golang</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+        <a href="/tags/gcc/">gcc</a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+
+            
+            
+          </p>
+        </header>
+
+        <div class="post-content">
+          <p>This week was spent studying the go language’s runtime and studying the behaviour of various go programs when executed under the Hurd. I learnt a variety of new things, and got some 
+new clues about the problem.</p>
+
+<h2>The new libgo clues</h2>
+
+<p>I already know that <em>M’s are the “real” kernel schedulable threads</em> and <em>G’s are the go runtime managed ones (goroutines)</em>. Last time I had gone through the go runtime’s code I had noticed that neither of them get created, so there must be an issue with thread creation. <strong>But since there is at least one of each created during the program’s initialization, how come
+most programs are able to run, and issues present themselves when we manually attempt to run a goroutine?</strong></p>
+
+<p>I will admit that the situation looks strange. So I decided to look more into it. Before we go any further, I have to embed the issues I had when I run goroutine powered programs under the Hurd.</p>
+
+<div lang="shell" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@debian:~/Software/Experiments/go# ./a.out
+a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&gt;kernel_thread == ktid;
+__mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })' failed.
+Aborted
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">__pthread_create_internal</code> is a libpthread function that gets called when a new posix thread is instanciated. So we know that when we call a goroutine, apart from the goroutine,
+there is at least one kernel thread created, otherwise, if a new goroutine was created, and not a new kernel thread (M) why wasn’t it matched with an existing kernel thread
+(remember there is at least one).</p>
+
+<p>That made me look into the go runtime some more. I found a lot of things, that I can not enumerate here, but amongst the most interesting ones, was the following piece of code:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="c1">// Create a new m.  It will start off with a call to runtime_mstart.</span>
+<span class="n">M</span><span class="o">*</span>
+<span class="nf">runtime_newm</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">M</span> <span class="o">*</span><span class="n">mp</span><span class="p">;</span>
+	<span class="n">pthread_attr_t</span> <span class="n">attr</span><span class="p">;</span>
+	<span class="n">pthread_t</span> <span class="n">tid</span><span class="p">;</span>
+	<span class="kt">size_t</span> <span class="n">stacksize</span><span class="p">;</span>
+	<span class="n">sigset_t</span> <span class="n">clear</span><span class="p">;</span>
+	<span class="n">sigset_t</span> <span class="n">old</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="n">ret</span><span class="p">;</span>
+
+<span class="c">#if 0
+	static const Type *mtype;  // The Go type M
+	if(mtype == nil) {
+		Eface e;
+		runtime_gc_m_ptr(&amp;e);
+		mtype = ((const PtrType*)e.__type_descriptor)-&gt;__element_type;
+	}
+#endif
+</span>
+	<span class="n">mp</span> <span class="o">=</span> <span class="n">runtime_mal</span><span class="p">(</span><span class="k">sizeof</span> <span class="o">*</span><span class="n">mp</span><span class="p">);</span>
+	<span class="n">mcommoninit</span><span class="p">(</span><span class="n">mp</span><span class="p">);</span>
+	<span class="n">mp</span><span class="o">-&gt;</span><span class="n">g0</span> <span class="o">=</span> <span class="n">runtime_malg</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">nil</span><span class="p">,</span> <span class="n">nil</span><span class="p">);</span>
+
+	<span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_attr_init"</span><span class="p">);</span>
+	<span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_setdetachstate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">PTHREAD_CREATE_DETACHED</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_attr_setdetachstate"</span><span class="p">);</span>
+
+	<span class="n">stacksize</span> <span class="o">=</span> <span class="n">PTHREAD_STACK_MIN</span><span class="p">;</span>
+
+	<span class="c1">// With glibc before version 2.16 the static TLS size is taken</span>
+	<span class="c1">// out of the stack size, and we get an error or a crash if</span>
+	<span class="c1">// there is not enough stack space left.  Add it back in if we</span>
+	<span class="c1">// can, in case the program uses a lot of TLS space.  FIXME:</span>
+	<span class="c1">// This can be disabled in glibc 2.16 and later, if the bug is</span>
+	<span class="c1">// indeed fixed then.</span>
+	<span class="n">stacksize</span> <span class="o">+=</span> <span class="n">tlssize</span><span class="p">;</span>
+
+	<span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_setstacksize</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">stacksize</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_attr_setstacksize"</span><span class="p">);</span>
+
+	<span class="c1">// Block signals during pthread_create so that the new thread</span>
+	<span class="c1">// starts with signals disabled.  It will enable them in minit.</span>
+	<span class="n">sigfillset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">clear</span><span class="p">);</span>
+
+<span class="cp">#ifdef SIGTRAP
+</span>	<span class="c1">// Blocking SIGTRAP reportedly breaks gdb on Alpha GNU/Linux.</span>
+	<span class="n">sigdelset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">clear</span><span class="p">,</span> <span class="n">SIGTRAP</span><span class="p">);</span>
+<span class="cp">#endif
+</span>
+	<span class="n">sigemptyset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">old</span><span class="p">);</span>
+	<span class="n">sigprocmask</span><span class="p">(</span><span class="n">SIG_BLOCK</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">clear</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">old</span><span class="p">);</span>
+	<span class="n">ret</span> <span class="o">=</span> <span class="n">pthread_create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tid</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">runtime_mstart</span><span class="p">,</span> <span class="n">mp</span><span class="p">);</span>
+	<span class="n">sigprocmask</span><span class="p">(</span><span class="n">SIG_SETMASK</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">old</span><span class="p">,</span> <span class="n">nil</span><span class="p">);</span>
+
+	<span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_create"</span><span class="p">);</span>
+
+	<span class="k">return</span> <span class="n">mp</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>This is the code that creates a new kernel thread. Notice the line <code class="language-plaintext highlighter-rouge">ret = pthread_create(&amp;tid, &amp;attr, runtime_mstart, mp);</code>. It’s obvious that it creates a new kernel thread,
+so that explains why we get the specific error. But what is not explained is that since we do have at least one in program startup, why is this specific error only triggered when
+we manually create a go routine?</p>
+
+<h2>Go programs under the Hurd</h2>
+
+<p>Apart from studying Go’s runtime source code, I also run some experiments under the Hurd. I got some very weird results that I am investigating, but I would like to share nonetheless.
+Consider the following piece of code:</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="k">package</span> <span class="n">main</span>
+
+<span class="k">import</span> <span class="s">"fmt"</span>
+
+<span class="k">func</span> <span class="n">say</span><span class="p">(</span><span class="n">s</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="m">5</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">say</span><span class="p">(</span><span class="s">"world"</span><span class="p">)</span>
+    <span class="n">say</span><span class="p">(</span><span class="s">"hello"</span><span class="p">)</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>A very basic example that can demonstrate goroutines. Now, if we change <strong>one</strong> of the say functions inside main to a goroutine, this happens:</p>
+
+<div lang="shell" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@debian:~/Software/Experiments/go# ./a.out
+a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&gt;kernel_thread == ktid;
+__mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })' failed.
+Aborted
+</code></pre></div></div>
+
+<p><strong>BUT</strong> if we change <strong>BOTH</strong> of these functions to goroutines (<code class="language-plaintext highlighter-rouge">go say("world")</code>, <code class="language-plaintext highlighter-rouge">go say("hello")</code>), this happens:</p>
+
+<figure class="highlight"><pre><code class="language-sh" data-lang="sh">root@debian:~/Software/Experiments/go# ./a.out
+root@debian:~/Software/Experiments/go# </code></pre></figure>
+
+<p>Wait a minute. It can’t be! Did it execute correctly? Where is the output?</p>
+
+<figure class="highlight"><pre><code class="language-sh" data-lang="sh">root@debian:~/Software/Experiments/go# <span class="nb">echo</span> <span class="nv">$?</span>
+0
+root@debian:~/Software/Experiments/go#</code></pre></figure>
+
+<p>It reports that it has executed correctly. But there is no output.</p>
+
+<h2>What I am doing next</h2>
+
+<p>I will continue reading through the go runtime for some clues. On the more active size, I am writing a custom test case for goroutine testing under the Hurd, while also doing some analysis
+on the programs that run there (currently studying the assembly generated for these programs) to see how they differ and why we get this particular behavior.</p>
+
+        </div>
+        
+      </li>
+    
+      
+      
+
+      <li>
+        <header class="post-header">
+          <h1 class="post-title">
+            
               <a class="post-link" href="/2013/08/05/gsoc-partial-week-7-report/">GSOC (Partial) Week 7 report</a>
             
           </h1>
@@ -99,6 +465,8 @@
                •
   
     
+    
+      
     
       
     
@@ -222,6 +590,8 @@
       
     
       
+    
+      
         <a href="/categories/golang/">golang</a>,
       
     
@@ -229,6 +599,8 @@
     
   
     
+    
+      
     
       
     
@@ -557,6 +929,8 @@ or I looking for clues regarding the issue in the wrong place (might be possible
     
       
     
+      
+    
   
     
     
@@ -564,6 +938,8 @@ or I looking for clues regarding the issue in the wrong place (might be possible
     
       
         <a href="/tags/gcc/">gcc</a>,
+      
+    
       
     
       
@@ -631,6 +1007,8 @@ or I looking for clues regarding the issue in the wrong place (might be possible
     
       
         <a href="/tags/golang/">golang</a>
+      
+    
       
     
       
@@ -946,6 +1324,8 @@ If it does that should mean that there is nothing wrong in the go runtime itself
     
       
     
+      
+    
   
     
     
@@ -953,6 +1333,8 @@ If it does that should mean that there is nothing wrong in the go runtime itself
     
       
         <a href="/tags/gcc/">gcc</a>,
+      
+    
       
     
       
@@ -1020,6 +1402,8 @@ If it does that should mean that there is nothing wrong in the go runtime itself
     
       
         <a href="/tags/golang/">golang</a>
+      
+    
       
     
       
@@ -1429,6 +1813,8 @@ runtest completed at Fri Jul 12 18:09:07 UTC 2013
     
       
     
+      
+    
   
     
     
@@ -1436,6 +1822,8 @@ runtest completed at Fri Jul 12 18:09:07 UTC 2013
     
       
         <a href="/tags/gcc/">gcc</a>,
+      
+    
       
     
       
@@ -1503,6 +1891,8 @@ runtest completed at Fri Jul 12 18:09:07 UTC 2013
     
       
         <a href="/tags/golang/">golang</a>
+      
+    
       
     
       
@@ -1934,60 +2324,12 @@ in its part is blocking goroutines, without which, the go library will not work 
         
       </li>
     
-      
-      
-
-      <li>
-        <header class="post-header">
-          <h1 class="post-title">
-            
-              <a class="post-link" href="/2013/07/14/hello-world/">Hello World</a>
-            
-          </h1>
-
-          <p class="post-meta">
-            Jul 14, 2013
-            
-            
-          </p>
-        </header>
-
-        <div class="post-content">
-          <h1>A new beginning</h1>
-
-<p>Oh boy! A new start. Isn’t that exciting? You bet it is. It’s not however
-my first introduction to blogging. I used to have a <a href="http://lambdareflection.wordpress.com">blog</a>
-on Wordpress.com, but after a while I was turned off by the fact that it felt too limited.
-So I decided I wanted a new place for me to host my online presence, that wasn’t so much limited as Wordpress was.
-Initially I was thinking about renting a VPS and self hosting wordpress there. But after doing a little research,
-I came across <a href="http://pages.github.com">Github Pages</a>. I started investigating 
-Github pages some more, and found <a href="http://jekyllrb.com">jekyll</a> to be very <strong>very</strong> interesting.
-After a while, I also came across <a href="http://octopress.org">Octopress</a>. That was it. I was sold :)</p>
-
-<p>Free hosting of a blog, no need to maintain a server, and a platform written in <a href="http://www.ruby-lang.org">ruby</a>?</p>
-
-<p>Without hesitation, I immediately started working on it. I went through octopress documentation, (which needless to say, but it was fantastic)
-found a wonderful theme online at <a href="http://opthemes.com">opthemes</a>, (kudos to <a href="http://alexgaribay.com">Alex Garibay</a> for that)
-and got started.</p>
-
-<p>And here we are. On a platform that you can hack and customize to your liking - at least more so than the locked down version of wordpress.
-On a platform that is written on a language that I don’t hate with passion (like cough, <strong>php</strong>, cough), 
-and may actually learn in the future, just for the sake of being able to customize every bit of it (gotta love the hacker’s way)</p>
-<ul>
-  <li>even though I am not really interested in web development per se.</li>
-</ul>
-
-<p>Hope it starts out nice. I guess that is left to be seen.</p>
-
-
-        </div>
-        
-      </li>
-    
   </ul>
 
   
   <div class="pagination">
+    
+      <a class="previous" href="/posts/5/">&laquo; Older</a>
     
 
     
