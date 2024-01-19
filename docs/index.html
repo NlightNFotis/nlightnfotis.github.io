@@ -491,7 +491,7 @@ languages.</p>
 
 <h2>The Beginning: the <code class="language-plaintext highlighter-rouge">bool</code> type</h2>
 
-<p>We’re all used to using the <code class="language-plaintext highlighter-rouge">bool</code> type: its value set has arity <code class="language-plaintext highlighter-rouge">2</code>, basically
+<p>We’re all used to using the <code class="language-plaintext highlighter-rouge">bool</code> type: its value set has cardinality <code class="language-plaintext highlighter-rouge">2</code>, basically
 admitting two values:</p>
 
 <ul>
@@ -508,7 +508,7 @@ or a <em>failure</em> outcome after their execution has finished.</p>
 <p>The return of a <code class="language-plaintext highlighter-rouge">bool</code>-typed value allows these functions to have great synergy
 with conditional statements/expressions, directly plugging into the <em>antecedent</em>
 (condition) part of a conditional statement. Undoubtedly, you’ve come across
-something like this (in C pseudo-syntax):</p>
+something like this (in C-like pseudocode):</p>
 
 <div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">bool</span> <span class="nf">do_something</span><span class="p">()</span> <span class="p">{</span>
     <span class="c1">// --snip--</span>
@@ -668,7 +668,7 @@ seen in the past, but it also suffers from a flaw, albeit a less severe one this
 time: the pollution of the codebase with many similar but <em>oh-so-slightly-different</em>
 types which served only as “rich-return-typed objects”.</p>
 
-<p>This has the side-effect of an increase to the cognitive load of the programmer,
+<p>This has the side-effect of an increase in the cognitive load of the programmer,
 which makes the experience of programming in that codebase a bit worse than it
 needs to be: the editors and other tools might help, but you still need to mentally
 keep track of which function returns what, and have some special handling around
@@ -678,7 +678,7 @@ any of those.</p>
 
 <p>This one is a variation of the two themes above, falling somewhat in the middle:
 it still signals success and makes it harder (kinda…) to crash the application.
-This time around, our code would look similar to this:</p>
+This time around, our code would look similar to this (in Cpp-like pseudocode):</p>
 
 <div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Our SearchResult object</span>
 <span class="k">struct</span> <span class="nc">SearchResult</span> <span class="p">{</span>
@@ -733,11 +733,11 @@ based on the value of the <code class="language-plaintext highlighter-rouge">boo
 <p>Or are we?</p>
 
 <p>For programming languages that only allow one return value, we can look into
-packing our <code class="language-plaintext highlighter-rouge">bool</code> and the auxiliary value into a <code class="language-plaintext highlighter-rouge">pair</code> or an <code class="language-plaintext highlighter-rouge">n-tuple</code> (it’s
+packing our <code class="language-plaintext highlighter-rouge">bool</code> and the auxiliary value into a <code class="language-plaintext highlighter-rouge">pair</code> or an <code class="language-plaintext highlighter-rouge">n-tuple</code> (its
 arity-based generalisation).</p>
 
-<p>This used to be harder, but nowadays most programming languages offer more mathematical
-primitives in their standard libraries.</p>
+<p>This used to be harder, but nowadays most programming languages offer more
+mathematical primitives in their standard libraries.</p>
 
 <p>For example, adapting our example above to something like Kotlin:</p>
 
@@ -785,7 +785,8 @@ using this as an idiom for error handling:</p>
 
 <h2><code class="language-plaintext highlighter-rouge">Option</code>/<code class="language-plaintext highlighter-rouge">Result</code>/<code class="language-plaintext highlighter-rouge">Either</code></h2>
 
-<p>Wow. What a trip. Let’s have a quick recap so that we see where we are:</p>
+<p>Wow. What a trip. Let’s have a quick recap so we can review where we’ve been so
+far:</p>
 
 <ul>
   <li>We started with a function doing something, and returning <code class="language-plaintext highlighter-rouge">true</code> or <code class="language-plaintext highlighter-rouge">false</code> to
@@ -798,12 +799,10 @@ to the above <code class="language-plaintext highlighter-rouge">true</code>/<cod
 <p>But all of them were a bit lacking, in various different ways:</p>
 
 <ul>
-  <li>They… allowed us to crash, either by accidental mistake or misuse of their
-interface.</li>
+  <li>They… allowed us to crash, either by accident or by misuse of their interface.</li>
   <li>They didn’t provide enough context to the compiler to assist us with development
-(and to provide guardrails <em>against</em> misuse), using pattern matching for instance.</li>
-  <li>They depended on the creation of other context-sensitive types, with non-uniform
-forms.</li>
+(and to provide guard rails <em>against</em> misuse), using pattern matching for instance.</li>
+  <li>They depended on the creation of other context-sensitive, non-uniform types.</li>
   <li>They fallback to using types (e.g. <code class="language-plaintext highlighter-rouge">Pair</code> or <code class="language-plaintext highlighter-rouge">Triple</code>) that lack specificity
 to guide our expectations and intuition to a specific context.</li>
 </ul>
@@ -812,11 +811,11 @@ to guide our expectations and intuition to a specific context.</li>
 dual in Haskell, <code class="language-plaintext highlighter-rouge">Either</code>).</p>
 
 <p>All of them are what’s known in Programming Language Theory as <em>Sum Types</em> (sometimes
-called <em>Discriminated Unions</em>), due to the fact that the value set of the Compound
+called <em>Discriminated Unions</em>), due to the fact that the value set of the compound
 type is the <em>sum</em> of the <em>cardinality</em> of the <em>sets</em> of the <em>atomic types</em> (called
 constructors) that comprise them.</p>
 
-<p>The type definitions look like these (in an ML-inspired pseudosyntax):</p>
+<p>The type definitions look like these (in an ML-like pseudocode):</p>
 
 <div class="language-fsharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="nc">Option</span><span class="p">&lt;</span><span class="nc">T</span><span class="p">&gt;</span> <span class="p">=</span>
   <span class="p">|</span> <span class="nc">Some</span><span class="p">&lt;</span><span class="nc">T</span><span class="p">&gt;</span>
@@ -840,7 +839,7 @@ without the need to explicitly say so).</p>
 
 <hr />
 
-<p>An interesting pattern appears if we also provide a type definition for a <code class="language-plaintext highlighter-rouge">Boolean</code>
+<p>An interesting pattern arises if we also provide a type definition for a <code class="language-plaintext highlighter-rouge">Boolean</code>
 type in the same pseudo syntax:</p>
 
 <div class="language-fsharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="nc">Boolean</span> <span class="p">=</span>
@@ -886,7 +885,7 @@ for a clarity) and see how we do:</p>
 <p>A clear pattern now emerges! All of these signal the same sort of binary outcome,
 with the capability of also carrying extra information.</p>
 
-<p>Nice! The keen eyed amongst you will have noticed that this insight has now solved
+<p>Nice! The keen-eyed amongst you will have noticed that this insight has now solved
 our original problem in a very clean way, and has at the same time provided a very
 clear usage guideline:</p>
 
@@ -993,12 +992,13 @@ constructor, with an appropriate error message attached.</li>
 
 <h2>Conclusion</h2>
 
-<p>To wrap everything up, here’s my usage heuristic for the above types:</p>
+<p>To wrap everything up in a TL;DR form, here’s my usage heuristic for the above types:</p>
 
 <ul>
   <li>Use <code class="language-plaintext highlighter-rouge">bool</code> for simple predicates.</li>
   <li>Use <code class="language-plaintext highlighter-rouge">Option&lt;T&gt;</code> when extra data needs to be carried in the success case (for instance
-when searching for values in a collection)</li>
+when searching for values in a collection) and the failure case is signaling a simple
+absence of value for any reason.</li>
   <li>Use <code class="language-plaintext highlighter-rouge">Result&lt;T,E&gt;</code> when extra data needs to be carried around in the success and failure
 case (say, if you’re reading something from the network, and you want to return
 the data in the success case or an appropriate error message in the failure case).</li>
