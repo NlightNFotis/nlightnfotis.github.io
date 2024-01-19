@@ -4,12 +4,14 @@ title: "About"
 permalink: /about/
 ---
 
-I am Fotis Koutoulakis (Φώτης Κουτουλάκης, in Greek), a Greek Scientist and Engineer
-residing in Oxford, England.
+I am Fotis Koutoulakis (Φώτης Κουτουλάκης, in Greek), a Computer Scientist,
+Engineer and Mathematician residing in Oxford, England.
 
-I am currently working as a Senior Software Engineer at [Diffblue](https://www.diffblue.com)'s
-open source team, working on maintaining [CBMC](https://github.com/diffblue/cbmc). My
-day to day work is in C++ and Rust.
+*I am currently open to employment opportunities*.
+
+Most recently I was a Senior Software Engineer at [Diffblue](https://www.diffblue.com)'s
+open source team, where I was working on maintaining [CBMC](https://github.com/diffblue/cbmc).
+My day to day work was in C++ and Rust.
 
 My primary background in Computer Science is PLT (Programming Language Theory). I have
 also expanded into adjacent fields (Software Verification, Formal Methods, etc).
@@ -28,7 +30,6 @@ personal-development (across all facets of my life).
 You can connect with me by:
 
 * [Email](mailto:fotis.koutoulakis@gmail.com)
-* [Twitter](https://twitter.com/NlightNFotis)
 * [Goodreads](https://www.goodreads.com/nlightnfotis)
 
 ## The Blog
@@ -40,7 +41,7 @@ The blog was created with the following ends in mind:
 3. Reach and connect with people who share my interests.
 
 It's not strictly related to computers (even though that will probably be most of what
-I'm sharing here), and you may on occassions find some rudimentary philosophical essays,
+I'm sharing here), and you may on occasions find some rudimentary philosophical essays,
 mathematical observations, etc.
 
 The blog is named after the *lambda calculus*, a model of computation that's close to
