@@ -89,6 +89,932 @@
         <header class="post-header">
           <h1 class="post-title">
             
+              <a class="post-link" href="/2023/12/16/how-to-use-option-result/">How to Think About And Use the Option And Result Types</a>
+            
+          </h1>
+
+          <p class="post-meta">
+            Dez 16, 2023
+            
+              
+
+ •
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/types/">types</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/rust/">rust</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/go/">go</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/c/">c++</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/haskell/">haskell</a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+
+            
+            
+          </p>
+        </header>
+
+        <div class="post-content">
+          <p>This post is written with an aim to provide some clarity as to the purpose and
+usage of the (evermore present) types <code class="language-plaintext highlighter-rouge">Option</code> and <code class="language-plaintext highlighter-rouge">Result</code> in various programming
+languages.</p>
+
+<hr />
+
+<h2>The Beginning: the <code class="language-plaintext highlighter-rouge">bool</code> type</h2>
+
+<p>We’re all used to using the <code class="language-plaintext highlighter-rouge">bool</code> type: its value set has arity <code class="language-plaintext highlighter-rouge">2</code>, basically
+admitting two values:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">true</code>, and</li>
+  <li><code class="language-plaintext highlighter-rouge">false</code>.</li>
+</ul>
+
+<p>This means that we can use it as a return type for a function to discriminate
+between two outcomes from the function’s execution. Thus, it ties well with
+predicates (functions answering a decision problem, e.g. <code class="language-plaintext highlighter-rouge">isDiscountValid</code>
+or <code class="language-plaintext highlighter-rouge">any?</code>) and, more broadly, functions that want to indicate a <em>successful</em> outcome
+or a <em>failure</em> outcome after their execution has finished.</p>
+
+<p>The return of a <code class="language-plaintext highlighter-rouge">bool</code>-typed value allows these functions to have great synergy
+with conditional statements/expressions, directly plugging into the <em>antecedent</em>
+(condition) part of a conditional statement. Undoubtedly, you’ve come across
+something like this (in C pseudo-syntax):</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">bool</span> <span class="nf">do_something</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// --snip--</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">something_went_wrong</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// signal failure</span>
+        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="c1">// all went right in the main path</span>
+    <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// --snip---</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">do_something</span><span class="p">())</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"Operation was successful!</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="c1">// perform some logging, or error recover here...</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This… works. But it’s a fairly rudimentary mechanism, with a significant limitation:
+<em>what happens if we want to pass along some information in either case</em>?</p>
+
+<p>This is a thought that has crossed many a programmer’s mind, and different languages
+have provided different solutions to this problem, depending on whether the language
+allows for <strong>one</strong> or <strong>more</strong> return values. Solutions fall within the following
+general criteria:</p>
+
+<ul>
+  <li>Return a value if successful and <code class="language-plaintext highlighter-rouge">null</code>/<code class="language-plaintext highlighter-rouge">nil</code>/<code class="language-plaintext highlighter-rouge">None</code> otherwise.</li>
+  <li>Nest the <code class="language-plaintext highlighter-rouge">bool</code> and the <code class="language-plaintext highlighter-rouge">value</code> in a <code class="language-plaintext highlighter-rouge">struct</code>/<code class="language-plaintext highlighter-rouge">class</code> and return that.</li>
+  <li>Return a single <code class="language-plaintext highlighter-rouge">bool</code> value and extra values in <em>out-parameters</em>.</li>
+  <li>Allow the return of <code class="language-plaintext highlighter-rouge">tuple</code>s containing the values.</li>
+  <li><code class="language-plaintext highlighter-rouge">Option</code>/<code class="language-plaintext highlighter-rouge">Result</code>/<code class="language-plaintext highlighter-rouge">Either</code>.</li>
+</ul>
+
+<p>Let’s have a quick look at some examples. For each of the below examples, imagine
+that our use case is the following:</p>
+
+<blockquote>
+  <p>We have a function which searches a rich document (think like a Word document)
+for a particular search text.</p>
+</blockquote>
+
+<p>This is also called a “needle-in-haystack search”.</p>
+
+<h3>Return a value if successful and <code class="language-plaintext highlighter-rouge">null</code> otherwise</h3>
+
+<p>This was pretty much the default way people handled this situation in Algol-family
+languages (C, C++, Java, etc.), especially in the past. It would look something
+like the following (in Java-like pseudocode):</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Document</span> <span class="o">{</span>
+    <span class="c1">// --snip--</span>
+
+    <span class="kd">class</span> <span class="nc">SearchResult</span> <span class="o">{</span>
+        <span class="kt">int</span> <span class="n">column</span><span class="o">;</span>
+        <span class="kt">int</span> <span class="n">line</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">SearchResult</span> <span class="nf">searchText</span><span class="o">(</span><span class="nc">String</span> <span class="n">needle</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// --snip --</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">found</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="nf">SearchResult</span><span class="o">(</span><span class="n">column</span><span class="o">,</span> <span class="n">found</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>The approach was fairly similar in C and C++, where instead of <code class="language-plaintext highlighter-rouge">null</code> someone
+might see <code class="language-plaintext highlighter-rouge">return NULL;</code> or the more modern <code class="language-plaintext highlighter-rouge">return nullptr;</code> in the case of C++.</p>
+
+<p>This approach came with a major, <strong><em>major</em></strong> flaw, one that has even been given
+its own nickname across the industry, by its own creator (Sir Tony Hoare) nonetheless:
+<a href="https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare/">the billion-dollar mistake</a>.</p>
+
+<p>The problem is that the return value is usually then perused in a way that gets
+dereferenced (either directly, through a pointer, like in C and C++ or indirectly
+through objects in Java/C#, etc), causing the program to crash with either a friendly
+error message or <s> an occult incantation out of Saruman's grimoire</s> a less descriptive
+error message, depending on how well-behaved the language runtime you’re using is:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// In Java
+
+Exception in thread "main" java.lang.NullPointerException
+    at Printer.printString(Printer.java:13)
+    at Printer.print(Printer.java:9)
+    at Printer.main(Printer.java:19)
+
+// In C/C++
+
+[1]    93157 segmentation fault  ./a.out
+</code></pre></div></div>
+
+<p>The computer <strong>really</strong> doesn’t like it when you force it to go to address <code class="language-plaintext highlighter-rouge">0x00</code>,
+you see. But…</p>
+
+<h3>Nest the value and the <code class="language-plaintext highlighter-rouge">bool</code> in a <code class="language-plaintext highlighter-rouge">class</code> and return that</h3>
+
+<p>Seeing as we’re very sensitive to the computer’s plight (and our own inconvenience
+and embarrassment), we might as well try to find a different way: one that, at least,
+doesn’t result in a crash.</p>
+
+<p>One way to solve the above problem, especially in the past, would be to wrap both
+the <code class="language-plaintext highlighter-rouge">bool</code> and the return value (in the successful case) in a single compound type
+(a <code class="language-plaintext highlighter-rouge">class</code>), and return values of that type. It would look something like the following.</p>
+
+<p>Assume that our string-search function has been programmed to return a <code class="language-plaintext highlighter-rouge">SearchResult</code>
+type of the following form:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="nc">SearchResult</span> <span class="p">{</span>
+    <span class="kt">bool</span> <span class="n">success</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">column</span><span class="p">;</span>     <span class="c1">// present only if text was found</span>
+    <span class="kt">int</span> <span class="n">line</span><span class="p">;</span>       <span class="c1">// ditto</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>Objects of that type would use the <code class="language-plaintext highlighter-rouge">success</code> sub-component as a discriminating
+value, indicating on whether the search yielded a successful match or not. The
+rest of the sub-components (<code class="language-plaintext highlighter-rouge">column</code> and <code class="language-plaintext highlighter-rouge">line</code>) would have well-defined values
+if the <code class="language-plaintext highlighter-rouge">success</code> is <code class="language-plaintext highlighter-rouge">true</code>, and undefined otherwise.</p>
+
+<p>Thus, our function might look something like this:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">SearchResult</span> <span class="nf">search_text</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">subtext</span><span class="p">,</span> <span class="k">const</span> <span class="n">Document</span><span class="o">&amp;</span> <span class="n">doc</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// --snip--</span>
+    
+    <span class="k">if</span><span class="p">(</span><span class="n">found</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">{</span><span class="nb">true</span><span class="p">,</span> <span class="n">column_no</span><span class="p">,</span> <span class="n">line_no</span><span class="p">};</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">{</span><span class="nb">false</span><span class="p">,</span> <span class="n">random</span><span class="p">(),</span> <span class="n">random</span><span class="p">()};</span> <span class="c1">// random to simulate undefined value</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>Now, if we wanted to use our <code class="language-plaintext highlighter-rouge">search_text</code> function, being the responsible programmers
+we are, we would first check the <code class="language-plaintext highlighter-rouge">success</code> field:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">perform_action</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// --snip--</span>
+
+    <span class="k">const</span> <span class="k">auto</span> <span class="n">result</span> <span class="o">=</span> <span class="n">search_text</span><span class="p">(</span><span class="s">"the jabberwocky"</span><span class="p">,</span> <span class="n">alice_in_wonderland</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="n">success</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"Found at line %d and column %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">result</span><span class="p">.</span><span class="n">line</span><span class="p">,</span> <span class="n">result</span><span class="p">.</span><span class="n">column</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="c1">// !result.success </span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"Unable to find given text within the document."</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This is definitely a solution, and one that was adopted in various codebases I’ve
+seen in the past, but it also suffers from a flaw, albeit a less severe one this
+time: the pollution of the codebase with many similar but <em>oh-so-slightly-different</em>
+types which served only as “rich-return-typed objects”.</p>
+
+<p>This has the side-effect of an increase to the cognitive load of the programmer,
+which makes the experience of programming in that codebase a bit worse than it
+needs to be: the editors and other tools might help, but you still need to mentally
+keep track of which function returns what, and have some special handling around
+any of those.</p>
+
+<h3>Out-parameters</h3>
+
+<p>This one is a variation of the two themes above, falling somewhat in the middle:
+it still signals success and makes it harder (kinda…) to crash the application.
+This time around, our code would look similar to this:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Our SearchResult object</span>
+<span class="k">struct</span> <span class="nc">SearchResult</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">column</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">line</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c1">// And the search function</span>
+<span class="kt">bool</span> <span class="nf">search_text</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">needle</span><span class="p">,</span> <span class="k">const</span> <span class="n">Document</span><span class="o">&amp;</span> <span class="n">haystack</span><span class="p">,</span> <span class="n">SearchResult</span><span class="o">&amp;</span> <span class="n">result</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// --snip--</span>
+    
+    <span class="k">if</span><span class="p">(</span><span class="n">found</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">SearchResult</span><span class="p">{</span><span class="n">column_no</span><span class="p">,</span> <span class="n">line_no</span><span class="p">};</span> 
+        <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="c1">// With our usage looking like this:</span>
+
+<span class="kt">void</span> <span class="nf">perform_action</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// --snip--</span>
+
+    <span class="k">auto</span> <span class="n">result</span> <span class="o">=</span> <span class="n">SearchResult</span><span class="p">{};</span> 
+
+    <span class="k">const</span> <span class="k">auto</span> <span class="n">found</span> <span class="o">=</span> <span class="n">search_text</span><span class="p">(</span><span class="s">"the jabberwocky"</span><span class="p">,</span> <span class="n">alice_in_wonderland</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">result</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">found</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"Found at line %d and column %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">result</span><span class="p">.</span><span class="n">line</span><span class="p">,</span> <span class="n">result</span><span class="p">.</span><span class="n">column</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="c1">// !found </span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"Unable to find given text within the document."</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This, again, also works. It’s a fine solution for many people (given how widespread
+out-parameters are) and enjoys a good performance profile because of the pointers/references,
+but I personally heavily dislike it from an aesthetics/philosophical standpoint:</p>
+
+<blockquote>
+  <p>A function should only ever return its return value and nothing else.</p>
+</blockquote>
+
+<p>What can I say? I’m a functional-programming kind of guy.</p>
+
+<h3>Allow the return of a tuple containing the values</h3>
+
+<p>If we use the above quote as an axiom for our programming system, we kind of
+find ourselves in a bind: we both want to return a <code class="language-plaintext highlighter-rouge">bool</code>, and a secondary value
+based on the value of the <code class="language-plaintext highlighter-rouge">bool</code> itself.</p>
+
+<p>Or are we?</p>
+
+<p>For programming languages that only allow one return value, we can look into
+packing our <code class="language-plaintext highlighter-rouge">bool</code> and the auxiliary value into a <code class="language-plaintext highlighter-rouge">pair</code> or an <code class="language-plaintext highlighter-rouge">n-tuple</code> (it’s
+arity-based generalisation).</p>
+
+<p>This used to be harder, but nowadays most programming languages offer more mathematical
+primitives in their standard libraries.</p>
+
+<p>For example, adapting our example above to something like Kotlin:</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">fun</span> <span class="nf">searchText</span><span class="p">(</span><span class="n">needle</span><span class="p">:</span> <span class="nc">String</span><span class="p">,</span> <span class="n">haystack</span><span class="p">:</span> <span class="nc">Document</span><span class="p">):</span> <span class="nc">Pair</span><span class="p">&lt;</span><span class="nc">Boolean</span><span class="p">,</span> <span class="nc">SearchResult</span><span class="p">&gt;</span> <span class="p">{</span>
+    <span class="c1">// --snip--</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">found</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nc">Pair</span><span class="p">(</span><span class="k">true</span><span class="p">,</span> <span class="nc">SearchResult</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="n">line</span><span class="p">))</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nc">Pair</span><span class="p">(</span><span class="k">false</span><span class="p">,</span> <span class="nc">SearchResult</span><span class="p">())</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>And for our usage, this time around:</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">val</span> <span class="py">result</span> <span class="p">=</span> <span class="nf">searchText</span><span class="p">(</span><span class="s">"The Queen of Hearts"</span><span class="p">,</span> <span class="n">aliceInWonderland</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="n">first</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nf">println</span><span class="p">(</span><span class="s">"Found The Queen of Hearts at ${result.second}"</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>There are also some languages that allow you to return multiple values in their
+base syntax (internally, they might do packing/unpacking automatically to achieve
+an effect very similar to the above). Of these, perhaps Go is the most famous one,
+using this as an idiom for error handling:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="s">"errors"</span>
+
+<span class="k">func</span> <span class="n">example_function</span><span class="p">(</span><span class="n">arg</span> <span class="kt">int</span><span class="p">)</span> <span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="n">arg</span> <span class="o">==</span> <span class="m">42</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="o">-</span><span class="m">1</span><span class="p">,</span> <span class="n">errors</span><span class="o">.</span><span class="n">New</span><span class="p">(</span><span class="s">"can't work with 42"</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">arg</span> <span class="o">+</span> <span class="m">3</span><span class="p">,</span> <span class="no">nil</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">result</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">example_function</span><span class="p">(</span><span class="m">42</span><span class="p">);</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="c">// Log or do some error handling here</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2><code class="language-plaintext highlighter-rouge">Option</code>/<code class="language-plaintext highlighter-rouge">Result</code>/<code class="language-plaintext highlighter-rouge">Either</code></h2>
+
+<p>Wow. What a trip. Let’s have a quick recap so that we see where we are:</p>
+
+<ul>
+  <li>We started with a function doing something, and returning <code class="language-plaintext highlighter-rouge">true</code> or <code class="language-plaintext highlighter-rouge">false</code> to
+show whether it succeeded or not.</li>
+  <li>Our requirements evolved to now also need some extra information <em>in addition</em>
+to the above <code class="language-plaintext highlighter-rouge">true</code>/<code class="language-plaintext highlighter-rouge">false</code> values.</li>
+  <li>We explored a number of different ways to satisfy that new requirement.</li>
+</ul>
+
+<p>But all of them were a bit lacking, in various different ways:</p>
+
+<ul>
+  <li>They… allowed us to crash, either by accidental mistake or misuse of their
+interface.</li>
+  <li>They didn’t provide enough context to the compiler to assist us with development
+(and to provide guardrails <em>against</em> misuse), using pattern matching for instance.</li>
+  <li>They depended on the creation of other context-sensitive types, with non-uniform
+forms.</li>
+  <li>They fallback to using types (e.g. <code class="language-plaintext highlighter-rouge">Pair</code> or <code class="language-plaintext highlighter-rouge">Triple</code>) that lack specificity
+to guide our expectations and intuition to a specific context.</li>
+</ul>
+
+<p>All of the above are solved by the <code class="language-plaintext highlighter-rouge">Option</code> and <code class="language-plaintext highlighter-rouge">Result</code> type (and its more general
+dual in Haskell, <code class="language-plaintext highlighter-rouge">Either</code>).</p>
+
+<p>All of them are what’s known in Programming Language Theory as <em>Sum Types</em> (sometimes
+called <em>Discriminated Unions</em>), due to the fact that the value set of the Compound
+type is the <em>sum</em> of the <em>cardinality</em> of the <em>sets</em> of the <em>atomic types</em> (called
+constructors) that comprise them.</p>
+
+<p>The type definitions look like these (in an ML-inspired pseudosyntax):</p>
+
+<div class="language-fsharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="nc">Option</span><span class="p">&lt;</span><span class="nc">T</span><span class="p">&gt;</span> <span class="p">=</span>
+  <span class="p">|</span> <span class="nc">Some</span><span class="p">&lt;</span><span class="nc">T</span><span class="p">&gt;</span>
+  <span class="p">|</span> <span class="nc">None</span>
+
+<span class="k">type</span> <span class="nc">Result</span><span class="p">&lt;</span><span class="nc">T</span><span class="p">,</span> <span class="nc">E</span><span class="p">&gt;</span> <span class="p">=</span>
+  <span class="p">|</span> <span class="nc">Ok</span><span class="p">&lt;</span><span class="nc">T</span><span class="p">&gt;</span>
+  <span class="p">|</span> <span class="nc">Err</span><span class="p">&lt;</span><span class="nc">E</span><span class="p">&gt;</span>
+
+<span class="k">type</span> <span class="nc">Either</span><span class="p">&lt;</span><span class="nc">L</span><span class="p">,</span> <span class="nc">R</span><span class="p">&gt;</span> <span class="p">=</span>
+  <span class="p">|</span> <span class="nc">Left</span><span class="p">&lt;</span><span class="nc">L</span><span class="p">&gt;</span>
+  <span class="p">|</span> <span class="nc">Right</span><span class="p">&lt;</span><span class="nc">R</span><span class="p">&gt;</span>
+</code></pre></div></div>
+
+<p>All of the above are generic types, admitting generic parameters (the <code class="language-plaintext highlighter-rouge">T</code>, <code class="language-plaintext highlighter-rouge">E</code>s,
+etc.).</p>
+
+<p>(At this point, it’s worth observing that <code class="language-plaintext highlighter-rouge">Either</code> is isomorphic to <code class="language-plaintext highlighter-rouge">Result</code>, so
+from now on onwards, what we mention for <code class="language-plaintext highlighter-rouge">Result</code> will apply to <code class="language-plaintext highlighter-rouge">Either</code> as well,
+without the need to explicitly say so).</p>
+
+<hr />
+
+<p>An interesting pattern appears if we also provide a type definition for a <code class="language-plaintext highlighter-rouge">Boolean</code>
+type in the same pseudo syntax:</p>
+
+<div class="language-fsharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="nc">Boolean</span> <span class="p">=</span>
+  <span class="p">|</span> <span class="nc">True</span>
+  <span class="p">|</span> <span class="nc">False</span>
+</code></pre></div></div>
+
+<p>If we also remove the generic parameters from the above type definitions (just
+for illustration purposes) and lay them all next to each other, we’re going to
+observe that their value sets their definitions are identical (with only different
+<em>names</em> for the various constructors):</p>
+
+<div class="language-fsharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="nc">Boolean</span> <span class="p">=</span>
+  <span class="p">|</span> <span class="nc">True</span>
+  <span class="p">|</span> <span class="nc">False</span>
+
+<span class="k">type</span> <span class="nc">Option</span> <span class="p">=</span>
+  <span class="p">|</span> <span class="nc">Some</span>
+  <span class="p">|</span> <span class="nc">None</span>
+
+<span class="k">type</span> <span class="nc">Result</span> <span class="p">=</span>
+  <span class="p">|</span> <span class="nc">Ok</span>
+  <span class="p">|</span> <span class="nc">Err</span>
+</code></pre></div></div>
+
+<p>Wow! This near-identical (isomorphic) form is also a hint that their <em>semantics</em>
+are also very similar. Let’s try to put the generic parameters (but as comment
+for a clarity) and see how we do:</p>
+
+<div class="language-fsharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="nc">Boolean</span> <span class="p">=</span>
+  <span class="p">|</span> <span class="nc">True</span>
+  <span class="p">|</span> <span class="nc">False</span>
+
+<span class="k">type</span> <span class="nc">Option</span> <span class="p">=</span>
+  <span class="p">|</span> <span class="nc">Some</span> <span class="o">--</span> <span class="k">with</span> <span class="n">extra</span> <span class="n">information</span>
+  <span class="p">|</span> <span class="nc">None</span>
+
+<span class="k">type</span> <span class="nc">Result</span> <span class="p">=</span>
+  <span class="p">|</span> <span class="nc">Ok</span>  <span class="o">--</span> <span class="k">with</span> <span class="n">extra</span> <span class="n">information</span>
+  <span class="p">|</span> <span class="nc">Err</span> <span class="o">--</span> <span class="k">with</span> <span class="n">extra</span> <span class="n">information</span>
+</code></pre></div></div>
+
+<p>A clear pattern now emerges! All of these signal the same sort of binary outcome,
+with the capability of also carrying extra information.</p>
+
+<p>Nice! The keen eyed amongst you will have noticed that this insight has now solved
+our original problem in a very clean way, and has at the same time provided a very
+clear usage guideline:</p>
+
+<ul>
+  <li>Use <code class="language-plaintext highlighter-rouge">Boolean</code> whenever you only need to discriminate between two outcomes.</li>
+  <li>Use <code class="language-plaintext highlighter-rouge">Option</code> whenever you want to do the above, but also want to carry extra
+information around in the <code class="language-plaintext highlighter-rouge">True</code> case.</li>
+  <li>Use <code class="language-plaintext highlighter-rouge">Result</code> whenever you want to discriminate between two outcomes but also
+want to carry extra information around in both of these cases.</li>
+</ul>
+
+<p>Let’s have a look at some examples in Rust to see how we would choose which one
+to use in practice. Let’s have a look at 3 different cases:</p>
+
+<div class="language-rust highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">Person</span> <span class="p">{</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">u8</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="k">impl</span> <span class="n">Person</span> <span class="p">{</span>
+    <span class="c1">// A Person can either drink (is of legal age) or not.</span>
+    <span class="c1">// True or false. No other information needed.</span>
+    <span class="k">fn</span> <span class="nf">can_drink</span><span class="p">()</span> <span class="k">-&gt;</span> <span class="nb">bool</span> <span class="p">{</span>
+        <span class="n">age</span> <span class="o">&gt;=</span> <span class="mi">18</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In the above case we see an example of a <em>predicate</em> (a function returning <code class="language-plaintext highlighter-rouge">true</code>/<code class="language-plaintext highlighter-rouge">false</code>,
+in effect solving a decision problem). Boolean values work very well for predicates:
+we only want the first order value - it’s either <code class="language-plaintext highlighter-rouge">true</code> or <code class="language-plaintext highlighter-rouge">false</code>, but we don’t
+care why in either case.</p>
+
+<p>Let’s now have a look at a case where we might care about extra information in
+addition to the first-order value: Let’s assume we’re searching for a value in a
+vector and want to know its index in it:</p>
+
+<div class="language-rust highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">fn</span> <span class="nf">search</span><span class="p">(</span><span class="n">needle</span><span class="p">:</span> <span class="o">&amp;</span><span class="nb">String</span><span class="p">,</span> <span class="n">haystack</span><span class="p">:</span> <span class="o">&amp;</span><span class="nb">Vec</span><span class="o">&lt;</span><span class="nb">String</span><span class="o">&gt;</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="nb">Option</span><span class="o">&lt;</span><span class="nb">usize</span><span class="o">&gt;</span> <span class="p">{</span>
+    <span class="c1">// Return `Some(index)` if value is present `None` otherwise</span>
+    <span class="n">haystack</span><span class="nf">.iter</span><span class="p">()</span><span class="nf">.position</span><span class="p">(|</span><span class="n">x</span><span class="p">|</span> <span class="n">x</span> <span class="o">==</span> <span class="n">needle</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="k">fn</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="n">fruit</span> <span class="o">=</span> <span class="nd">vec!</span><span class="p">[</span>
+        <span class="s">"banana"</span><span class="nf">.to_string</span><span class="p">(),</span>
+        <span class="s">"mango"</span><span class="nf">.to_string</span><span class="p">(),</span>
+        <span class="s">"apple"</span><span class="nf">.to_string</span><span class="p">()</span>
+    <span class="p">];</span>
+    <span class="k">let</span> <span class="n">res</span> <span class="o">=</span> <span class="nf">search</span><span class="p">(</span><span class="o">&amp;</span><span class="s">"apple"</span><span class="nf">.to_string</span><span class="p">(),</span> <span class="o">&amp;</span><span class="n">fruit</span><span class="p">);</span>
+    <span class="nd">assert_eq!</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="nf">Some</span><span class="p">(</span><span class="mi">2</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In this case, our search function will search for the string <code class="language-plaintext highlighter-rouge">needle</code> inside
+the collection <code class="language-plaintext highlighter-rouge">haystack</code>. If it succeeds (the <code class="language-plaintext highlighter-rouge">true</code> case), it’s going to return
+us a value that signals that it succeeded, along with the extra information we
+asked for (the index in our case). This is the <code class="language-plaintext highlighter-rouge">Some(T)</code> constructor that we saw
+above in the type definitions. If it fails, it will instead return <code class="language-plaintext highlighter-rouge">None</code> (the
+<code class="language-plaintext highlighter-rouge">false</code> equivalent).</p>
+
+<p>This is a great example of the typical use-case for <code class="language-plaintext highlighter-rouge">Option</code>: we use it in contexts
+where we want to attach auxiliary data in the successful case, but where if we fail,
+we don’t care enough to know more about the failure case - only that it happened.</p>
+
+<p>That gap is being filled by <code class="language-plaintext highlighter-rouge">Result</code> - it’s like <code class="language-plaintext highlighter-rouge">Option</code> semantically, but it allows
+us to also carry around extra data in the case <code class="language-plaintext highlighter-rouge">false</code> case. This is useful in that
+it allows us to carry around diagnostic information in the failure case, to allow
+with error reporting and recovery.</p>
+
+<p>An example of this need being satisfied would be the following function:</p>
+
+<div class="language-rust highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">fn</span> <span class="nf">read_to_string</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="o">&amp;</span><span class="nb">str</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="nb">Result</span><span class="o">&lt;</span><span class="nb">String</span><span class="p">,</span> <span class="nn">io</span><span class="p">::</span><span class="n">Error</span><span class="o">&gt;</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="k">mut</span> <span class="n">file</span> <span class="o">=</span> <span class="k">match</span> <span class="nn">File</span><span class="p">::</span><span class="nf">open</span><span class="p">(</span><span class="o">&amp;</span><span class="n">filename</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">Ok</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">=&gt;</span> <span class="n">f</span><span class="p">,</span>
+        <span class="nf">Err</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">=&gt;</span> <span class="k">return</span> <span class="nf">Err</span><span class="p">(</span><span class="n">e</span><span class="p">),</span>
+    <span class="p">};</span>
+
+    <span class="k">let</span> <span class="k">mut</span> <span class="n">text</span> <span class="o">=</span> <span class="nn">String</span><span class="p">::</span><span class="nf">new</span><span class="p">();</span>
+    <span class="k">match</span> <span class="n">file</span><span class="nf">.read_to_string</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span> <span class="n">text</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">Ok</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> <span class="k">=&gt;</span> <span class="nf">Ok</span><span class="p">(</span><span class="n">text</span><span class="p">),</span>
+        <span class="nf">Err</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">=&gt;</span> <span class="nf">Err</span><span class="p">(</span><span class="n">e</span><span class="p">),</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Here our <code class="language-plaintext highlighter-rouge">read_to_string</code> function is doing two things:</p>
+
+<ol>
+  <li>Open a file, and</li>
+  <li>Read its contents into a string buffer.</li>
+</ol>
+
+<p>Any of these two operations can fail. If we only had a <code class="language-plaintext highlighter-rouge">bool</code> value as the return
+value, we could signal that a failure happened by returning <code class="language-plaintext highlighter-rouge">false</code>, but we would
+be at a loss as to <em>what</em> has actually failed.</p>
+
+<p>In this case, our <code class="language-plaintext highlighter-rouge">Result</code> type allows us to do the following:</p>
+
+<ul>
+  <li>If everything worked fine, return the <code class="language-plaintext highlighter-rouge">Ok()</code> constructor with an appropriate
+value attached (the string buffer in our case, after completion).</li>
+  <li>If there was an error, either at file opening or reading, returning an <code class="language-plaintext highlighter-rouge">Err()</code>
+constructor, with an appropriate error message attached.</li>
+</ul>
+
+<h2>Conclusion</h2>
+
+<p>To wrap everything up, here’s my usage heuristic for the above types:</p>
+
+<ul>
+  <li>Use <code class="language-plaintext highlighter-rouge">bool</code> for simple predicates.</li>
+  <li>Use <code class="language-plaintext highlighter-rouge">Option&lt;T&gt;</code> when extra data needs to be carried in the success case (for instance
+when searching for values in a collection)</li>
+  <li>Use <code class="language-plaintext highlighter-rouge">Result&lt;T,E&gt;</code> when extra data needs to be carried around in the success and failure
+case (say, if you’re reading something from the network, and you want to return
+the data in the success case or an appropriate error message in the failure case).</li>
+</ul>
+
+        </div>
+        
+      </li>
+    
+      
+      
+
+      <li>
+        <header class="post-header">
+          <h1 class="post-title">
+            
               <a class="post-link" href="/2023/02/12/yearly-goals-2023/">Yearly Goals: 2023</a>
             
           </h1>
@@ -158,6 +1084,14 @@
     
       
         <a href="/tags/yearly-goals/">yearly-goals</a>
+      
+    
+      
+    
+      
+    
+      
+    
       
     
       
@@ -401,6 +1335,14 @@ leading us all into a brighter future.</p>
     
       
         <a href="/tags/year-in-review/">year-in-review</a>
+      
+    
+      
+    
+      
+    
+      
+    
       
     
       
@@ -943,6 +1885,14 @@ observed in some of the progress subdomains.</p>
     
       
     
+      
+    
+      
+    
+      
+    
+      
+    
   
     
     
@@ -998,6 +1948,14 @@ observed in some of the progress subdomains.</p>
     
       
         <a href="/tags/software-design/">software-design</a>
+      
+    
+      
+    
+      
+    
+      
+    
       
     
       
@@ -1288,6 +2246,14 @@ going to negatively affect it.</p>
     
       
     
+      
+    
+      
+    
+      
+    
+      
+    
   
     
     
@@ -1339,6 +2305,14 @@ going to negatively affect it.</p>
     
       
         <a href="/tags/haskell/">haskell</a>
+      
+    
+      
+    
+      
+    
+      
+    
       
     
       
@@ -1625,427 +2599,6 @@ been exposed to this range of <code class="language-plaintext highlighter-rouge"
 offer some of the language features that enable them, like list comprehensions.</p>
 
 <p>All in all, happy I went down this path, and looking forward to what’s next.</p>
-
-        </div>
-        
-      </li>
-    
-      
-      
-
-      <li>
-        <header class="post-header">
-          <h1 class="post-title">
-            
-              <a class="post-link" href="/2022/05/12/reflections-on-learning-how-to-grow-almost-anything/">Reflections on Learning &quot;How to Grow (Almost) Anything&quot;</a>
-            
-          </h1>
-
-          <p class="post-meta">
-            May 12, 2022
-            
-              
-
- •
-  
-    
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-        <a href="/tags/synbio/">synbio</a>,
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-  
-    
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-        <a href="/tags/course/">course</a>,
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-  
-    
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-        <a href="/tags/mooc/">mooc</a>
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-  
-
-
-            
-            
-          </p>
-        </header>
-
-        <div class="post-content">
-          <p>Wow, what a journey this has been!</p>
-
-<p>Yesterday, Wednesday 11th of May, was the final project presentations for committed
-listeners in MIT’s synthetic biology course,
-<a href="https://htgaa2022.notion.site/htgaa2022/HTGAA-2022-d39e5560ad83483ab87d415f085b60c6">How To Grow (Almost) Anything</a>,
-class of 2022.</p>
-
-<p>When I started the course, sometime in the end of January, I had no idea what a blast
-this would be (nor did I have any idea of how much pressure this would apply on me, but
-hey, I survived this, and then some 😁 ).</p>
-
-<p>I credit this class with taking me from rudimentary biology knowledge to a fairly solid
-understanding of molecular biology and immunology, all in about 3-4 months.</p>
-
-<p>As you can probably imagine, this was… intense.</p>
-
-<p>But before I dive more into the experience and what I learnt in this course, let me
-give some background into the course and the context of my participation.</p>
-
-<h2>Some background</h2>
-
-<p>Anyone who knows me is aware of my awe at the potential of synthetic biology. There’s
-no doubt in my mind that it’s going to be the next exponential growth sector after
-the computer industry. The field itself is fairly nascent, but it’s going to pick
-up the pace in the next 5-10 years. And although I believe that all its subdomains
-hold massive potential, I’m especially keen on synthetic biology applications in
-human therapeutics.</p>
-
-<p>Now, I keep it no secret that I want to found a synthetic biology company in the
-(hopefully, not so distant) future.</p>
-
-<p>Given that, you may guess that in general I was observant of any opportunities
-to dig a bit deeper into the field.</p>
-
-<p>With that in mind (along with a hefty bit of luck - fate? 😁 ), I came across a
-tweet by the organiser of the course, <a href="https://twitter.com/davidsunkong">David Kong</a>,
-advertising the course, along with the fact that this year it would admit a small
-cohort of students who want to attend remotely.</p>
-
-<p>Wasting no time, I shot an email towards David, and was surprised when I got an
-email a couple days later admitting me to the course, and sharing zoom links for
-the course’s first lecture.</p>
-
-<h2>The Attendance Experience</h2>
-
-<p>The course was setup in a set of two classes per week:</p>
-
-<ul>
-  <li>one three-hour lecture, in which the first hour was spent reviewing homework
-from last week, and the next two hours had different presenters give presentations
-on various topics in synthetic biology, and</li>
-  <li>a two-hour class the next day, that included a recitation session - which was
-previewing next week’s homework - along with a homework review for online listeners.</li>
-</ul>
-
-<p>To my surprise, there was a relatively high number of online students participating
-(~ 45, IIRC - about 3 times the number of MIT students physically attending), but
-only about a third of the online students made it through to the end.</p>
-
-<p>Attendance was taken every lecture, for both online listeners and the students
-physically present at MIT. We were also expected to do all the exercises for
-the week - with the TAs ensuring that this was the case.</p>
-
-<p>In the middle of the course’s duration, we also had a handful of hands-on workshops
-(of which we had to attend some), aptly named the <em>Festival of Growing</em>.</p>
-
-<h2>The Lectures</h2>
-
-<p>The course was setup around a number of themes (therapeutics, biofabrication/biomaterials,
-DNA/RNA editing, microfluidics, etc), and every week we had two (sometimes three)
-different presenters (which ranged from university professors to company CEOs) present
-on the topic at hand.</p>
-
-<p>The first couple of weeks were focused on teaching the foundations of molecular biology
-(but in a very, <em>very</em> accelerated timeframe), and then the following weeks assumed
-competence in molecular biology and built on top of that in terms of presenting the
-state of the art in applications in various domains.</p>
-
-<p>It’s probably worth noting that the course attracted people from a wide variety
-of backgrounds - you could find architects, designers, computer scientists, chemists,
-etc. As you can imagine, a lot of these people didn’t have a background in biology
-(or had a very shallow one, myself included), and the intensity of the ramp up of
-the first few weeks might have contributed to the dropouts.</p>
-
-<p>For the MIT/Harvard students, most of these lectures were also followed by a lab
-component. For online listeners, we would partially follow along those processes
-(given the lack of wet lab access for some of us), or, at other times, we would
-be given substitute exercises that involved using online tools (such as <a href="https://www.benchling.com/">Benchling</a>
-to simulate the in-vitro experiments in-silico.</p>
-
-<h2>The <em>Festival of Growing</em></h2>
-
-<p>Sometime around the half of the semester, we had a pause in the online lectures
-for a couple of weeks in favour of attending various workshops. Those workshops
-were structured around a number of different themes. Examples of those were growing
-mycelium at home, or performing DNA sequencing using a nanopore device.</p>
-
-<p>From these workshops, some of them were on-premise and some of them were online.
-We did manage to watch one of the on-premise workshops (the nanopore sequencing one)
-via a TA streaming the workshop, which was nice. In retrospect, this would be
-a good idea for all of the on-premise workshops - maybe that will happen from
-next year onwards?</p>
-
-<p>For both online and MIT/Harvard students, we had to attend at least 1 of the workshops
-(attendance was taken), with no upper limit on how many you could attend.</p>
-
-<p>I think the Festival of Growing was a nice little fragment of the course’s structure,
-and it also contributed in making the course feel a lot more dynamic in nature
-(compared to an alternative, hypothetical course consisting only of lectures).</p>
-
-<h2>The Final Project</h2>
-
-<p>A relatively big part of the course (and the main focus of the last two weeks)
-was the the preparation of the final project. It had been made clear from the
-start that this was an integral part of the course, and that everyone who stuck
-to the end (either online listener or on-premise student) would have to
-present one.</p>
-
-<p>We had a lot of leeway in terms of the project that we would choose to do -
-though you were <em>strongly encouraged</em> to pick a project topic that fell within
-the experience/knowledge range of available TAs. For the on-premise students,
-the idea is that the project would include a lab component but for online students
-this was considered optional (given that only some people had access to a lab),
-but we still had to present on a topic that was considered feasible (if speculative),
-and the expectation was that the project would be fairly well-researched.</p>
-
-<p>For each one of us doing a final project, we would be assigned a mentor (a
-TA or industry professional) who would end up as an endpoint for answering
-questions/providing guidance on our project.</p>
-
-<h2>My Own Experience</h2>
-
-<p>I have to start with the fact that I enjoyed all of the course, and that
-I’m grateful to MIT/the organisers for admitting us online listeners to the
-course.</p>
-
-<p>Having said that, the first couple of weeks were very hard - it required
-<strong>a lot</strong> of outside studying (we’re talking several textbooks worth of
-reading) to catch up to the required knowledge. If you have to juggle a
-job as well, and you’re not a full-time student, that can definitely feel
-pretty overwhelming at times.</p>
-
-<p>(By the way, this is coming from someone who already commits 3-4 hours of
-study on a daily basis, if that helps underline the above paragraph - though
-to be fair, I think that a lot of the pressure was coming from the tight
-weekly deadlines for exercises.)</p>
-
-<p>I recall that at one point during the first two weeks I felt the presenters
-were speaking something other than English. 😓 The nice thing is that persistence
-does pay of, however, and by the end, you are also capable of fluently conversing
-with everyone else in this weird little dialect of English.</p>
-
-<p>The festival of growing was also very nice, but, personally, I was a little bit
-miffed by the fact that the workshop I was most looking forward to (metabolic
-simulation in Python) got cancelled without any explanation a day before it
-was to be presented.</p>
-
-<p>For me the most enjoyable part of the course was the final project because
-by that point I already knew enough to be able to do some competent background
-research on the project.</p>
-
-<h2>In Conclusion</h2>
-
-<p>In this final bit, I want to say that I wholeheartedly recommend this course
-to anyone who is keen on synthetic biology, if only to see some of the people
-on the forefront of the domain discuss the possibilities and what they are
-currently exploring.</p>
-
-<p>I also have a feeling that David and his course are going to be a future kingmaker
-of synthetic biology 😉 You would hear very often during the presentations (person
-X, CEO of Y, and alumni of HTGAA few years ago). I think this trend is going to
-continue for many more years to come.</p>
-
-<p>Again many thanks to the organisers (<strong>David</strong> in particular), the lecturers, TAs,
-and everyone else who contributed to this course.</p>
-
-<p>Special thanks from my end to the following people as well:</p>
-
-<ul>
-  <li><strong>Jessica Weber</strong>, for entertaining a barrage of questions I posed during
-one of the lectures.</li>
-  <li><strong>Karolina Sulich</strong>, for providing some early assistance during my project,
-and for introducing me to Amy Holt,</li>
-  <li><strong>Amy Holt</strong>, who provided me with specific answers to some immunology related
-questions I had, with regard to my final project.</li>
-</ul>
-
-<p>You can find my course notes, exercises, and final project at my course notes
-<a href="https://www.notion.so/HTGAA-2022-a43e0f0b56a444f29aea3a94a388c7bf">Notion page</a>.</p>
 
         </div>
         

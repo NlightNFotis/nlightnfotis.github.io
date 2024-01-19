@@ -89,12 +89,12 @@
         <header class="post-header">
           <h1 class="post-title">
             
-              <a class="post-link" href="/2013/08/12/gsoc-week-8-partial-report/">GSOC Week 8 (Partial) report</a>
+              <a class="post-link" href="/2013/08/19/gsoc-week-9-partial-report/">GSOC Week 9 (Partial) report</a>
             
           </h1>
 
           <p class="post-meta">
-            Aug 12, 2013
+            Aug 19, 2013
             
               
 
@@ -103,7 +103,15 @@
     
     
       
-        <a href="/tags/gsoc/">gsoc</a>,
+    
+      
+        <a href="/tags/gcc/">gcc</a>,
+      
+    
+      
+    
+      
+    
       
     
       
@@ -233,6 +241,416 @@
     
       
     
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+        <a href="/tags/gsoc/">gsoc</a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+
+            
+            
+          </p>
+        </header>
+
+        <div class="post-content">
+          <p>This week was revolving around the print debugging in the gccgo runtime in search
+for clues regarding the creation of new threads under the goruntime, so as to see
+if there is something wrong with the runtime itself, or the way the runtime 
+interacts with the libpthread.</p>
+
+<h2>(partial presentation of) findings</h2>
+
+<p>During print debugging the gccgo runtime, I didn’t notice anything abnormal or 
+unusual so far. For example, the code that does trigger the assertion failure
+seems to work at least once, since <code class="language-plaintext highlighter-rouge">pthread_create()</code> returns <code class="language-plaintext highlighter-rouge">0</code> at least once.</p>
+
+<p>This is expected behavior, since we already have stated that there is at least
+one <code class="language-plaintext highlighter-rouge">M</code> (kernel thread) created at the initialisation of the program’s runtime.</p>
+
+<p>If however, we try to use a <em>go statement</em> in our program, to make usage of a 
+goroutine, the runtime still fails at the usual assertion fail, however the 
+output of the program is this:</p>
+
+<div lang="shell" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@debian:~/Software/Experiments/go# ./a.out
+[DEBUG] pthread_create returned 0
+a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&gt;kernel_thread == ktid;
+__mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })' failed.
+Aborted
+</code></pre></div></div>
+
+<p>The above output can give us some pieces of information:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">pthread_create()</code> is called at least once.</li>
+  <li>it executes successfuly and without errors - libpthread code suggests that 0 is returned upon successful execution and creation of a thread</li>
+  <li>However the assertion is still triggered, which we know it’s getting triggered during thread creation.</li>
+</ul>
+
+<p>The second bullet point is also being supported by the fact that even if you exe
+cute something as simple as hello world in go, a new M is created, so you get
+something along the lines of this as an output:</p>
+
+<figure class="highlight"><pre><code class="language-sh" data-lang="sh">root@debian:~/Software/Experiments/go# ./a.out
+<span class="o">[</span>DEBUG] pthread_create returned 0
+Hello World!
+root@debian:~/Software/Experiments/go#</code></pre></figure>
+
+<p>There is however something that the above piece of code doesn’t tell us, 
+but it would be useful to know: <em>How many times did we create a new thread?</em>
+So we modify our gcc’s source code to see how many times the runtimes 
+attempts to create a new kernel thread (M). This is what we get out of it:</p>
+
+<div lang="shell" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@debian:~/Software/Experiments/go# ./a.out
+[DEBUG] Preparing to create a new thread.
+[DEBUG] pthread_create returned 0
+a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&gt;kernel_thread == ktid;
+__mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })' failed.
+[DEBUG] Preparing to create a new thread.
+aborted.
+</code></pre></div></div>
+
+<p>The code at this point in the runtime is this:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="c1">// Create a new m.  It will start off with a call to runtime_mstart.</span>
+<span class="n">M</span><span class="o">*</span>
+<span class="nf">runtime_newm</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">M</span> <span class="o">*</span><span class="n">mp</span><span class="p">;</span>
+	<span class="n">pthread_attr_t</span> <span class="n">attr</span><span class="p">;</span>
+	<span class="n">pthread_t</span> <span class="n">tid</span><span class="p">;</span>
+	<span class="kt">size_t</span> <span class="n">stacksize</span><span class="p">;</span>
+	<span class="n">sigset_t</span> <span class="n">clear</span><span class="p">;</span>
+	<span class="n">sigset_t</span> <span class="n">old</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="n">ret</span><span class="p">;</span>
+
+<span class="c">#if 0
+	static const Type *mtype;  // The Go type M
+	if(mtype == nil) {
+		Eface e;
+		runtime_gc_m_ptr(&amp;e);
+		mtype = ((const PtrType*)e.__type_descriptor)-&gt;__element_type;
+	}
+#endif
+</span>
+	<span class="c1">// XXX: Added by fotis for print debugging.</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">"[DEBUG] Preparing to create a new thread.</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+
+	<span class="n">mp</span> <span class="o">=</span> <span class="n">runtime_mal</span><span class="p">(</span><span class="k">sizeof</span> <span class="o">*</span><span class="n">mp</span><span class="p">);</span>
+	<span class="n">mcommoninit</span><span class="p">(</span><span class="n">mp</span><span class="p">);</span>
+	<span class="n">mp</span><span class="o">-&gt;</span><span class="n">g0</span> <span class="o">=</span> <span class="n">runtime_malg</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">nil</span><span class="p">,</span> <span class="n">nil</span><span class="p">);</span>
+
+	<span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_attr_init"</span><span class="p">);</span>
+	<span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_setdetachstate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">PTHREAD_CREATE_DETACHED</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_attr_setdetachstate"</span><span class="p">);</span>
+
+	<span class="c1">// &lt;http://www.gnu.org/software/hurd/open_issues/libpthread_set_stack_size.html&gt;</span>
+<span class="cp">#ifdef __GNU__
+</span>	<span class="n">stacksize</span> <span class="o">=</span> <span class="n">StackMin</span><span class="p">;</span>
+<span class="cp">#else
+</span>	<span class="n">stacksize</span> <span class="o">=</span> <span class="n">PTHREAD_STACK_MIN</span><span class="p">;</span>
+
+	<span class="c1">// With glibc before version 2.16 the static TLS size is taken</span>
+	<span class="c1">// out of the stack size, and we get an error or a crash if</span>
+	<span class="c1">// there is not enough stack space left.  Add it back in if we</span>
+	<span class="c1">// can, in case the program uses a lot of TLS space.  FIXME:</span>
+	<span class="c1">// This can be disabled in glibc 2.16 and later, if the bug is</span>
+	<span class="c1">// indeed fixed then.</span>
+	<span class="n">stacksize</span> <span class="o">+=</span> <span class="n">tlssize</span><span class="p">;</span>
+<span class="cp">#endif
+</span>
+	<span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_setstacksize</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">stacksize</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_attr_setstacksize"</span><span class="p">);</span>
+
+	<span class="c1">// Block signals during pthread_create so that the new thread</span>
+	<span class="c1">// starts with signals disabled.  It will enable them in minit.</span>
+	<span class="n">sigfillset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">clear</span><span class="p">);</span>
+
+<span class="cp">#ifdef SIGTRAP
+</span>	<span class="c1">// Blocking SIGTRAP reportedly breaks gdb on Alpha GNU/Linux.</span>
+	<span class="n">sigdelset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">clear</span><span class="p">,</span> <span class="n">SIGTRAP</span><span class="p">);</span>
+<span class="cp">#endif
+</span>
+	<span class="n">sigemptyset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">old</span><span class="p">);</span>
+	<span class="n">sigprocmask</span><span class="p">(</span><span class="n">SIG_BLOCK</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">clear</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">old</span><span class="p">);</span>
+	<span class="n">ret</span> <span class="o">=</span> <span class="n">pthread_create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tid</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">runtime_mstart</span><span class="p">,</span> <span class="n">mp</span><span class="p">);</span>
+
+	<span class="cm">/* XXX: added for debug printing */</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">"[DEBUG] pthread_create() returned %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">ret</span><span class="p">);</span>
+
+	<span class="n">sigprocmask</span><span class="p">(</span><span class="n">SIG_SETMASK</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">old</span><span class="p">,</span> <span class="n">nil</span><span class="p">);</span>
+
+	<span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_create"</span><span class="p">);</span>
+
+	<span class="k">return</span> <span class="n">mp</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>We can deduce two things about our situation right now:</p>
+
+<ul>
+  <li>There is <strong>at least one</strong> thread successfully created, and there is an attempt
+to create another one.</li>
+  <li>The second time, there is a failure before pthread_create is called.</li>
+</ul>
+
+<h2>Continuation of work.</h2>
+
+<p>I have been following this course of path the last week. I presented
+some of my findings, and hope to soon be able to write an exhaustive
+report on what exactly it is that causes the bug.</p>
+
+        </div>
+        
+      </li>
+    
+      
+      
+
+      <li>
+        <header class="post-header">
+          <h1 class="post-title">
+            
+              <a class="post-link" href="/2013/08/12/gsoc-week-8-partial-report/">GSOC Week 8 (Partial) report</a>
+            
+          </h1>
+
+          <p class="post-meta">
+            Aug 12, 2013
+            
+              
+
+ •
+  
+    
+    
+      
+        <a href="/tags/gsoc/">gsoc</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+        <a href="/tags/golang/">golang</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
   
     
     
@@ -240,6 +658,14 @@
     
       
         <a href="/tags/gcc/">gcc</a>
+      
+    
+      
+    
+      
+    
+      
+    
       
     
       
@@ -523,6 +949,14 @@ on the programs that run there (currently studying the assembly generated for th
       
     
       
+    
+      
+    
+      
+    
+      
+    
+      
         <a href="/categories/gsoc/">gsoc</a>,
       
     
@@ -592,6 +1026,14 @@ on the programs that run there (currently studying the assembly generated for th
       
     
       
+    
+      
+    
+      
+    
+      
+    
+      
         <a href="/categories/golang/">golang</a>,
       
     
@@ -599,6 +1041,14 @@ on the programs that run there (currently studying the assembly generated for th
     
   
     
+    
+      
+    
+      
+    
+      
+    
+      
     
       
     
@@ -931,6 +1381,14 @@ or I looking for clues regarding the issue in the wrong place (might be possible
     
       
     
+      
+    
+      
+    
+      
+    
+      
+    
   
     
     
@@ -938,6 +1396,14 @@ or I looking for clues regarding the issue in the wrong place (might be possible
     
       
         <a href="/tags/gcc/">gcc</a>,
+      
+    
+      
+    
+      
+    
+      
+    
       
     
       
@@ -1007,6 +1473,14 @@ or I looking for clues regarding the issue in the wrong place (might be possible
     
       
         <a href="/tags/golang/">golang</a>
+      
+    
+      
+    
+      
+    
+      
+    
       
     
       
@@ -1326,6 +1800,14 @@ If it does that should mean that there is nothing wrong in the go runtime itself
     
       
     
+      
+    
+      
+    
+      
+    
+      
+    
   
     
     
@@ -1333,6 +1815,14 @@ If it does that should mean that there is nothing wrong in the go runtime itself
     
       
         <a href="/tags/gcc/">gcc</a>,
+      
+    
+      
+    
+      
+    
+      
+    
       
     
       
@@ -1402,6 +1892,14 @@ If it does that should mean that there is nothing wrong in the go runtime itself
     
       
         <a href="/tags/golang/">golang</a>
+      
+    
+      
+    
+      
+    
+      
+    
       
     
       
@@ -1726,599 +2224,6 @@ runtest completed at Fri Jul 12 18:09:07 UTC 2013
 <p>This leaves us with next week’s work, which is to hack in libpthread’s code to attempt to create a thread pool, so that we avoid some of the issues that are present now with the current implementation of the Hurd libpthread code.</p>
 
 <p>It was also suggested by Samuel Thibault (youpi) that I should run the libgo tests by hand and see if I get some more clues, like stack traces. It sounds like a good idea to me, so that’s something that I will look into too.</p>
-
-        </div>
-        
-      </li>
-    
-      
-      
-
-      <li>
-        <header class="post-header">
-          <h1 class="post-title">
-            
-              <a class="post-link" href="/2013/07/15/gsoc-week-4-report/">GSOC: Week 4 report</a>
-            
-          </h1>
-
-          <p class="post-meta">
-            Jul 15, 2013
-            
-              
-
- •
-  
-    
-    
-      
-        <a href="/tags/gsoc/">gsoc</a>,
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-  
-    
-    
-      
-    
-      
-        <a href="/tags/gcc/">gcc</a>,
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-  
-    
-    
-      
-    
-      
-    
-      
-        <a href="/tags/golang/">golang</a>
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-  
-
-
-            
-            
-          </p>
-        </header>
-
-        <div class="post-content">
-          <h1>Yeah baby! It builds!</h1>
-
-<p><strong>The highlight of this week’s progress was managing to successfully build
-gccgo under the Hurd.</strong>
-Not only did it compile successfully, it also run its tests, with the
-results <a href="http://lists.gnu.org/archive/html/bug-hurd/2013-06/msg00117.html">matching the ones provided by my mentor Thomas Schwinge</a>.
-This was a checkpoint in my summer of code project. Successful building of
-the compiler meant that I am (happily) in the position to carry on with the
-next part (and the main one) of my project, that is, to make sure that
-the <strong>go library (libgo) also passes all its tests 
-and works without any major issues.</strong></p>
-
-<h1>So where are we now?</h1>
-
-<h2>gccgo</h2>
-
-<p>Compiling gccgo on the Hurd was big. But we also had to see how it 
-compared to the build that was successful on Linux. The most effective
-way to compare the two builds, is to check the test results of the two.</p>
-
-<p>Taking a look at the gccgo results on the Hurd, I was delighted to find 
-that it passed most of its tests. There were few that were failing, but 
-for the most part, it did well. Below are the test results of gccgo on the Hurd:</p>
-
-<div lang="shell" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>     === go Summary ===
-
-# of expected passes        5069
-# of unexpected failures    11
-# of expected failures      1
-# of untested testcases     6
-/root/gcc_new/gccbuild/gcc/testsuite/go/../../gccgo  version 4.9.0 20130606 (experimental) (GCC)
-
-</code></pre></div></div>
-
-<p>So it’s passing 99% of its tests. That’s cool. But it could help to take a look
-at the tests that are failing, to get an idea of what the fails are, how critical they are, etc</p>
-
-<div lang="shell" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nlightnfotis@earth:~/HurdVM/HurdFiles$ grep -v ^PASS: &lt; go.sum
-Test Run By root on Thu Jul 11 10:33:34 2013
-Native configuration is i686-unknown-gnu0.3
-
-        === go tests ===
-
-        Schedule of variations:
-            unix
-
-            Running target unix
-            Running /root/gcc_new/gcc/gcc/testsuite/go.dg/dg.exp ...
-            Running /root/gcc_new/gcc/gcc/testsuite/go.go-torture/execute/execute.exp ...
-            Running /root/gcc_new/gcc/gcc/testsuite/go.test/go-test.exp ...
-            FAIL: go.test/test/chan/doubleselect.go execution,  -O2 -g 
-            FAIL: go.test/test/chan/nonblock.go execution,  -O2 -g 
-            UNTESTED: go.test/test/chan/select2.go
-            FAIL: go.test/test/chan/select3.go execution,  -O2 -g 
-            FAIL: go.test/test/chan/select5.go execution
-            UNTESTED: go.test/test/closure.go
-            FAIL: go.test/test/fixedbugs/bug147.go execution,  -O2 -g 
-            FAIL: go.test/test/fixedbugs/bug347.go execution,  -O0 -g 
-            FAIL: go.test/test/fixedbugs/bug348.go execution,  -O0 -g 
-            XFAIL: bug429.go  -O2 -g  execution test
-            FAIL: go.test/test/goprint.go execution
-            UNTESTED: go.test/test/goprint.go compare
-            UNTESTED: go.test/test/init1.go
-            FAIL: go.test/test/mallocfin.go execution,  -O2 -g 
-            FAIL: go.test/test/nil.go execution,  -O2 -g 
-            FAIL: go.test/test/recover3.go execution,  -O2 -g 
-            UNTESTED: go.test/test/rotate.go
-            UNTESTED: go.test/test/stack.go
-
-                    === go Summary ===
-
-# of expected passes        5069
-# of unexpected failures    11
-# of expected failures      1
-# of untested testcases     6
-/root/gcc_new/gccbuild/gcc/testsuite/go/../../gccgo  version 4.9.0 20130606 (experimental) (GCC) 
-</code></pre></div></div>
-
-<p>Hmm. So these are the failing tests. Before we go through them, it might be a good idea
-to check the status of the gccgo tests on the Linux build too. Let’s see.</p>
-
-<div lang="shell" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nlightnfotis@earth:~$ grep -v ^PASS: &lt; linux_go.sum 
-Test Run By fotis on Mon Jul 15 10:28:38 2013
-Native configuration is i686-pc-linux-gnu
-
-        === go tests ===
-
-        Schedule of variations:
-            unix
-
-            Running target unix
-            Running /home/fotis/Software/gcc/gcc/testsuite/go.dg/dg.exp ...
-            Running /home/fotis/Software/gcc/gcc/testsuite/go.go-torture/execute/execute.exp ...
-            Running /home/fotis/Software/gcc/gcc/testsuite/go.test/go-test.exp ...
-            UNTESTED: go.test/test/closure.go
-            XFAIL: bug429.go  -O2 -g  execution test
-            UNTESTED: go.test/test/init1.go
-            UNTESTED: go.test/test/rotate.go
-
-                    === go Summary ===
-
-# of expected passes        5183
-# of expected failures      1
-# of untested testcases     3
-/home/fotis/Software/gcc_build/gcc/testsuite/go/../../gccgo  version 4.9.0 20130702 (experimental) (GCC) 
-</code></pre></div></div>
-
-<p>So, it seems like there are less tests failing here. But wait a minute. Those tests that are failing.
-They are the same as with the Hurd build. So I can assume that we are left with 4 less tests to check
-regarding their failures (Go on Linux works without any issues,so I guess it would be safe to skip those tests at the moment).
-That leaves us with these tests to check:</p>
-
-<div lang="shell" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>FAIL: go.test/test/chan/doubleselect.go execution,  -O2 -g
-FAIL: go.test/test/chan/nonblock.go execution,  -O2 -g
-UNTESTED: go.test/test/chan/select2.go
-FAIL: go.test/test/chan/select3.go execution,  -O2 -g
-FAIL: go.test/test/chan/select5.go execution
-FAIL: go.test/test/fixedbugs/bug147.go execution,  -O2 -g
-FAIL: go.test/test/fixedbugs/bug347.go execution,  -O0 -g
-FAIL: go.test/test/fixedbugs/bug348.go execution,  -O0 -g
-FAIL: go.test/test/goprint.go execution
-UNTESTED: go.test/test/goprint.go compare
-FAIL: go.test/test/mallocfin.go execution,  -O2 -g
-FAIL: go.test/test/nil.go execution,  -O2 -g
-FAIL: go.test/test/recover3.go execution,  -O2 -g
-UNTESTED: go.test/test/stack.go
-</code></pre></div></div>
-
-<p>Discussing this with my mentor <a href="https://plus.google.com/101468009864620818344">Thomas Schwinge</a> in IRC (#hurd)</p>
-
-<blockquote>
-  <tschwinge> For now, please ignore any failing tests that have »select« in their name -- that is, do file them, but do not spend a lot of time figuring out what might be wrong there.
-<tschwinge> The Hurd's select implementation is a bit of a beast, and I don't want you -- at this time -- spend a lot of time on that.  We already know there are some deficiencies, so we should postpone that to later.
-</tschwinge></tschwinge>
-</blockquote>
-
-<p>So that leaves us with even less tests to check:</p>
-
-<div lang="shell" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>FAIL: go.test/test/chan/nonblock.go execution,  -O2 -g
-FAIL: go.test/test/fixedbugs/bug147.go execution,  -O2 -g
-FAIL: go.test/test/fixedbugs/bug347.go execution,  -O0 -g
-FAIL: go.test/test/fixedbugs/bug348.go execution,  -O0 -g
-FAIL: go.test/test/goprint.go execution
-UNTESTED: go.test/test/goprint.go compare
-FAIL: go.test/test/mallocfin.go execution,  -O2 -g
-FAIL: go.test/test/nil.go execution,  -O2 -g
-FAIL: go.test/test/recover3.go execution,  -O2 -g
-UNTESTED: go.test/test/stack.go
-</code></pre></div></div>
-
-<p>Nice. <strong>This narrowed down the list of errors that I have to go through to make sure that gccgo
-works as well on the Hurd as it does on Linux.</strong></p>
-
-<h2>libgo</h2>
-
-<p>So, we talked about gccgo, but what about the runtime libraries (libgo)? They are also getting 
-tested when we run <code class="language-plaintext highlighter-rouge">make check-go</code>and seeing as they are a vital part 
-of enabling programs written on go to run on the Hurd, we ought
-to take a look. (This was also the original goal of my project proposal).</p>
-
-<p>So let us see what we have at the libgo.sum:</p>
-
-<div lang="shell" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Test Run By root on Fri Jul 12 17:56:44 UTC 2013
-Native configuration is i686-unknown-gnu0.3
-
-        === libgo tests ===
-
-        Schedule of variations:
-            unix
-
-            Running target unix
-            Running ../../../gcc/libgo/libgo.exp ...
-            FAIL: bufio
-            FAIL: bytes
-            FAIL: errors
-            FAIL: expvar
-            FAIL: flag
-            FAIL: fmt
-            FAIL: html
-            FAIL: image
-            FAIL: io
-            FAIL: log
-            FAIL: math
-            FAIL: mime
-            FAIL: net
-            FAIL: os
-            FAIL: path
-            FAIL: reflect
-            FAIL: regexp
-            FAIL: runtime
-            FAIL: sort
-            FAIL: strconv
-            FAIL: strings
-            FAIL: sync
-            FAIL: syscall
-            FAIL: time
-            FAIL: unicode
-            FAIL: archive/tar
-            FAIL: archive/zip
-            FAIL: compress/bzip2
-            FAIL: compress/flate
-            FAIL: compress/gzip
-            FAIL: compress/lzw
-            FAIL: compress/zlib
-            FAIL: container/heap
-            FAIL: container/list
-            FAIL: container/ring
-            FAIL: crypto/aes
-            FAIL: crypto/cipher
-            FAIL: crypto/des
-            FAIL: crypto/dsa
-            FAIL: crypto/ecdsa
-            FAIL: crypto/elliptic
-            FAIL: crypto/hmac
-            FAIL: crypto/md5
-            FAIL: crypto/rand
-            FAIL: crypto/rc4
-            FAIL: crypto/rsa
-            FAIL: crypto/sha1
-            FAIL: crypto/sha256
-            FAIL: crypto/sha512
-            FAIL: crypto/subtle
-            FAIL: crypto/tls
-            FAIL: crypto/x509
-            FAIL: database/sql
-            FAIL: database/sql/driver
-            FAIL: debug/dwarf
-            FAIL: debug/elf
-            FAIL: debug/macho
-            FAIL: debug/pe
-            FAIL: encoding/ascii85
-            FAIL: encoding/asn1
-            FAIL: encoding/base32
-            FAIL: encoding/base64
-            FAIL: encoding/binary
-            FAIL: encoding/csv
-            FAIL: encoding/gob
-            FAIL: encoding/hex
-            FAIL: encoding/json
-            FAIL: encoding/pem
-            PASS: encoding/xml
-            FAIL: exp/cookiejar
-            FAIL: exp/ebnf
-            FAIL: exp/html
-            FAIL: exp/html/atom
-            FAIL: exp/locale/collate
-            FAIL: exp/locale/collate/build
-            FAIL: exp/norm
-            FAIL: exp/proxy
-            FAIL: exp/terminal
-            FAIL: exp/utf8string
-            FAIL: html/template
-            FAIL: go/ast
-            FAIL: go/doc
-            FAIL: go/format
-            FAIL: go/parser
-            FAIL: go/printer
-            FAIL: go/scanner
-            FAIL: go/token
-            FAIL: go/types
-            FAIL: hash/adler32
-            FAIL: hash/crc32
-            FAIL: hash/crc64
-            FAIL: hash/fnv
-            FAIL: image/color
-            FAIL: image/draw
-            FAIL: image/jpeg
-            FAIL: image/png
-            FAIL: index/suffixarray
-            FAIL: io/ioutil
-            FAIL: log/syslog
-            FAIL: math/big
-            FAIL: math/cmplx
-            FAIL: math/rand
-            FAIL: mime/multipart
-            FAIL: net/http
-            FAIL: net/http/cgi
-            FAIL: net/http/fcgi
-            FAIL: net/http/httptest
-            FAIL: net/http/httputil
-            FAIL: net/mail
-            FAIL: net/rpc
-            FAIL: net/smtp
-            FAIL: net/textproto
-            FAIL: net/url
-            FAIL: net/rpc/jsonrpc
-            FAIL: old/netchan
-            FAIL: old/regexp
-            FAIL: old/template
-            FAIL: os/exec
-            FAIL: os/signal
-            FAIL: os/user
-            FAIL: path/filepath
-            FAIL: regexp/syntax
-            FAIL: runtime/pprof
-            FAIL: sync/atomic
-            FAIL: text/scanner
-            FAIL: text/tabwriter
-            FAIL: text/template
-            FAIL: text/template/parse
-            FAIL: testing/quick
-            FAIL: unicode/utf16
-            FAIL: unicode/utf8
-
-                    === libgo Summary ===
-
-# of expected passes        1
-# of unexpected failures    130
-/root/gcc_new/gccbuild/./gcc/gccgo version 4.9.0 20130606 (experimental) (GCC)
-</code></pre></div></div>
-
-<p><strong>Oh boy!</strong> Oh boy! Well, on second thoughts, this was not unexpected. 
-<strong>This was the core of my GSOC work</strong>. This is how it starts :)</p>
-
-<p>Before this goes any further, maybe we should visit the Linux test results too.</p>
-
-<div lang="shell" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
-Test Run By fotis on Τρι 02 Ιούλ 2013 09:20:20 μμ EEST
-Native configuration is i686-pc-linux-gnu
-
-        === libgo tests ===
-
-        Schedule of variations:
-            unix
-
-            Running target unix
-            Running ../../../gcc/libgo/libgo.exp ...
-            PASS: bufio
-            PASS: bytes
-            ...
-
-                    === libgo Summary ===
-
-# of expected passes        131
-/home/fotis/Software/gcc_build/./gcc/gccgo version 4.9.0 20130702 (experimental) (GCC)
-</code></pre></div></div>
-
-<p>Wow. Considering the results from the Hurd, they really are <strong>not</strong> unexpected. <a href="http://darnassus.sceen.net/~hurd-web/open_issues/gccgo/">Remember
-that <strong>getcontext, makecontext, setcontext and swapcontext</strong> are not working as expected.</a></p>
-
-<p>And recalling from an email from Ian Lance Taylor (the GCCgo maintainer, and a member of the Go team)
-early in the summer:</p>
-
-<blockquote>
-  <p>Go does require switching stacks.  A port of Go that doesn’t support
-goroutines would be useless–nothing in the standard library would
-work</p>
-</blockquote>
-
-<h1>Conclusion / Work for next week.</h1>
-
-<p><strong>So now it comes down to work on implementing correctly the context switching functions.</strong> 
-Apart from that, going through the test results that fail from gccgo is also something that
-is to be done, however I am not sure that it should be a first priority. I also have to go
-through go.log to see if there any clues as to why the gccgo tests fail.</p>
-
-<p>Having finally built gccgo on the Hurd, and <strong>more importantly still being on schedule,
-(the original one, from my proposal) means that I can now concentrate on the core part of my 
-project proposal (and the most exciting one too)</strong>, that is proper implementation 
-of what is <em>blocking effective context switching, which
-in its part is blocking goroutines, without which, the go library will not work properly.</em></p>
 
         </div>
         

@@ -5,7 +5,7 @@
   
   <link href="https://nlightnfotis.github.io/feed.xml" rel="self" type="application/atom+xml" />
   <link href="https://nlightnfotis.github.io/" rel="alternate" type="text/html" hreflang="en-GB" />
-  <updated>2023-02-12T13:00:57+00:00</updated>
+  <updated>2024-01-19T10:40:49+00:00</updated>
   <id>https://nlightnfotis.github.io//</id>
 
   
@@ -24,6 +24,575 @@
     </author>
   
 
+  
+  
+    <entry>
+      
+      <title type="html">How to Think About And Use the Option And Result Types</title>
+      
+      
+      <link href="https://nlightnfotis.github.io/2023/12/16/how-to-use-option-result/" rel="alternate" type="text/html" title="How to Think About And Use the Option And Result Types" />
+      
+      <published>2023-12-16T00:00:00+00:00</published>
+      <updated>2023-12-16T00:00:00+00:00</updated>
+      <id>https://nlightnfotis.github.io/2023/12/16/how-to-use-option-result</id>
+      <content type="html" xml:base="https://nlightnfotis.github.io/2023/12/16/how-to-use-option-result/">&lt;p&gt;This post is written with an aim to provide some clarity as to the purpose and
+usage of the (evermore present) types &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Option&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Result&lt;/code&gt; in various programming
+languages.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2&gt;The Beginning: the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;bool&lt;/code&gt; type&lt;/h2&gt;
+
+&lt;p&gt;We’re all used to using the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;bool&lt;/code&gt; type: its value set has arity &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;2&lt;/code&gt;, basically
+admitting two values:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;true&lt;/code&gt;, and&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;false&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This means that we can use it as a return type for a function to discriminate
+between two outcomes from the function’s execution. Thus, it ties well with
+predicates (functions answering a decision problem, e.g. &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;isDiscountValid&lt;/code&gt;
+or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;any?&lt;/code&gt;) and, more broadly, functions that want to indicate a &lt;em&gt;successful&lt;/em&gt; outcome
+or a &lt;em&gt;failure&lt;/em&gt; outcome after their execution has finished.&lt;/p&gt;
+
+&lt;p&gt;The return of a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;bool&lt;/code&gt;-typed value allows these functions to have great synergy
+with conditional statements/expressions, directly plugging into the &lt;em&gt;antecedent&lt;/em&gt;
+(condition) part of a conditional statement. Undoubtedly, you’ve come across
+something like this (in C pseudo-syntax):&lt;/p&gt;
+
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;do_something&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// --snip--&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;something_went_wrong&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// signal failure&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// all went right in the main path&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// --snip---&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;do_something&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Operation was successful!&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// perform some logging, or error recover here...&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This… works. But it’s a fairly rudimentary mechanism, with a significant limitation:
+&lt;em&gt;what happens if we want to pass along some information in either case&lt;/em&gt;?&lt;/p&gt;
+
+&lt;p&gt;This is a thought that has crossed many a programmer’s mind, and different languages
+have provided different solutions to this problem, depending on whether the language
+allows for &lt;strong&gt;one&lt;/strong&gt; or &lt;strong&gt;more&lt;/strong&gt; return values. Solutions fall within the following
+general criteria:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Return a value if successful and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;null&lt;/code&gt;/&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;nil&lt;/code&gt;/&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;None&lt;/code&gt; otherwise.&lt;/li&gt;
+  &lt;li&gt;Nest the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;bool&lt;/code&gt; and the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;value&lt;/code&gt; in a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;struct&lt;/code&gt;/&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;class&lt;/code&gt; and return that.&lt;/li&gt;
+  &lt;li&gt;Return a single &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;bool&lt;/code&gt; value and extra values in &lt;em&gt;out-parameters&lt;/em&gt;.&lt;/li&gt;
+  &lt;li&gt;Allow the return of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;tuple&lt;/code&gt;s containing the values.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Option&lt;/code&gt;/&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Result&lt;/code&gt;/&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Either&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Let’s have a quick look at some examples. For each of the below examples, imagine
+that our use case is the following:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;We have a function which searches a rich document (think like a Word document)
+for a particular search text.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;This is also called a “needle-in-haystack search”.&lt;/p&gt;
+
+&lt;h3&gt;Return a value if successful and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;null&lt;/code&gt; otherwise&lt;/h3&gt;
+
+&lt;p&gt;This was pretty much the default way people handled this situation in Algol-family
+languages (C, C++, Java, etc.), especially in the past. It would look something
+like the following (in Java-like pseudocode):&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Document&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// --snip--&lt;/span&gt;
+
+    &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;SearchResult&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;column&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;line&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;SearchResult&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;searchText&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;needle&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// --snip --&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;found&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;SearchResult&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;column&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;found&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The approach was fairly similar in C and C++, where instead of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;null&lt;/code&gt; someone
+might see &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;return NULL;&lt;/code&gt; or the more modern &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;return nullptr;&lt;/code&gt; in the case of C++.&lt;/p&gt;
+
+&lt;p&gt;This approach came with a major, &lt;strong&gt;&lt;em&gt;major&lt;/em&gt;&lt;/strong&gt; flaw, one that has even been given
+its own nickname across the industry, by its own creator (Sir Tony Hoare) nonetheless:
+&lt;a href=&quot;https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare/&quot;&gt;the billion-dollar mistake&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The problem is that the return value is usually then perused in a way that gets
+dereferenced (either directly, through a pointer, like in C and C++ or indirectly
+through objects in Java/C#, etc), causing the program to crash with either a friendly
+error message or &lt;s&gt; an occult incantation out of Saruman&apos;s grimoire&lt;/s&gt; a less descriptive
+error message, depending on how well-behaved the language runtime you’re using is:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// In Java
+
+Exception in thread &quot;main&quot; java.lang.NullPointerException
+    at Printer.printString(Printer.java:13)
+    at Printer.print(Printer.java:9)
+    at Printer.main(Printer.java:19)
+
+// In C/C++
+
+[1]    93157 segmentation fault  ./a.out
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The computer &lt;strong&gt;really&lt;/strong&gt; doesn’t like it when you force it to go to address &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;0x00&lt;/code&gt;,
+you see. But…&lt;/p&gt;
+
+&lt;h3&gt;Nest the value and the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;bool&lt;/code&gt; in a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;class&lt;/code&gt; and return that&lt;/h3&gt;
+
+&lt;p&gt;Seeing as we’re very sensitive to the computer’s plight (and our own inconvenience
+and embarrassment), we might as well try to find a different way: one that, at least,
+doesn’t result in a crash.&lt;/p&gt;
+
+&lt;p&gt;One way to solve the above problem, especially in the past, would be to wrap both
+the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;bool&lt;/code&gt; and the return value (in the successful case) in a single compound type
+(a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;class&lt;/code&gt;), and return values of that type. It would look something like the following.&lt;/p&gt;
+
+&lt;p&gt;Assume that our string-search function has been programmed to return a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SearchResult&lt;/code&gt;
+type of the following form:&lt;/p&gt;
+
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;SearchResult&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;success&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;column&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;     &lt;span class=&quot;c1&quot;&gt;// present only if text was found&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;line&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;       &lt;span class=&quot;c1&quot;&gt;// ditto&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Objects of that type would use the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;success&lt;/code&gt; sub-component as a discriminating
+value, indicating on whether the search yielded a successful match or not. The
+rest of the sub-components (&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;column&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;line&lt;/code&gt;) would have well-defined values
+if the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;success&lt;/code&gt; is &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;true&lt;/code&gt;, and undefined otherwise.&lt;/p&gt;
+
+&lt;p&gt;Thus, our function might look something like this:&lt;/p&gt;
+
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;SearchResult&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;search_text&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;subtext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Document&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;doc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// --snip--&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;found&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;column_no&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;line_no&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;random&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;random&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()};&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// random to simulate undefined value&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Now, if we wanted to use our &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;search_text&lt;/code&gt; function, being the responsible programmers
+we are, we would first check the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;success&lt;/code&gt; field:&lt;/p&gt;
+
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;perform_action&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// --snip--&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;search_text&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;the jabberwocky&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;alice_in_wonderland&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;success&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Found at line %d and column %d&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;line&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;column&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// !result.success &lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Unable to find given text within the document.&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This is definitely a solution, and one that was adopted in various codebases I’ve
+seen in the past, but it also suffers from a flaw, albeit a less severe one this
+time: the pollution of the codebase with many similar but &lt;em&gt;oh-so-slightly-different&lt;/em&gt;
+types which served only as “rich-return-typed objects”.&lt;/p&gt;
+
+&lt;p&gt;This has the side-effect of an increase to the cognitive load of the programmer,
+which makes the experience of programming in that codebase a bit worse than it
+needs to be: the editors and other tools might help, but you still need to mentally
+keep track of which function returns what, and have some special handling around
+any of those.&lt;/p&gt;
+
+&lt;h3&gt;Out-parameters&lt;/h3&gt;
+
+&lt;p&gt;This one is a variation of the two themes above, falling somewhat in the middle:
+it still signals success and makes it harder (kinda…) to crash the application.
+This time around, our code would look similar to this:&lt;/p&gt;
+
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// Our SearchResult object&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;SearchResult&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;column&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;line&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// And the search function&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;search_text&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;needle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Document&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;haystack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SearchResult&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// --snip--&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;found&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SearchResult&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;column_no&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;line_no&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt; 
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// With our usage looking like this:&lt;/span&gt;
+
+&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;perform_action&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// --snip--&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SearchResult&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{};&lt;/span&gt; 
+
+    &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;found&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;search_text&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;the jabberwocky&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;alice_in_wonderland&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;found&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Found at line %d and column %d&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;line&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;column&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// !found &lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Unable to find given text within the document.&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This, again, also works. It’s a fine solution for many people (given how widespread
+out-parameters are) and enjoys a good performance profile because of the pointers/references,
+but I personally heavily dislike it from an aesthetics/philosophical standpoint:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;A function should only ever return its return value and nothing else.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;What can I say? I’m a functional-programming kind of guy.&lt;/p&gt;
+
+&lt;h3&gt;Allow the return of a tuple containing the values&lt;/h3&gt;
+
+&lt;p&gt;If we use the above quote as an axiom for our programming system, we kind of
+find ourselves in a bind: we both want to return a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;bool&lt;/code&gt;, and a secondary value
+based on the value of the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;bool&lt;/code&gt; itself.&lt;/p&gt;
+
+&lt;p&gt;Or are we?&lt;/p&gt;
+
+&lt;p&gt;For programming languages that only allow one return value, we can look into
+packing our &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;bool&lt;/code&gt; and the auxiliary value into a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pair&lt;/code&gt; or an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;n-tuple&lt;/code&gt; (it’s
+arity-based generalisation).&lt;/p&gt;
+
+&lt;p&gt;This used to be harder, but nowadays most programming languages offer more mathematical
+primitives in their standard libraries.&lt;/p&gt;
+
+&lt;p&gt;For example, adapting our example above to something like Kotlin:&lt;/p&gt;
+
+&lt;div class=&quot;language-kotlin highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;fun&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;searchText&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;needle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;haystack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Document&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Pair&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Boolean&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;SearchResult&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// --snip--&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;found&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Pair&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;SearchResult&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;column&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;line&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Pair&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;SearchResult&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;And for our usage, this time around:&lt;/p&gt;
+
+&lt;div class=&quot;language-kotlin highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;py&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;searchText&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;The Queen of Hearts&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;aliceInWonderland&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;first&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Found The Queen of Hearts at ${result.second}&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;There are also some languages that allow you to return multiple values in their
+base syntax (internally, they might do packing/unpacking automatically to achieve
+an effect very similar to the above). Of these, perhaps Go is the most famous one,
+using this as an idiom for error handling:&lt;/p&gt;
+
+&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;errors&quot;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;example_function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;arg&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;arg&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;42&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;errors&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;New&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;can&apos;t work with 42&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;arg&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;nil&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;example_function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;42&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;nil&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;c&quot;&gt;// Log or do some error handling here&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Option&lt;/code&gt;/&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Result&lt;/code&gt;/&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Either&lt;/code&gt;&lt;/h2&gt;
+
+&lt;p&gt;Wow. What a trip. Let’s have a quick recap so that we see where we are:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;We started with a function doing something, and returning &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;true&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;false&lt;/code&gt; to
+show whether it succeeded or not.&lt;/li&gt;
+  &lt;li&gt;Our requirements evolved to now also need some extra information &lt;em&gt;in addition&lt;/em&gt;
+to the above &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;true&lt;/code&gt;/&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;false&lt;/code&gt; values.&lt;/li&gt;
+  &lt;li&gt;We explored a number of different ways to satisfy that new requirement.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;But all of them were a bit lacking, in various different ways:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;They… allowed us to crash, either by accidental mistake or misuse of their
+interface.&lt;/li&gt;
+  &lt;li&gt;They didn’t provide enough context to the compiler to assist us with development
+(and to provide guardrails &lt;em&gt;against&lt;/em&gt; misuse), using pattern matching for instance.&lt;/li&gt;
+  &lt;li&gt;They depended on the creation of other context-sensitive types, with non-uniform
+forms.&lt;/li&gt;
+  &lt;li&gt;They fallback to using types (e.g. &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Pair&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Triple&lt;/code&gt;) that lack specificity
+to guide our expectations and intuition to a specific context.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;All of the above are solved by the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Option&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Result&lt;/code&gt; type (and its more general
+dual in Haskell, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Either&lt;/code&gt;).&lt;/p&gt;
+
+&lt;p&gt;All of them are what’s known in Programming Language Theory as &lt;em&gt;Sum Types&lt;/em&gt; (sometimes
+called &lt;em&gt;Discriminated Unions&lt;/em&gt;), due to the fact that the value set of the Compound
+type is the &lt;em&gt;sum&lt;/em&gt; of the &lt;em&gt;cardinality&lt;/em&gt; of the &lt;em&gt;sets&lt;/em&gt; of the &lt;em&gt;atomic types&lt;/em&gt; (called
+constructors) that comprise them.&lt;/p&gt;
+
+&lt;p&gt;The type definitions look like these (in an ML-inspired pseudosyntax):&lt;/p&gt;
+
+&lt;div class=&quot;language-fsharp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Option&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Some&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;None&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;E&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Ok&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;E&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Either&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;L&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;R&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;L&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;R&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;All of the above are generic types, admitting generic parameters (the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;T&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;E&lt;/code&gt;s,
+etc.).&lt;/p&gt;
+
+&lt;p&gt;(At this point, it’s worth observing that &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Either&lt;/code&gt; is isomorphic to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Result&lt;/code&gt;, so
+from now on onwards, what we mention for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Result&lt;/code&gt; will apply to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Either&lt;/code&gt; as well,
+without the need to explicitly say so).&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;An interesting pattern appears if we also provide a type definition for a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Boolean&lt;/code&gt;
+type in the same pseudo syntax:&lt;/p&gt;
+
+&lt;div class=&quot;language-fsharp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Boolean&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;True&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;False&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;If we also remove the generic parameters from the above type definitions (just
+for illustration purposes) and lay them all next to each other, we’re going to
+observe that their value sets their definitions are identical (with only different
+&lt;em&gt;names&lt;/em&gt; for the various constructors):&lt;/p&gt;
+
+&lt;div class=&quot;language-fsharp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Boolean&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;True&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;False&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Option&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Some&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;None&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Result&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Ok&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Err&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Wow! This near-identical (isomorphic) form is also a hint that their &lt;em&gt;semantics&lt;/em&gt;
+are also very similar. Let’s try to put the generic parameters (but as comment
+for a clarity) and see how we do:&lt;/p&gt;
+
+&lt;div class=&quot;language-fsharp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Boolean&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;True&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;False&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Option&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Some&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;with&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;extra&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;information&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;None&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Result&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Ok&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;with&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;extra&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;information&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;with&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;extra&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;information&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;A clear pattern now emerges! All of these signal the same sort of binary outcome,
+with the capability of also carrying extra information.&lt;/p&gt;
+
+&lt;p&gt;Nice! The keen eyed amongst you will have noticed that this insight has now solved
+our original problem in a very clean way, and has at the same time provided a very
+clear usage guideline:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Boolean&lt;/code&gt; whenever you only need to discriminate between two outcomes.&lt;/li&gt;
+  &lt;li&gt;Use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Option&lt;/code&gt; whenever you want to do the above, but also want to carry extra
+information around in the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;True&lt;/code&gt; case.&lt;/li&gt;
+  &lt;li&gt;Use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Result&lt;/code&gt; whenever you want to discriminate between two outcomes but also
+want to carry extra information around in both of these cases.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Let’s have a look at some examples in Rust to see how we would choose which one
+to use in practice. Let’s have a look at 3 different cases:&lt;/p&gt;
+
+&lt;div class=&quot;language-rust highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Person&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;age&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;u8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;impl&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Person&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// A Person can either drink (is of legal age) or not.&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// True or false. No other information needed.&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;can_drink&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;bool&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;age&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;18&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;In the above case we see an example of a &lt;em&gt;predicate&lt;/em&gt; (a function returning &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;true&lt;/code&gt;/&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;false&lt;/code&gt;,
+in effect solving a decision problem). Boolean values work very well for predicates:
+we only want the first order value - it’s either &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;true&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;false&lt;/code&gt;, but we don’t
+care why in either case.&lt;/p&gt;
+
+&lt;p&gt;Let’s now have a look at a case where we might care about extra information in
+addition to the first-order value: Let’s assume we’re searching for a value in a
+vector and want to know its index in it:&lt;/p&gt;
+
+&lt;div class=&quot;language-rust highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;search&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;needle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;haystack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;Vec&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Option&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;usize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// Return `Some(index)` if value is present `None` otherwise&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;haystack&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.iter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.position&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;needle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fruit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nd&quot;&gt;vec!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
+        &lt;span class=&quot;s&quot;&gt;&quot;banana&quot;&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.to_string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt;
+        &lt;span class=&quot;s&quot;&gt;&quot;mango&quot;&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.to_string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt;
+        &lt;span class=&quot;s&quot;&gt;&quot;apple&quot;&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.to_string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;res&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;search&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;apple&quot;&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.to_string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fruit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;nd&quot;&gt;assert_eq!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Some&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;In this case, our search function will search for the string &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;needle&lt;/code&gt; inside
+the collection &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;haystack&lt;/code&gt;. If it succeeds (the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;true&lt;/code&gt; case), it’s going to return
+us a value that signals that it succeeded, along with the extra information we
+asked for (the index in our case). This is the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Some(T)&lt;/code&gt; constructor that we saw
+above in the type definitions. If it fails, it will instead return &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;None&lt;/code&gt; (the
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;false&lt;/code&gt; equivalent).&lt;/p&gt;
+
+&lt;p&gt;This is a great example of the typical use-case for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Option&lt;/code&gt;: we use it in contexts
+where we want to attach auxiliary data in the successful case, but where if we fail,
+we don’t care enough to know more about the failure case - only that it happened.&lt;/p&gt;
+
+&lt;p&gt;That gap is being filled by &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Result&lt;/code&gt; - it’s like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Option&lt;/code&gt; semantically, but it allows
+us to also carry around extra data in the case &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;false&lt;/code&gt; case. This is useful in that
+it allows us to carry around diagnostic information in the failure case, to allow
+with error reporting and recovery.&lt;/p&gt;
+
+&lt;p&gt;An example of this need being satisfied would be the following function:&lt;/p&gt;
+
+&lt;div class=&quot;language-rust highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;read_to_string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;filename&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;str&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Result&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;io&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Error&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;mut&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;file&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;match&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;File&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;open&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;filename&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nf&quot;&gt;Ok&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;nf&quot;&gt;Err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;mut&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;text&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;match&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;file&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.read_to_string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;mut&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;text&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nf&quot;&gt;Ok&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Ok&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;text&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
+        &lt;span class=&quot;nf&quot;&gt;Err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Here our &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;read_to_string&lt;/code&gt; function is doing two things:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Open a file, and&lt;/li&gt;
+  &lt;li&gt;Read its contents into a string buffer.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Any of these two operations can fail. If we only had a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;bool&lt;/code&gt; value as the return
+value, we could signal that a failure happened by returning &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;false&lt;/code&gt;, but we would
+be at a loss as to &lt;em&gt;what&lt;/em&gt; has actually failed.&lt;/p&gt;
+
+&lt;p&gt;In this case, our &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Result&lt;/code&gt; type allows us to do the following:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;If everything worked fine, return the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Ok()&lt;/code&gt; constructor with an appropriate
+value attached (the string buffer in our case, after completion).&lt;/li&gt;
+  &lt;li&gt;If there was an error, either at file opening or reading, returning an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Err()&lt;/code&gt;
+constructor, with an appropriate error message attached.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;To wrap everything up, here’s my usage heuristic for the above types:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;bool&lt;/code&gt; for simple predicates.&lt;/li&gt;
+  &lt;li&gt;Use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Option&amp;lt;T&amp;gt;&lt;/code&gt; when extra data needs to be carried in the success case (for instance
+when searching for values in a collection)&lt;/li&gt;
+  &lt;li&gt;Use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Result&amp;lt;T,E&amp;gt;&lt;/code&gt; when extra data needs to be carried around in the success and failure
+case (say, if you’re reading something from the network, and you want to return
+the data in the success case or an appropriate error message in the failure case).&lt;/li&gt;
+&lt;/ul&gt;</content>
+
+      
+      
+      
+      
+      
+
+      
+        <author>
+            <name>Fotis Koutoulakis</name>
+          
+          
+        </author>
+      
+
+      
+
+      
+        <category term="types" />
+      
+        <category term="rust" />
+      
+        <category term="go" />
+      
+        <category term="c++" />
+      
+        <category term="haskell" />
+      
+
+      
+        <summary type="html">This post is written with an aim to provide some clarity as to the purpose and usage of the (evermore present) types Option and Result in various programming languages. The Beginning: the bool type We’re all used to using the bool type: its value set has arity 2, basically admitting two values: true, and false. This means that we can use it as a return type for a function to discriminate between two outcomes from the function’s execution. Thus, it ties well with predicates (functions answering a decision problem, e.g. isDiscountValid or any?) and, more broadly, functions that want to indicate a successful outcome or a failure outcome after their execution has finished. The return of a bool-typed value allows these functions to have great synergy with conditional statements/expressions, directly plugging into the antecedent (condition) part of a conditional statement. Undoubtedly, you’ve come across something like this (in C pseudo-syntax): bool do_something() { // --snip-- if (something_went_wrong) { // signal failure return false; } // all went right in the main path return true; } int main() { // --snip--- if (do_something()) { printf(&quot;Operation was successful!\n&quot;); } else { // perform some logging, or error recover here... } } This… works. But it’s a fairly rudimentary mechanism, with a significant limitation: what happens if we want to pass along some information in either case? This is a thought that has crossed many a programmer’s mind, and different languages have provided different solutions to this problem, depending on whether the language allows for one or more return values. Solutions fall within the following general criteria: Return a value if successful and null/nil/None otherwise. Nest the bool and the value in a struct/class and return that. Return a single bool value and extra values in out-parameters. Allow the return of tuples containing the values. Option/Result/Either. Let’s have a quick look at some examples. For each of the below examples, imagine that our use case is the following: We have a function which searches a rich document (think like a Word document) for a particular search text. This is also called a “needle-in-haystack search”. Return a value if successful and null otherwise This was pretty much the default way people handled this situation in Algol-family languages (C, C++, Java, etc.), especially in the past. It would look something like the following (in Java-like pseudocode): public class Document { // --snip-- class SearchResult { int column; int line; } public SearchResult searchText(String needle) { // --snip -- if (found) { return SearchResult(column, found); } else { return null; } } } The approach was fairly similar in C and C++, where instead of null someone might see return NULL; or the more modern return nullptr; in the case of C++. This approach came with a major, major flaw, one that has even been given its own nickname across the industry, by its own creator (Sir Tony Hoare) nonetheless: the billion-dollar mistake. The problem is that the return value is usually then perused in a way that gets dereferenced (either directly, through a pointer, like in C and C++ or indirectly through objects in Java/C#, etc), causing the program to crash with either a friendly error message or an occult incantation out of Saruman&apos;s grimoire a less descriptive error message, depending on how well-behaved the language runtime you’re using is: // In Java Exception in thread &quot;main&quot; java.lang.NullPointerException at Printer.printString(Printer.java:13) at Printer.print(Printer.java:9) at Printer.main(Printer.java:19) // In C/C++ [1] 93157 segmentation fault ./a.out The computer really doesn’t like it when you force it to go to address 0x00, you see. But… Nest the value and the bool in a class and return that Seeing as we’re very sensitive to the computer’s plight (and our own inconvenience and embarrassment), we might as well try to find a different way: one that, at least, doesn’t result in a crash. One way to solve the above problem, especially in the past, would be to wrap both the bool and the return value (in the successful case) in a single compound type (a class), and return values of that type. It would look something like the following. Assume that our string-search function has been programmed to return a SearchResult type of the following form: struct SearchResult { bool success; int column; // present only if text was found int line; // ditto }; Objects of that type would use the success sub-component as a discriminating value, indicating on whether the search yielded a successful match or not. The rest of the sub-components (column and line) would have well-defined values if the success is true, and undefined otherwise. Thus, our function might look something like this: SearchResult search_text(const std::string&amp;amp; subtext, const Document&amp;amp; doc) { // --snip-- if(found) { return {true, column_no, line_no}; } else { return {false, random(), random()}; // random to simulate undefined value } }; Now, if we wanted to use our search_text function, being the responsible programmers we are, we would first check the success field: void perform_action() { // --snip-- const auto result = search_text(&quot;the jabberwocky&quot;, alice_in_wonderland); if (result.success) { printf(&quot;Found at line %d and column %d\n&quot;, result.line, result.column); } else { // !result.success printf(&quot;Unable to find given text within the document.&quot;); } } This is definitely a solution, and one that was adopted in various codebases I’ve seen in the past, but it also suffers from a flaw, albeit a less severe one this time: the pollution of the codebase with many similar but oh-so-slightly-different types which served only as “rich-return-typed objects”. This has the side-effect of an increase to the cognitive load of the programmer, which makes the experience of programming in that codebase a bit worse than it needs to be: the editors and other tools might help, but you still need to mentally keep track of which function returns what, and have some special handling around any of those. Out-parameters This one is a variation of the two themes above, falling somewhat in the middle: it still signals success and makes it harder (kinda…) to crash the application. This time around, our code would look similar to this: // Our SearchResult object struct SearchResult { int column; int line; }; // And the search function bool search_text(const std::string&amp;amp; needle, const Document&amp;amp; haystack, SearchResult&amp;amp; result) { // --snip-- if(found) { result = SearchResult{column_no, line_no}; return true; } else { return false; } }; // With our usage looking like this: void perform_action() { // --snip-- auto result = SearchResult{}; const auto found = search_text(&quot;the jabberwocky&quot;, alice_in_wonderland, &amp;amp;result); if (found) { printf(&quot;Found at line %d and column %d\n&quot;, result.line, result.column); } else { // !found printf(&quot;Unable to find given text within the document.&quot;); } } This, again, also works. It’s a fine solution for many people (given how widespread out-parameters are) and enjoys a good performance profile because of the pointers/references, but I personally heavily dislike it from an aesthetics/philosophical standpoint: A function should only ever return its return value and nothing else. What can I say? I’m a functional-programming kind of guy. Allow the return of a tuple containing the values If we use the above quote as an axiom for our programming system, we kind of find ourselves in a bind: we both want to return a bool, and a secondary value based on the value of the bool itself. Or are we? For programming languages that only allow one return value, we can look into packing our bool and the auxiliary value into a pair or an n-tuple (it’s arity-based generalisation). This used to be harder, but nowadays most programming languages offer more mathematical primitives in their standard libraries. For example, adapting our example above to something like Kotlin: fun searchText(needle: String, haystack: Document): Pair&amp;lt;Boolean, SearchResult&amp;gt; { // --snip-- if (found) { return Pair(true, SearchResult(column, line)) } else { return Pair(false, SearchResult()) } } And for our usage, this time around: val result = searchText(&quot;The Queen of Hearts&quot;, aliceInWonderland); if (result.first) { println(&quot;Found The Queen of Hearts at ${result.second}&quot;) } There are also some languages that allow you to return multiple values in their base syntax (internally, they might do packing/unpacking automatically to achieve an effect very similar to the above). Of these, perhaps Go is the most famous one, using this as an idiom for error handling: import &quot;errors&quot; func example_function(arg int) (int, error) { if arg == 42 { return -1, errors.New(&quot;can&apos;t work with 42&quot;) } return arg + 3, nil } func main() { result, err := example_function(42); if err != nil { // Log or do some error handling here } } Option/Result/Either Wow. What a trip. Let’s have a quick recap so that we see where we are: We started with a function doing something, and returning true or false to show whether it succeeded or not. Our requirements evolved to now also need some extra information in addition to the above true/false values. We explored a number of different ways to satisfy that new requirement. But all of them were a bit lacking, in various different ways: They… allowed us to crash, either by accidental mistake or misuse of their interface. They didn’t provide enough context to the compiler to assist us with development (and to provide guardrails against misuse), using pattern matching for instance. They depended on the creation of other context-sensitive types, with non-uniform forms. They fallback to using types (e.g. Pair or Triple) that lack specificity to guide our expectations and intuition to a specific context. All of the above are solved by the Option and Result type (and its more general dual in Haskell, Either). All of them are what’s known in Programming Language Theory as Sum Types (sometimes called Discriminated Unions), due to the fact that the value set of the Compound type is the sum of the cardinality of the sets of the atomic types (called constructors) that comprise them. The type definitions look like these (in an ML-inspired pseudosyntax): type Option&amp;lt;T&amp;gt; = | Some&amp;lt;T&amp;gt; | None type Result&amp;lt;T, E&amp;gt; = | Ok&amp;lt;T&amp;gt; | Err&amp;lt;E&amp;gt; type Either&amp;lt;L, R&amp;gt; = | Left&amp;lt;L&amp;gt; | Right&amp;lt;R&amp;gt; All of the above are generic types, admitting generic parameters (the T, Es, etc.). (At this point, it’s worth observing that Either is isomorphic to Result, so from now on onwards, what we mention for Result will apply to Either as well, without the need to explicitly say so). An interesting pattern appears if we also provide a type definition for a Boolean type in the same pseudo syntax: type Boolean = | True | False If we also remove the generic parameters from the above type definitions (just for illustration purposes) and lay them all next to each other, we’re going to observe that their value sets their definitions are identical (with only different names for the various constructors): type Boolean = | True | False type Option = | Some | None type Result = | Ok | Err Wow! This near-identical (isomorphic) form is also a hint that their semantics are also very similar. Let’s try to put the generic parameters (but as comment for a clarity) and see how we do: type Boolean = | True | False type Option = | Some -- with extra information | None type Result = | Ok -- with extra information | Err -- with extra information A clear pattern now emerges! All of these signal the same sort of binary outcome, with the capability of also carrying extra information. Nice! The keen eyed amongst you will have noticed that this insight has now solved our original problem in a very clean way, and has at the same time provided a very clear usage guideline: Use Boolean whenever you only need to discriminate between two outcomes. Use Option whenever you want to do the above, but also want to carry extra information around in the True case. Use Result whenever you want to discriminate between two outcomes but also want to carry extra information around in both of these cases. Let’s have a look at some examples in Rust to see how we would choose which one to use in practice. Let’s have a look at 3 different cases: struct Person { age: u8, } impl Person { // A Person can either drink (is of legal age) or not. // True or false. No other information needed. fn can_drink() -&amp;gt; bool { age &amp;gt;= 18 } } In the above case we see an example of a predicate (a function returning true/false, in effect solving a decision problem). Boolean values work very well for predicates: we only want the first order value - it’s either true or false, but we don’t care why in either case. Let’s now have a look at a case where we might care about extra information in addition to the first-order value: Let’s assume we’re searching for a value in a vector and want to know its index in it: fn search(needle: &amp;amp;String, haystack: &amp;amp;Vec&amp;lt;String&amp;gt;) -&amp;gt; Option&amp;lt;usize&amp;gt; { // Return `Some(index)` if value is present `None` otherwise haystack.iter().position(|x| x == needle) } fn main() { let fruit = vec![ &quot;banana&quot;.to_string(), &quot;mango&quot;.to_string(), &quot;apple&quot;.to_string() ]; let res = search(&amp;amp;&quot;apple&quot;.to_string(), &amp;amp;fruit); assert_eq!(res, Some(2)); } In this case, our search function will search for the string needle inside the collection haystack. If it succeeds (the true case), it’s going to return us a value that signals that it succeeded, along with the extra information we asked for (the index in our case). This is the Some(T) constructor that we saw above in the type definitions. If it fails, it will instead return None (the false equivalent). This is a great example of the typical use-case for Option: we use it in contexts where we want to attach auxiliary data in the successful case, but where if we fail, we don’t care enough to know more about the failure case - only that it happened. That gap is being filled by Result - it’s like Option semantically, but it allows us to also carry around extra data in the case false case. This is useful in that it allows us to carry around diagnostic information in the failure case, to allow with error reporting and recovery. An example of this need being satisfied would be the following function: fn read_to_string(filename: &amp;amp;str) -&amp;gt; Result&amp;lt;String, io::Error&amp;gt; { let mut file = match File::open(&amp;amp;filename) { Ok(f) =&amp;gt; f, Err(e) =&amp;gt; return Err(e), }; let mut text = String::new(); match file.read_to_string(&amp;amp;mut text) { Ok(_) =&amp;gt; Ok(text), Err(e) =&amp;gt; Err(e), } } Here our read_to_string function is doing two things: Open a file, and Read its contents into a string buffer. Any of these two operations can fail. If we only had a bool value as the return value, we could signal that a failure happened by returning false, but we would be at a loss as to what has actually failed. In this case, our Result type allows us to do the following: If everything worked fine, return the Ok() constructor with an appropriate value attached (the string buffer in our case, after completion). If there was an error, either at file opening or reading, returning an Err() constructor, with an appropriate error message attached. Conclusion To wrap everything up, here’s my usage heuristic for the above types: Use bool for simple predicates. Use Option&amp;lt;T&amp;gt; when extra data needs to be carried in the success case (for instance when searching for values in a collection) Use Result&amp;lt;T,E&amp;gt; when extra data needs to be carried around in the success and failure case (say, if you’re reading something from the network, and you want to return the data in the success case or an appropriate error message in the failure case).</summary>
+      
+
+      
+      
+    </entry>
+  
   
   
     <entry>
@@ -4907,412 +5476,6 @@ runtest completed at Fri Jul 12 18:09:07 UTC 2013
 
       
         <summary type="html">A clue! So last week we were left with the compiler test logs and the build results logs that we had to go through to checkout what was the root cause of all these failures in the gccgo test results, and more importantly in the libgo tests. So I went through the gccgo logs in search for a clue about why this may have happened. Here is the list of all the failures I compiled from the logs: spawn [open ...]^M doubleselect.x: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_s elf_ + 0), ktid); ok; })&apos; failed. FAIL: go.test/test/chan/doubleselect.go execution, -O2 -g ========================================================== spawn [open ...]^M nonblock.x: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self_ + 0), ktid); ok; })&apos; failed. FAIL: go.test/test/chan/nonblock.go execution, -O2 -g ========================================================== Executing on host: /root/gcc_new/gccbuild/gcc/testsuite/go/../../gccgo -B/root/gcc_new/gccbuild/gcc/testsuite/go/../../ -fno-diagnostics-show-caret -fdiagnostics-color=never -I/root/gcc_new/gccbuild/i68 6-unknown-gnu0.3/./libgo -fsplit-stack -c -o split_stack376.o split_stack376.c (timeout = 300) spawn /root/gcc_new/gccbuild/gcc/testsuite/go/../../gccgo -B/root/gcc_new/gccbuild/gcc/testsuite/go/../../ -fno-diagnostics-show-caret -fdiagnostics-color=never -I/root/gcc_new/gccbuild/i686-unknown-gnu0. 3/./libgo -fsplit-stack -c -o split_stack376.o split_stack376.c^M cc1: error: &apos;-fsplit-stack&apos; currently only supported on GNU/Linux^M cc1: error: &apos;-fsplit-stack&apos; is not supported by this compiler configuration^M compiler exited with status 1 output is: cc1: error: &apos;-fsplit-stack&apos; currently only supported on GNU/Linux^M cc1: error: &apos;-fsplit-stack&apos; is not supported by this compiler configuration^M UNTESTED: go.test/test/chan/select2.go ========================================================== Setting LD_LIBRARY_PATH to .:/root/gcc_new/gccbuild/i686-unknown-gnu0.3/./libgo/.libs:/root/gcc_new/gccbuild/gcc:.:/root/gcc_new/gccbuild/i686-unknown-gnu0.3/./libgo/.libs:/root/gcc_new/gccbuild/gcc:/root /gcc_new/gccbuild/./gmp/.libs:/root/gcc_new/gccbuild/./prev-gmp/.libs:/root/gcc_new/gccbuild/./mpfr/.libs:/root/gcc_new/gccbuild/./prev-mpfr/.libs:/root/gcc_new/gccbuild/./mpc/.libs:/root/gcc_new/gccbuild /./prev-mpc/.libs spawn [open ...]^M select3.x: ./pthread/../sysdeps/generic/sem-timedwait.c:50: __sem_timedwait_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self_ + 0), ktid); ok; })&apos; failed. Aborted FAIL: go.test/test/chan/select3.go execution, -O2 -g ========================================================== Executing on host: /root/gcc_new/gccbuild/gcc/testsuite/go/../../gccgo -B/root/gcc_new/gccbuild/gcc/testsuite/go/../../ /root/gcc_new/gcc/gcc/testsuite/go.test/test/chan/select5.go -fno-diagnostics-show- caret -fdiagnostics-color=never -I/root/gcc_new/gccbuild/i686-unknown-gnu0.3/./libgo -O -w -pedantic-errors -L/root/gcc_new/gccbuild/i686-unknown-gnu0.3/./libgo -L/root/gcc_new/gccbuild/i686-unknown- gnu0.3/./libgo/.libs -lm -o select5.exe (timeout = 300) spawn /root/gcc_new/gccbuild/gcc/testsuite/go/../../gccgo -B/root/gcc_new/gccbuild/gcc/testsuite/go/../../ /root/gcc_new/gcc/gcc/testsuite/go.test/test/chan/select5.go -fno-diagnostics-show-caret -fdiagno stics-color=never -I/root/gcc_new/gccbuild/i686-unknown-gnu0.3/./libgo -O -w -pedantic-errors -L/root/gcc_new/gccbuild/i686-unknown-gnu0.3/./libgo -L/root/gcc_new/gccbuild/i686-unknown-gnu0.3/./libgo/.lib s -lm -o select5.exe^M PASS: go.test/test/chan/select5.go -O (test for excess errors) FAIL: go.test/test/chan/select5.go execution ========================================================== Setting LD_LIBRARY_PATH to .:/root/gcc_new/gccbuild/i686-unknown-gnu0.3/./libgo/.libs:/root/gcc_new/gccbuild/gcc:.:/root/gcc_new/gccbuild/i686-unknown-gnu0.3/./libgo/.libs:/root/gcc_new/gccbuild/gcc:/root /gcc_new/gccbuild/./gmp/.libs:/root/gcc_new/gccbuild/./prev-gmp/.libs:/root/gcc_new/gccbuild/./mpfr/.libs:/root/gcc_new/gccbuild/./prev-mpfr/.libs:/root/gcc_new/gccbuild/./mpc/.libs:/root/gcc_new/gccbuild /./prev-mpc/.libs spawn [open ...]^M bug147.x: ./pthread/../sysdeps/generic/sem-timedwait.c:50: __sem_timedwait_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self_ + 0), ktid); ok; })&apos; failed. Aborted FAIL: go.test/test/fixedbugs/bug147.go execution, -O2 -g ========================================================= Setting LD_LIBRARY_PATH to .:/root/gcc_new/gccbuild/i686-unknown-gnu0.3/./libgo/.libs:/root/gcc_new/gccbuild/gcc:.:/root/gcc_new/gccbuild/i686-unknown-gnu0.3/./libgo/.libs:/root/gcc_new/gccbuild/gcc:/root /gcc_new/gccbuild/./gmp/.libs:/root/gcc_new/gccbuild/./prev-gmp/.libs:/root/gcc_new/gccbuild/./mpfr/.libs:/root/gcc_new/gccbuild/./prev-mpfr/.libs:/root/gcc_new/gccbuild/./mpc/.libs:/root/gcc_new/gccbuild /./prev-mpc/.libs spawn [open ...]^M BUG: bug347: cannot find caller Aborted FAIL: go.test/test/fixedbugs/bug347.go execution, -O0 -g ======================================================== Setting LD_LIBRARY_PATH to .:/root/gcc_new/gccbuild/i686-unknown-gnu0.3/./libgo/.libs:/root/gcc_new/gccbuild/gcc:.:/root/gcc_new/gccbuild/i686-unknown-gnu0.3/./libgo/.libs:/root/gcc_new/gccbuild/gcc:/root /gcc_new/gccbuild/./gmp/.libs:/root/gcc_new/gccbuild/./prev-gmp/.libs:/root/gcc_new/gccbuild/./mpfr/.libs:/root/gcc_new/gccbuild/./prev-mpfr/.libs:/root/gcc_new/gccbuild/./mpc/.libs:/root/gcc_new/gccbuild /./prev-mpc/.libs spawn [open ...]^M BUG: bug348: cannot find caller panic: runtime error: invalid memory address or nil pointer dereference [signal 0xb code=0x2 addr=0x0] goroutine 1 [running]: FAIL: go.test/test/fixedbugs/bug348.go execution, -O0 -g ======================================================== Setting LD_LIBRARY_PATH to .:/root/gcc_new/gccbuild/i686-unknown-gnu0.3/./libgo/.libs:/root/gcc_new/gccbuild/gcc:.:/root/gcc_new/gccbuild/i686-unknown-gnu0.3/./libgo/.libs:/root/gcc_new/gccbuild/gcc:/root /gcc_new/gccbuild/./gmp/.libs:/root/gcc_new/gccbuild/./prev-gmp/.libs:/root/gcc_new/gccbuild/./mpfr/.libs:/root/gcc_new/gccbuild/./prev-mpfr/.libs:/root/gcc_new/gccbuild/./mpc/.libs:/root/gcc_new/gccbuild /./prev-mpc/.libs spawn [open ...]^M mallocfin.x: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self _ + 0), ktid); ok; })&apos; failed. FAIL: go.test/test/mallocfin.go execution, -O2 -g ======================================================= Setting LD_LIBRARY_PATH to .:/root/gcc_new/gccbuild/i686-unknown-gnu0.3/./libgo/.libs:/root/gcc_new/gccbuild/gcc:.:/root/gcc_new/gccbuild/i686-unknown-gnu0.3/./libgo/.libs:/root/gcc_new/gccbuild/gcc:/root /gcc_new/gccbuild/./gmp/.libs:/root/gcc_new/gccbuild/./prev-gmp/.libs:/root/gcc_new/gccbuild/./mpfr/.libs:/root/gcc_new/gccbuild/./prev-mpfr/.libs:/root/gcc_new/gccbuild/./mpc/.libs:/root/gcc_new/gccbuild /./prev-mpc/.libs spawn [open ...]^M Aborted FAIL: go.test/test/nil.go execution, -O2 -g ====================================================== Setting LD_LIBRARY_PATH to .:/root/gcc_new/gccbuild/i686-unknown-gnu0.3/./libgo/.libs:/root/gcc_new/gccbuild/gcc:.:/root/gcc_new/gccbuild/i686-unknown-gnu0.3/./libgo/.libs:/root/gcc_new/gccbuild/gcc:/root /gcc_new/gccbuild/./gmp/.libs:/root/gcc_new/gccbuild/./prev-gmp/.libs:/root/gcc_new/gccbuild/./mpfr/.libs:/root/gcc_new/gccbuild/./prev-mpfr/.libs:/root/gcc_new/gccbuild/./mpc/.libs:/root/gcc_new/gccbuild /./prev-mpc/.libs spawn [open ...]^M Aborted FAIL: go.test/test/recover3.go execution, -O2 -g See a pattern there? Well certainly I do. In several occasions, the root cause for the fail is this: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self_ + 0), ktid); ok; })&apos; failed. Hmm… That’s interesting. Let us go through the libgo results too. Test Run By root on Fri Jul 12 17:56:44 UTC 2013 Native configuration is i686-unknown-gnu0.3 === libgo tests === a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self_ + 0), ktid); ok; })&apos; failed. ../../../gcc/libgo/testsuite/gotest: line 486: 10005 Aborted ./a.out -test.short -test.timeout=${timeout}s &quot;$@&quot; FAIL: bufio timed out in gotest ../../../gcc/libgo/testsuite/gotest: line 484: kill: (10005) - No such process a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self_ + 0), ktid); ok; })&apos; failed. ../../../gcc/libgo/testsuite/gotest: line 486: 10637 Aborted ./a.out -test.short -test.timeout=${timeout}s &quot;$@&quot; FAIL: bytes timed out in gotest ../../../gcc/libgo/testsuite/gotest: line 484: kill: (10637) - No such process a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self_ + 0), ktid); ok; })&apos; failed. ../../../gcc/libgo/testsuite/gotest: line 486: 10757 Aborted ./a.out -test.short -test.timeout=${timeout}s &quot;$@&quot; FAIL: errors timed out in gotest ../../../gcc/libgo/testsuite/gotest: line 484: kill: (10757) - No such process a.out: ./pthread/../sysdeps/generic/sem-timedwait.c:50: __sem_timedwait_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self_ + 0), ktid); ok; })&apos; failed. Aborted goroutine 1 [syscall]: no stack trace available FAIL: expvar timed out in gotest ../../../gcc/libgo/testsuite/gotest: line 484: kill: (10886) - No such process a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self_ + 0), ktid); ok; })&apos; failed. ../../../gcc/libgo/testsuite/gotest: line 486: 11058 Aborted ./a.out -test.short -test.timeout=${timeout}s &quot;$@&quot; FAIL: flag timed out in gotest ../../../gcc/libgo/testsuite/gotest: line 484: kill: (11058) - No such process a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self_ + 0), ktid); ok; })&apos; failed. ../../../gcc/libgo/testsuite/gotest: line 486: 11475 Aborted ./a.out -test.short -test.timeout=${timeout}s &quot;$@&quot; FAIL: fmt timed out in gotest ../../../gcc/libgo/testsuite/gotest: line 484: kill: (11475) - No such process a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self_ + 0), ktid); ok; })&apos; failed. ../../../gcc/libgo/testsuite/gotest: line 486: 11584 Aborted ./a.out -test.short -test.timeout=${timeout}s &quot;$@&quot; FAIL: html timed out in gotest ../../../gcc/libgo/testsuite/gotest: line 484: kill: (11584) - No such process a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self_ + 0), ktid); ok; })&apos; failed. ../../../gcc/libgo/testsuite/gotest: line 486: 11747 Aborted ./a.out -test.short -test.timeout=${timeout}s &quot;$@&quot; FAIL: image timed out in gotest ../../../gcc/libgo/testsuite/gotest: line 484: kill: (11747) - No such process a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self_ + 0), ktid); ok; })&apos; failed. ../../../gcc/libgo/testsuite/gotest: line 486: 11999 Aborted ./a.out -test.short -test.timeout=${timeout}s &quot;$@&quot; FAIL: io timed out in gotest ../../../gcc/libgo/testsuite/gotest: line 484: kill: (11999) - No such process a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self_ + 0), ktid); ok; })&apos; failed. ../../../gcc/libgo/testsuite/gotest: line 486: 12116 Aborted ./a.out -test.short -test.timeout=${timeout}s &quot;$@&quot; FAIL: log timed out in gotest ../../../gcc/libgo/testsuite/gotest: line 484: kill: (12116) - No such process a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self_ + 0), ktid); ok; })&apos; failed. ../../../gcc/libgo/testsuite/gotest: line 486: 13107 Aborted ./a.out -test.short -test.timeout=${timeout}s &quot;$@&quot; FAIL: math timed out in gotest ../../../gcc/libgo/testsuite/gotest: line 484: kill: (13107) - No such process a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self_ + 0), ktid); ok; })&apos; failed. ../../../gcc/libgo/testsuite/gotest: line 486: 13271 Aborted ./a.out -test.short -test.timeout=${timeout}s &quot;$@&quot; FAIL: mime timed out in gotest ../../../gcc/libgo/testsuite/gotest: line 484: kill: (13271) - No such process a.out: ./pthread/../sysdeps/generic/sem-timedwait.c:50: __sem_timedwait_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self_ + 0), ktid); ok; })&apos; failed. Aborted goroutine 1 [chan receive]: a.out: ./pthread/../sysdeps/generic/sem-timedwait.c:50: __sem_timedwait_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self_ + 0), ktid); ok; })&apos; failed. panic during panic testing.RunTestsFAIL: net timed out in gotest ../../../gcc/libgo/testsuite/gotest: line 484: kill: (14234) - No such process a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self_ + 0), ktid); ok; })&apos; failed. ../../../gcc/libgo/testsuite/gotest: line 486: 14699 Aborted ./a.out -test.short -test.timeout=${timeout}s &quot;$@&quot; FAIL: os timed out in gotest ../../../gcc/libgo/testsuite/gotest: line 484: kill: (14699) - No such process a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self_ + 0), ktid); ok; })&apos; failed. ../../../gcc/libgo/testsuite/gotest: line 486: 14860 Aborted ./a.out -test.short -test.timeout=${timeout}s &quot;$@&quot; FAIL: path timed out in gotest ... runtest completed at Fri Jul 12 18:09:07 UTC 2013 That’s certainly even more interesting. In case you haven’t noticed, it’s the same assertion that caused the failures in gccgo test suite. Let us find the offending code, shall we? /* Set the new thread&apos;s signal mask and set the pending signals to empty. POSIX says: &quot;The signal mask shall be inherited from the creating thread. The set of signals pending for the new thread shall be empty.&quot; If the currnet thread is not a pthread then we just inherit the process&apos; sigmask. */ if (__pthread_num_threads == 1) err = sigprocmask (0, 0, &amp;amp;sigset); else err = __pthread_sigstate (_pthread_self (), 0, 0, &amp;amp;sigset, 0); assert_perror (err); This seems to be the code that the logs point to. But no sign of the assertion. After discussing this issue with my peers in #hurd, I was told that the code I was looking for (the failing assertion), is getting inlined via _pthread_self () and is actually located in libpthread/sysdeps/mach/hurd/pt-sysdep.h. extern __thread struct __pthread *___pthread_self; #define _pthread_self() \ ({ \ struct __pthread *thread; \ \ assert (__pthread_threads); \ thread = ___pthread_self; \ \ assert (thread); \ assert (({ mach_port_t ktid = __mach_thread_self (); \ int ok = thread-&amp;gt;kernel_thread == ktid; \ __mach_port_deallocate (__mach_task_self (), ktid);\ ok; })); \ thread; \ }) So this is what I was looking for. Further discussing it in the weekly IRC meeting, braunr provided me with some more clues: 08:38:15 braunr&amp;gt; nlightnfotis: did i answer that ? 08:38:24 nlightnfotis&amp;gt; braunr: which one? 08:38:30 nlightnfotis&amp;gt; hello btw :) 08:38:33 braunr&amp;gt; the problems you’re seeing are the pthread resources leaks i’ve been trying to fix lately 08:38:58 braunr&amp;gt; they’re not only leaks 08:39:08 braunr&amp;gt; creation and destruction are buggy 08:39:37 nlightnfotis&amp;gt; I have read so in http://www.gnu.org/software/hurd/libpthread.html. I believe it’s under Thread’s Death right? 08:40:15 braunr&amp;gt; nlightnfotis: yes but it’s buggy 08:40:22 braunr&amp;gt; and the description doesn’t describe the bugs 08:41:02 nlightnfotis&amp;gt; so we will either have to find a temporary workaround, or better yet work on a fix, right? 08:41:12 braunr&amp;gt; nlightnfotis: i also told you the work around 08:41:16 braunr&amp;gt; nlightnfotis: create a thread pool Work for next week This leaves us with next week’s work, which is to hack in libpthread’s code to attempt to create a thread pool, so that we avoid some of the issues that are present now with the current implementation of the Hurd libpthread code. It was also suggested by Samuel Thibault (youpi) that I should run the libgo tests by hand and see if I get some more clues, like stack traces. It sounds like a good idea to me, so that’s something that I will look into too.</summary>
-      
-
-      
-      
-    </entry>
-  
-  
-  
-    <entry>
-      
-      <title type="html">GSOC: Week 4 report</title>
-      
-      
-      <link href="https://nlightnfotis.github.io/2013/07/15/gsoc-week-4-report/" rel="alternate" type="text/html" title="GSOC: Week 4 report" />
-      
-      <published>2013-07-15T11:43:00+00:00</published>
-      <updated>2013-07-15T11:43:00+00:00</updated>
-      <id>https://nlightnfotis.github.io/2013/07/15/gsoc-week-4-report</id>
-      <content type="html" xml:base="https://nlightnfotis.github.io/2013/07/15/gsoc-week-4-report/">&lt;h1&gt;Yeah baby! It builds!&lt;/h1&gt;
-
-&lt;p&gt;&lt;strong&gt;The highlight of this week’s progress was managing to successfully build
-gccgo under the Hurd.&lt;/strong&gt;
-Not only did it compile successfully, it also run its tests, with the
-results &lt;a href=&quot;http://lists.gnu.org/archive/html/bug-hurd/2013-06/msg00117.html&quot;&gt;matching the ones provided by my mentor Thomas Schwinge&lt;/a&gt;.
-This was a checkpoint in my summer of code project. Successful building of
-the compiler meant that I am (happily) in the position to carry on with the
-next part (and the main one) of my project, that is, to make sure that
-the &lt;strong&gt;go library (libgo) also passes all its tests 
-and works without any major issues.&lt;/strong&gt;&lt;/p&gt;
-
-&lt;h1&gt;So where are we now?&lt;/h1&gt;
-
-&lt;h2&gt;gccgo&lt;/h2&gt;
-
-&lt;p&gt;Compiling gccgo on the Hurd was big. But we also had to see how it 
-compared to the build that was successful on Linux. The most effective
-way to compare the two builds, is to check the test results of the two.&lt;/p&gt;
-
-&lt;p&gt;Taking a look at the gccgo results on the Hurd, I was delighted to find 
-that it passed most of its tests. There were few that were failing, but 
-for the most part, it did well. Below are the test results of gccgo on the Hurd:&lt;/p&gt;
-
-&lt;div lang=&quot;shell&quot; class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;     === go Summary ===
-
-# of expected passes        5069
-# of unexpected failures    11
-# of expected failures      1
-# of untested testcases     6
-/root/gcc_new/gccbuild/gcc/testsuite/go/../../gccgo  version 4.9.0 20130606 (experimental) (GCC)
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;So it’s passing 99% of its tests. That’s cool. But it could help to take a look
-at the tests that are failing, to get an idea of what the fails are, how critical they are, etc&lt;/p&gt;
-
-&lt;div lang=&quot;shell&quot; class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nlightnfotis@earth:~/HurdVM/HurdFiles$ grep -v ^PASS: &amp;lt; go.sum
-Test Run By root on Thu Jul 11 10:33:34 2013
-Native configuration is i686-unknown-gnu0.3
-
-        === go tests ===
-
-        Schedule of variations:
-            unix
-
-            Running target unix
-            Running /root/gcc_new/gcc/gcc/testsuite/go.dg/dg.exp ...
-            Running /root/gcc_new/gcc/gcc/testsuite/go.go-torture/execute/execute.exp ...
-            Running /root/gcc_new/gcc/gcc/testsuite/go.test/go-test.exp ...
-            FAIL: go.test/test/chan/doubleselect.go execution,  -O2 -g 
-            FAIL: go.test/test/chan/nonblock.go execution,  -O2 -g 
-            UNTESTED: go.test/test/chan/select2.go
-            FAIL: go.test/test/chan/select3.go execution,  -O2 -g 
-            FAIL: go.test/test/chan/select5.go execution
-            UNTESTED: go.test/test/closure.go
-            FAIL: go.test/test/fixedbugs/bug147.go execution,  -O2 -g 
-            FAIL: go.test/test/fixedbugs/bug347.go execution,  -O0 -g 
-            FAIL: go.test/test/fixedbugs/bug348.go execution,  -O0 -g 
-            XFAIL: bug429.go  -O2 -g  execution test
-            FAIL: go.test/test/goprint.go execution
-            UNTESTED: go.test/test/goprint.go compare
-            UNTESTED: go.test/test/init1.go
-            FAIL: go.test/test/mallocfin.go execution,  -O2 -g 
-            FAIL: go.test/test/nil.go execution,  -O2 -g 
-            FAIL: go.test/test/recover3.go execution,  -O2 -g 
-            UNTESTED: go.test/test/rotate.go
-            UNTESTED: go.test/test/stack.go
-
-                    === go Summary ===
-
-# of expected passes        5069
-# of unexpected failures    11
-# of expected failures      1
-# of untested testcases     6
-/root/gcc_new/gccbuild/gcc/testsuite/go/../../gccgo  version 4.9.0 20130606 (experimental) (GCC) 
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Hmm. So these are the failing tests. Before we go through them, it might be a good idea
-to check the status of the gccgo tests on the Linux build too. Let’s see.&lt;/p&gt;
-
-&lt;div lang=&quot;shell&quot; class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nlightnfotis@earth:~$ grep -v ^PASS: &amp;lt; linux_go.sum 
-Test Run By fotis on Mon Jul 15 10:28:38 2013
-Native configuration is i686-pc-linux-gnu
-
-        === go tests ===
-
-        Schedule of variations:
-            unix
-
-            Running target unix
-            Running /home/fotis/Software/gcc/gcc/testsuite/go.dg/dg.exp ...
-            Running /home/fotis/Software/gcc/gcc/testsuite/go.go-torture/execute/execute.exp ...
-            Running /home/fotis/Software/gcc/gcc/testsuite/go.test/go-test.exp ...
-            UNTESTED: go.test/test/closure.go
-            XFAIL: bug429.go  -O2 -g  execution test
-            UNTESTED: go.test/test/init1.go
-            UNTESTED: go.test/test/rotate.go
-
-                    === go Summary ===
-
-# of expected passes        5183
-# of expected failures      1
-# of untested testcases     3
-/home/fotis/Software/gcc_build/gcc/testsuite/go/../../gccgo  version 4.9.0 20130702 (experimental) (GCC) 
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;So, it seems like there are less tests failing here. But wait a minute. Those tests that are failing.
-They are the same as with the Hurd build. So I can assume that we are left with 4 less tests to check
-regarding their failures (Go on Linux works without any issues,so I guess it would be safe to skip those tests at the moment).
-That leaves us with these tests to check:&lt;/p&gt;
-
-&lt;div lang=&quot;shell&quot; class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;FAIL: go.test/test/chan/doubleselect.go execution,  -O2 -g
-FAIL: go.test/test/chan/nonblock.go execution,  -O2 -g
-UNTESTED: go.test/test/chan/select2.go
-FAIL: go.test/test/chan/select3.go execution,  -O2 -g
-FAIL: go.test/test/chan/select5.go execution
-FAIL: go.test/test/fixedbugs/bug147.go execution,  -O2 -g
-FAIL: go.test/test/fixedbugs/bug347.go execution,  -O0 -g
-FAIL: go.test/test/fixedbugs/bug348.go execution,  -O0 -g
-FAIL: go.test/test/goprint.go execution
-UNTESTED: go.test/test/goprint.go compare
-FAIL: go.test/test/mallocfin.go execution,  -O2 -g
-FAIL: go.test/test/nil.go execution,  -O2 -g
-FAIL: go.test/test/recover3.go execution,  -O2 -g
-UNTESTED: go.test/test/stack.go
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Discussing this with my mentor &lt;a href=&quot;https://plus.google.com/101468009864620818344&quot;&gt;Thomas Schwinge&lt;/a&gt; in IRC (#hurd)&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;tschwinge&gt; For now, please ignore any failing tests that have »select« in their name -- that is, do file them, but do not spend a lot of time figuring out what might be wrong there.
-&lt;tschwinge&gt; The Hurd&apos;s select implementation is a bit of a beast, and I don&apos;t want you -- at this time -- spend a lot of time on that.  We already know there are some deficiencies, so we should postpone that to later.
-&lt;/tschwinge&gt;&lt;/tschwinge&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;So that leaves us with even less tests to check:&lt;/p&gt;
-
-&lt;div lang=&quot;shell&quot; class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;FAIL: go.test/test/chan/nonblock.go execution,  -O2 -g
-FAIL: go.test/test/fixedbugs/bug147.go execution,  -O2 -g
-FAIL: go.test/test/fixedbugs/bug347.go execution,  -O0 -g
-FAIL: go.test/test/fixedbugs/bug348.go execution,  -O0 -g
-FAIL: go.test/test/goprint.go execution
-UNTESTED: go.test/test/goprint.go compare
-FAIL: go.test/test/mallocfin.go execution,  -O2 -g
-FAIL: go.test/test/nil.go execution,  -O2 -g
-FAIL: go.test/test/recover3.go execution,  -O2 -g
-UNTESTED: go.test/test/stack.go
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Nice. &lt;strong&gt;This narrowed down the list of errors that I have to go through to make sure that gccgo
-works as well on the Hurd as it does on Linux.&lt;/strong&gt;&lt;/p&gt;
-
-&lt;h2&gt;libgo&lt;/h2&gt;
-
-&lt;p&gt;So, we talked about gccgo, but what about the runtime libraries (libgo)? They are also getting 
-tested when we run &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;make check-go&lt;/code&gt;and seeing as they are a vital part 
-of enabling programs written on go to run on the Hurd, we ought
-to take a look. (This was also the original goal of my project proposal).&lt;/p&gt;
-
-&lt;p&gt;So let us see what we have at the libgo.sum:&lt;/p&gt;
-
-&lt;div lang=&quot;shell&quot; class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Test Run By root on Fri Jul 12 17:56:44 UTC 2013
-Native configuration is i686-unknown-gnu0.3
-
-        === libgo tests ===
-
-        Schedule of variations:
-            unix
-
-            Running target unix
-            Running ../../../gcc/libgo/libgo.exp ...
-            FAIL: bufio
-            FAIL: bytes
-            FAIL: errors
-            FAIL: expvar
-            FAIL: flag
-            FAIL: fmt
-            FAIL: html
-            FAIL: image
-            FAIL: io
-            FAIL: log
-            FAIL: math
-            FAIL: mime
-            FAIL: net
-            FAIL: os
-            FAIL: path
-            FAIL: reflect
-            FAIL: regexp
-            FAIL: runtime
-            FAIL: sort
-            FAIL: strconv
-            FAIL: strings
-            FAIL: sync
-            FAIL: syscall
-            FAIL: time
-            FAIL: unicode
-            FAIL: archive/tar
-            FAIL: archive/zip
-            FAIL: compress/bzip2
-            FAIL: compress/flate
-            FAIL: compress/gzip
-            FAIL: compress/lzw
-            FAIL: compress/zlib
-            FAIL: container/heap
-            FAIL: container/list
-            FAIL: container/ring
-            FAIL: crypto/aes
-            FAIL: crypto/cipher
-            FAIL: crypto/des
-            FAIL: crypto/dsa
-            FAIL: crypto/ecdsa
-            FAIL: crypto/elliptic
-            FAIL: crypto/hmac
-            FAIL: crypto/md5
-            FAIL: crypto/rand
-            FAIL: crypto/rc4
-            FAIL: crypto/rsa
-            FAIL: crypto/sha1
-            FAIL: crypto/sha256
-            FAIL: crypto/sha512
-            FAIL: crypto/subtle
-            FAIL: crypto/tls
-            FAIL: crypto/x509
-            FAIL: database/sql
-            FAIL: database/sql/driver
-            FAIL: debug/dwarf
-            FAIL: debug/elf
-            FAIL: debug/macho
-            FAIL: debug/pe
-            FAIL: encoding/ascii85
-            FAIL: encoding/asn1
-            FAIL: encoding/base32
-            FAIL: encoding/base64
-            FAIL: encoding/binary
-            FAIL: encoding/csv
-            FAIL: encoding/gob
-            FAIL: encoding/hex
-            FAIL: encoding/json
-            FAIL: encoding/pem
-            PASS: encoding/xml
-            FAIL: exp/cookiejar
-            FAIL: exp/ebnf
-            FAIL: exp/html
-            FAIL: exp/html/atom
-            FAIL: exp/locale/collate
-            FAIL: exp/locale/collate/build
-            FAIL: exp/norm
-            FAIL: exp/proxy
-            FAIL: exp/terminal
-            FAIL: exp/utf8string
-            FAIL: html/template
-            FAIL: go/ast
-            FAIL: go/doc
-            FAIL: go/format
-            FAIL: go/parser
-            FAIL: go/printer
-            FAIL: go/scanner
-            FAIL: go/token
-            FAIL: go/types
-            FAIL: hash/adler32
-            FAIL: hash/crc32
-            FAIL: hash/crc64
-            FAIL: hash/fnv
-            FAIL: image/color
-            FAIL: image/draw
-            FAIL: image/jpeg
-            FAIL: image/png
-            FAIL: index/suffixarray
-            FAIL: io/ioutil
-            FAIL: log/syslog
-            FAIL: math/big
-            FAIL: math/cmplx
-            FAIL: math/rand
-            FAIL: mime/multipart
-            FAIL: net/http
-            FAIL: net/http/cgi
-            FAIL: net/http/fcgi
-            FAIL: net/http/httptest
-            FAIL: net/http/httputil
-            FAIL: net/mail
-            FAIL: net/rpc
-            FAIL: net/smtp
-            FAIL: net/textproto
-            FAIL: net/url
-            FAIL: net/rpc/jsonrpc
-            FAIL: old/netchan
-            FAIL: old/regexp
-            FAIL: old/template
-            FAIL: os/exec
-            FAIL: os/signal
-            FAIL: os/user
-            FAIL: path/filepath
-            FAIL: regexp/syntax
-            FAIL: runtime/pprof
-            FAIL: sync/atomic
-            FAIL: text/scanner
-            FAIL: text/tabwriter
-            FAIL: text/template
-            FAIL: text/template/parse
-            FAIL: testing/quick
-            FAIL: unicode/utf16
-            FAIL: unicode/utf8
-
-                    === libgo Summary ===
-
-# of expected passes        1
-# of unexpected failures    130
-/root/gcc_new/gccbuild/./gcc/gccgo version 4.9.0 20130606 (experimental) (GCC)
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;strong&gt;Oh boy!&lt;/strong&gt; Oh boy! Well, on second thoughts, this was not unexpected. 
-&lt;strong&gt;This was the core of my GSOC work&lt;/strong&gt;. This is how it starts :)&lt;/p&gt;
-
-&lt;p&gt;Before this goes any further, maybe we should visit the Linux test results too.&lt;/p&gt;
-
-&lt;div lang=&quot;shell&quot; class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
-Test Run By fotis on Τρι 02 Ιούλ 2013 09:20:20 μμ EEST
-Native configuration is i686-pc-linux-gnu
-
-        === libgo tests ===
-
-        Schedule of variations:
-            unix
-
-            Running target unix
-            Running ../../../gcc/libgo/libgo.exp ...
-            PASS: bufio
-            PASS: bytes
-            ...
-
-                    === libgo Summary ===
-
-# of expected passes        131
-/home/fotis/Software/gcc_build/./gcc/gccgo version 4.9.0 20130702 (experimental) (GCC)
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Wow. Considering the results from the Hurd, they really are &lt;strong&gt;not&lt;/strong&gt; unexpected. &lt;a href=&quot;http://darnassus.sceen.net/~hurd-web/open_issues/gccgo/&quot;&gt;Remember
-that &lt;strong&gt;getcontext, makecontext, setcontext and swapcontext&lt;/strong&gt; are not working as expected.&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;And recalling from an email from Ian Lance Taylor (the GCCgo maintainer, and a member of the Go team)
-early in the summer:&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;Go does require switching stacks.  A port of Go that doesn’t support
-goroutines would be useless–nothing in the standard library would
-work&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h1&gt;Conclusion / Work for next week.&lt;/h1&gt;
-
-&lt;p&gt;&lt;strong&gt;So now it comes down to work on implementing correctly the context switching functions.&lt;/strong&gt; 
-Apart from that, going through the test results that fail from gccgo is also something that
-is to be done, however I am not sure that it should be a first priority. I also have to go
-through go.log to see if there any clues as to why the gccgo tests fail.&lt;/p&gt;
-
-&lt;p&gt;Having finally built gccgo on the Hurd, and &lt;strong&gt;more importantly still being on schedule,
-(the original one, from my proposal) means that I can now concentrate on the core part of my 
-project proposal (and the most exciting one too)&lt;/strong&gt;, that is proper implementation 
-of what is &lt;em&gt;blocking effective context switching, which
-in its part is blocking goroutines, without which, the go library will not work properly.&lt;/em&gt;&lt;/p&gt;</content>
-
-      
-      
-      
-      
-      
-
-      
-        <author>
-            <name>Fotis Koutoulakis</name>
-          
-          
-        </author>
-      
-
-      
-
-      
-        <category term="gsoc" />
-      
-        <category term="gcc" />
-      
-        <category term="golang" />
-      
-
-      
-        <summary type="html">Yeah baby! It builds! The highlight of this week’s progress was managing to successfully build gccgo under the Hurd. Not only did it compile successfully, it also run its tests, with the results matching the ones provided by my mentor Thomas Schwinge. This was a checkpoint in my summer of code project. Successful building of the compiler meant that I am (happily) in the position to carry on with the next part (and the main one) of my project, that is, to make sure that the go library (libgo) also passes all its tests and works without any major issues. So where are we now? gccgo Compiling gccgo on the Hurd was big. But we also had to see how it compared to the build that was successful on Linux. The most effective way to compare the two builds, is to check the test results of the two. Taking a look at the gccgo results on the Hurd, I was delighted to find that it passed most of its tests. There were few that were failing, but for the most part, it did well. Below are the test results of gccgo on the Hurd: === go Summary === # of expected passes 5069 # of unexpected failures 11 # of expected failures 1 # of untested testcases 6 /root/gcc_new/gccbuild/gcc/testsuite/go/../../gccgo version 4.9.0 20130606 (experimental) (GCC) So it’s passing 99% of its tests. That’s cool. But it could help to take a look at the tests that are failing, to get an idea of what the fails are, how critical they are, etc nlightnfotis@earth:~/HurdVM/HurdFiles$ grep -v ^PASS: &amp;lt; go.sum Test Run By root on Thu Jul 11 10:33:34 2013 Native configuration is i686-unknown-gnu0.3 === go tests === Schedule of variations: unix Running target unix Running /root/gcc_new/gcc/gcc/testsuite/go.dg/dg.exp ... Running /root/gcc_new/gcc/gcc/testsuite/go.go-torture/execute/execute.exp ... Running /root/gcc_new/gcc/gcc/testsuite/go.test/go-test.exp ... FAIL: go.test/test/chan/doubleselect.go execution, -O2 -g FAIL: go.test/test/chan/nonblock.go execution, -O2 -g UNTESTED: go.test/test/chan/select2.go FAIL: go.test/test/chan/select3.go execution, -O2 -g FAIL: go.test/test/chan/select5.go execution UNTESTED: go.test/test/closure.go FAIL: go.test/test/fixedbugs/bug147.go execution, -O2 -g FAIL: go.test/test/fixedbugs/bug347.go execution, -O0 -g FAIL: go.test/test/fixedbugs/bug348.go execution, -O0 -g XFAIL: bug429.go -O2 -g execution test FAIL: go.test/test/goprint.go execution UNTESTED: go.test/test/goprint.go compare UNTESTED: go.test/test/init1.go FAIL: go.test/test/mallocfin.go execution, -O2 -g FAIL: go.test/test/nil.go execution, -O2 -g FAIL: go.test/test/recover3.go execution, -O2 -g UNTESTED: go.test/test/rotate.go UNTESTED: go.test/test/stack.go === go Summary === # of expected passes 5069 # of unexpected failures 11 # of expected failures 1 # of untested testcases 6 /root/gcc_new/gccbuild/gcc/testsuite/go/../../gccgo version 4.9.0 20130606 (experimental) (GCC) Hmm. So these are the failing tests. Before we go through them, it might be a good idea to check the status of the gccgo tests on the Linux build too. Let’s see. nlightnfotis@earth:~$ grep -v ^PASS: &amp;lt; linux_go.sum Test Run By fotis on Mon Jul 15 10:28:38 2013 Native configuration is i686-pc-linux-gnu === go tests === Schedule of variations: unix Running target unix Running /home/fotis/Software/gcc/gcc/testsuite/go.dg/dg.exp ... Running /home/fotis/Software/gcc/gcc/testsuite/go.go-torture/execute/execute.exp ... Running /home/fotis/Software/gcc/gcc/testsuite/go.test/go-test.exp ... UNTESTED: go.test/test/closure.go XFAIL: bug429.go -O2 -g execution test UNTESTED: go.test/test/init1.go UNTESTED: go.test/test/rotate.go === go Summary === # of expected passes 5183 # of expected failures 1 # of untested testcases 3 /home/fotis/Software/gcc_build/gcc/testsuite/go/../../gccgo version 4.9.0 20130702 (experimental) (GCC) So, it seems like there are less tests failing here. But wait a minute. Those tests that are failing. They are the same as with the Hurd build. So I can assume that we are left with 4 less tests to check regarding their failures (Go on Linux works without any issues,so I guess it would be safe to skip those tests at the moment). That leaves us with these tests to check: FAIL: go.test/test/chan/doubleselect.go execution, -O2 -g FAIL: go.test/test/chan/nonblock.go execution, -O2 -g UNTESTED: go.test/test/chan/select2.go FAIL: go.test/test/chan/select3.go execution, -O2 -g FAIL: go.test/test/chan/select5.go execution FAIL: go.test/test/fixedbugs/bug147.go execution, -O2 -g FAIL: go.test/test/fixedbugs/bug347.go execution, -O0 -g FAIL: go.test/test/fixedbugs/bug348.go execution, -O0 -g FAIL: go.test/test/goprint.go execution UNTESTED: go.test/test/goprint.go compare FAIL: go.test/test/mallocfin.go execution, -O2 -g FAIL: go.test/test/nil.go execution, -O2 -g FAIL: go.test/test/recover3.go execution, -O2 -g UNTESTED: go.test/test/stack.go Discussing this with my mentor Thomas Schwinge in IRC (#hurd) For now, please ignore any failing tests that have »select« in their name -- that is, do file them, but do not spend a lot of time figuring out what might be wrong there. The Hurd&apos;s select implementation is a bit of a beast, and I don&apos;t want you -- at this time -- spend a lot of time on that. We already know there are some deficiencies, so we should postpone that to later. So that leaves us with even less tests to check: FAIL: go.test/test/chan/nonblock.go execution, -O2 -g FAIL: go.test/test/fixedbugs/bug147.go execution, -O2 -g FAIL: go.test/test/fixedbugs/bug347.go execution, -O0 -g FAIL: go.test/test/fixedbugs/bug348.go execution, -O0 -g FAIL: go.test/test/goprint.go execution UNTESTED: go.test/test/goprint.go compare FAIL: go.test/test/mallocfin.go execution, -O2 -g FAIL: go.test/test/nil.go execution, -O2 -g FAIL: go.test/test/recover3.go execution, -O2 -g UNTESTED: go.test/test/stack.go Nice. This narrowed down the list of errors that I have to go through to make sure that gccgo works as well on the Hurd as it does on Linux. libgo So, we talked about gccgo, but what about the runtime libraries (libgo)? They are also getting tested when we run make check-goand seeing as they are a vital part of enabling programs written on go to run on the Hurd, we ought to take a look. (This was also the original goal of my project proposal). So let us see what we have at the libgo.sum: Test Run By root on Fri Jul 12 17:56:44 UTC 2013 Native configuration is i686-unknown-gnu0.3 === libgo tests === Schedule of variations: unix Running target unix Running ../../../gcc/libgo/libgo.exp ... FAIL: bufio FAIL: bytes FAIL: errors FAIL: expvar FAIL: flag FAIL: fmt FAIL: html FAIL: image FAIL: io FAIL: log FAIL: math FAIL: mime FAIL: net FAIL: os FAIL: path FAIL: reflect FAIL: regexp FAIL: runtime FAIL: sort FAIL: strconv FAIL: strings FAIL: sync FAIL: syscall FAIL: time FAIL: unicode FAIL: archive/tar FAIL: archive/zip FAIL: compress/bzip2 FAIL: compress/flate FAIL: compress/gzip FAIL: compress/lzw FAIL: compress/zlib FAIL: container/heap FAIL: container/list FAIL: container/ring FAIL: crypto/aes FAIL: crypto/cipher FAIL: crypto/des FAIL: crypto/dsa FAIL: crypto/ecdsa FAIL: crypto/elliptic FAIL: crypto/hmac FAIL: crypto/md5 FAIL: crypto/rand FAIL: crypto/rc4 FAIL: crypto/rsa FAIL: crypto/sha1 FAIL: crypto/sha256 FAIL: crypto/sha512 FAIL: crypto/subtle FAIL: crypto/tls FAIL: crypto/x509 FAIL: database/sql FAIL: database/sql/driver FAIL: debug/dwarf FAIL: debug/elf FAIL: debug/macho FAIL: debug/pe FAIL: encoding/ascii85 FAIL: encoding/asn1 FAIL: encoding/base32 FAIL: encoding/base64 FAIL: encoding/binary FAIL: encoding/csv FAIL: encoding/gob FAIL: encoding/hex FAIL: encoding/json FAIL: encoding/pem PASS: encoding/xml FAIL: exp/cookiejar FAIL: exp/ebnf FAIL: exp/html FAIL: exp/html/atom FAIL: exp/locale/collate FAIL: exp/locale/collate/build FAIL: exp/norm FAIL: exp/proxy FAIL: exp/terminal FAIL: exp/utf8string FAIL: html/template FAIL: go/ast FAIL: go/doc FAIL: go/format FAIL: go/parser FAIL: go/printer FAIL: go/scanner FAIL: go/token FAIL: go/types FAIL: hash/adler32 FAIL: hash/crc32 FAIL: hash/crc64 FAIL: hash/fnv FAIL: image/color FAIL: image/draw FAIL: image/jpeg FAIL: image/png FAIL: index/suffixarray FAIL: io/ioutil FAIL: log/syslog FAIL: math/big FAIL: math/cmplx FAIL: math/rand FAIL: mime/multipart FAIL: net/http FAIL: net/http/cgi FAIL: net/http/fcgi FAIL: net/http/httptest FAIL: net/http/httputil FAIL: net/mail FAIL: net/rpc FAIL: net/smtp FAIL: net/textproto FAIL: net/url FAIL: net/rpc/jsonrpc FAIL: old/netchan FAIL: old/regexp FAIL: old/template FAIL: os/exec FAIL: os/signal FAIL: os/user FAIL: path/filepath FAIL: regexp/syntax FAIL: runtime/pprof FAIL: sync/atomic FAIL: text/scanner FAIL: text/tabwriter FAIL: text/template FAIL: text/template/parse FAIL: testing/quick FAIL: unicode/utf16 FAIL: unicode/utf8 === libgo Summary === # of expected passes 1 # of unexpected failures 130 /root/gcc_new/gccbuild/./gcc/gccgo version 4.9.0 20130606 (experimental) (GCC) Oh boy! Oh boy! Well, on second thoughts, this was not unexpected. This was the core of my GSOC work. This is how it starts :) Before this goes any further, maybe we should visit the Linux test results too. Test Run By fotis on Τρι 02 Ιούλ 2013 09:20:20 μμ EEST Native configuration is i686-pc-linux-gnu === libgo tests === Schedule of variations: unix Running target unix Running ../../../gcc/libgo/libgo.exp ... PASS: bufio PASS: bytes ... === libgo Summary === # of expected passes 131 /home/fotis/Software/gcc_build/./gcc/gccgo version 4.9.0 20130702 (experimental) (GCC) Wow. Considering the results from the Hurd, they really are not unexpected. Remember that getcontext, makecontext, setcontext and swapcontext are not working as expected. And recalling from an email from Ian Lance Taylor (the GCCgo maintainer, and a member of the Go team) early in the summer: Go does require switching stacks. A port of Go that doesn’t support goroutines would be useless–nothing in the standard library would work Conclusion / Work for next week. So now it comes down to work on implementing correctly the context switching functions. Apart from that, going through the test results that fail from gccgo is also something that is to be done, however I am not sure that it should be a first priority. I also have to go through go.log to see if there any clues as to why the gccgo tests fail. Having finally built gccgo on the Hurd, and more importantly still being on schedule, (the original one, from my proposal) means that I can now concentrate on the core part of my project proposal (and the most exciting one too), that is proper implementation of what is blocking effective context switching, which in its part is blocking goroutines, without which, the go library will not work properly.</summary>
       
 
       

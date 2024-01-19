@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  
+  
+  <title>How to Think About And Use the Option And Result Types</title>
+  <meta name="description" content="This post is written with an aim to provide some clarity as to the purpose and usage of the (evermore present) types Option and Result in various programming languages. The Beginning: the bool type We’re all used to using the bool type: its value set has arity 2, basically admitting two values: true, and false. This means that we can use it as a return type for a function to discriminate between two outcomes from the function’s execution. Thus, it ties well with predicates (functions answering a decision problem, e.g. isDiscountValid or any?) and, more broadly, functions that want to indicate a successful outcome or a failure outcome after their execution has finished. The return of a bool-typed value allows these functions to have great synergy with conditional statements/expressions, directly plugging into the antecedent (condition) part of a conditional statement. Undoubtedly, you’ve come across something like this (in C pseudo-syntax): bool do_something() { // --snip-- if (something_went_wrong) { // signal failure return false; } // all went right in the main path return true; } int main() { // --snip--- if (do_something()) { printf(&quot;Operation was successful!\n&quot;); } else { // perform some logging, or error recover here... } } This… works. But it’s a fairly rudimentary mechanism, with a significant limitation: what happens if we want to pass along some information in either case? This is a thought that has crossed many a programmer’s mind, and different languages have provided different solutions to this problem, depending on whether the language allows for one or more return values. Solutions fall within the following general criteria: Return a value if successful and null/nil/None otherwise. Nest the bool and the value in a struct/class and return that. Return a single bool value and extra values in out-parameters. Allow the return of tuples containing the values. Option/Result/Either. Let’s have a quick look at some examples. For each of the below examples, imagine that our use case is the following: We have a function which searches a rich document (think like a Word document) for a particular search text. This is also called a “needle-in-haystack search”. Return a value if successful and null otherwise This was pretty much the default way people handled this situation in Algol-family languages (C, C++, Java, etc.), especially in the past. It would look something like the following (in Java-like pseudocode): public class Document { // --snip-- class SearchResult { int column; int line; } public SearchResult searchText(String needle) { // --snip -- if (found) { return SearchResult(column, found); } else { return null; } } } The approach was fairly similar in C and C++, where instead of null someone might see return NULL; or the more modern return nullptr; in the case of C++. This approach came with a major, major flaw, one that has even been given its own nickname across the industry, by its own creator (Sir Tony Hoare) nonetheless: the billion-dollar mistake. The problem is that the return value is usually then perused in a way that gets dereferenced (either directly, through a pointer, like in C and C++ or indirectly through objects in Java/C#, etc), causing the program to crash with either a friendly error message or an occult incantation out of Saruman&#39;s grimoire a less descriptive error message, depending on how well-behaved the language runtime you’re using is: // In Java Exception in thread &quot;main&quot; java.lang.NullPointerException at Printer.printString(Printer.java:13) at Printer.print(Printer.java:9) at Printer.main(Printer.java:19) // In C/C++ [1] 93157 segmentation fault ./a.out The computer really doesn’t like it when you force it to go to address 0x00, you see. But… Nest the value and the bool in a class and return that Seeing as we’re very sensitive to the computer’s plight (and our own inconvenience and embarrassment), we might as well try to find a different way: one that, at least, doesn’t result in a crash. One way to solve the above problem, especially in the past, would be to wrap both the bool and the return value (in the successful case) in a single compound type (a class), and return values of that type. It would look something like the following. Assume that our string-search function has been programmed to return a SearchResult type of the following form: struct SearchResult { bool success; int column; // present only if text was found int line; // ditto }; Objects of that type would use the success sub-component as a discriminating value, indicating on whether the search yielded a successful match or not. The rest of the sub-components (column and line) would have well-defined values if the success is true, and undefined otherwise. Thus, our function might look something like this: SearchResult search_text(const std::string&amp;amp; subtext, const Document&amp;amp; doc) { // --snip-- if(found) { return {true, column_no, line_no}; } else { return {false, random(), random()}; // random to simulate undefined value } }; Now, if we wanted to use our search_text function, being the responsible programmers we are, we would first check the success field: void perform_action() { // --snip-- const auto result = search_text(&quot;the jabberwocky&quot;, alice_in_wonderland); if (result.success) { printf(&quot;Found at line %d and column %d\n&quot;, result.line, result.column); } else { // !result.success printf(&quot;Unable to find given text within the document.&quot;); } } This is definitely a solution, and one that was adopted in various codebases I’ve seen in the past, but it also suffers from a flaw, albeit a less severe one this time: the pollution of the codebase with many similar but oh-so-slightly-different types which served only as “rich-return-typed objects”. This has the side-effect of an increase to the cognitive load of the programmer, which makes the experience of programming in that codebase a bit worse than it needs to be: the editors and other tools might help, but you still need to mentally keep track of which function returns what, and have some special handling around any of those. Out-parameters This one is a variation of the two themes above, falling somewhat in the middle: it still signals success and makes it harder (kinda…) to crash the application. This time around, our code would look similar to this: // Our SearchResult object struct SearchResult { int column; int line; }; // And the search function bool search_text(const std::string&amp;amp; needle, const Document&amp;amp; haystack, SearchResult&amp;amp; result) { // --snip-- if(found) { result = SearchResult{column_no, line_no}; return true; } else { return false; } }; // With our usage looking like this: void perform_action() { // --snip-- auto result = SearchResult{}; const auto found = search_text(&quot;the jabberwocky&quot;, alice_in_wonderland, &amp;amp;result); if (found) { printf(&quot;Found at line %d and column %d\n&quot;, result.line, result.column); } else { // !found printf(&quot;Unable to find given text within the document.&quot;); } } This, again, also works. It’s a fine solution for many people (given how widespread out-parameters are) and enjoys a good performance profile because of the pointers/references, but I personally heavily dislike it from an aesthetics/philosophical standpoint: A function should only ever return its return value and nothing else. What can I say? I’m a functional-programming kind of guy. Allow the return of a tuple containing the values If we use the above quote as an axiom for our programming system, we kind of find ourselves in a bind: we both want to return a bool, and a secondary value based on the value of the bool itself. Or are we? For programming languages that only allow one return value, we can look into packing our bool and the auxiliary value into a pair or an n-tuple (it’s arity-based generalisation). This used to be harder, but nowadays most programming languages offer more mathematical primitives in their standard libraries. For example, adapting our example above to something like Kotlin: fun searchText(needle: String, haystack: Document): Pair&amp;lt;Boolean, SearchResult&amp;gt; { // --snip-- if (found) { return Pair(true, SearchResult(column, line)) } else { return Pair(false, SearchResult()) } } And for our usage, this time around: val result = searchText(&quot;The Queen of Hearts&quot;, aliceInWonderland); if (result.first) { println(&quot;Found The Queen of Hearts at ${result.second}&quot;) } There are also some languages that allow you to return multiple values in their base syntax (internally, they might do packing/unpacking automatically to achieve an effect very similar to the above). Of these, perhaps Go is the most famous one, using this as an idiom for error handling: import &quot;errors&quot; func example_function(arg int) (int, error) { if arg == 42 { return -1, errors.New(&quot;can&#39;t work with 42&quot;) } return arg + 3, nil } func main() { result, err := example_function(42); if err != nil { // Log or do some error handling here } } Option/Result/Either Wow. What a trip. Let’s have a quick recap so that we see where we are: We started with a function doing something, and returning true or false to show whether it succeeded or not. Our requirements evolved to now also need some extra information in addition to the above true/false values. We explored a number of different ways to satisfy that new requirement. But all of them were a bit lacking, in various different ways: They… allowed us to crash, either by accidental mistake or misuse of their interface. They didn’t provide enough context to the compiler to assist us with development (and to provide guardrails against misuse), using pattern matching for instance. They depended on the creation of other context-sensitive types, with non-uniform forms. They fallback to using types (e.g. Pair or Triple) that lack specificity to guide our expectations and intuition to a specific context. All of the above are solved by the Option and Result type (and its more general dual in Haskell, Either). All of them are what’s known in Programming Language Theory as Sum Types (sometimes called Discriminated Unions), due to the fact that the value set of the Compound type is the sum of the cardinality of the sets of the atomic types (called constructors) that comprise them. The type definitions look like these (in an ML-inspired pseudosyntax): type Option&amp;lt;T&amp;gt; = | Some&amp;lt;T&amp;gt; | None type Result&amp;lt;T, E&amp;gt; = | Ok&amp;lt;T&amp;gt; | Err&amp;lt;E&amp;gt; type Either&amp;lt;L, R&amp;gt; = | Left&amp;lt;L&amp;gt; | Right&amp;lt;R&amp;gt; All of the above are generic types, admitting generic parameters (the T, Es, etc.). (At this point, it’s worth observing that Either is isomorphic to Result, so from now on onwards, what we mention for Result will apply to Either as well, without the need to explicitly say so). An interesting pattern appears if we also provide a type definition for a Boolean type in the same pseudo syntax: type Boolean = | True | False If we also remove the generic parameters from the above type definitions (just for illustration purposes) and lay them all next to each other, we’re going to observe that their value sets their definitions are identical (with only different names for the various constructors): type Boolean = | True | False type Option = | Some | None type Result = | Ok | Err Wow! This near-identical (isomorphic) form is also a hint that their semantics are also very similar. Let’s try to put the generic parameters (but as comment for a clarity) and see how we do: type Boolean = | True | False type Option = | Some -- with extra information | None type Result = | Ok -- with extra information | Err -- with extra information A clear pattern now emerges! All of these signal the same sort of binary outcome, with the capability of also carrying extra information. Nice! The keen eyed amongst you will have noticed that this insight has now solved our original problem in a very clean way, and has at the same time provided a very clear usage guideline: Use Boolean whenever you only need to discriminate between two outcomes. Use Option whenever you want to do the above, but also want to carry extra information around in the True case. Use Result whenever you want to discriminate between two outcomes but also want to carry extra information around in both of these cases. Let’s have a look at some examples in Rust to see how we would choose which one to use in practice. Let’s have a look at 3 different cases: struct Person { age: u8, } impl Person { // A Person can either drink (is of legal age) or not. // True or false. No other information needed. fn can_drink() -&amp;gt; bool { age &amp;gt;= 18 } } In the above case we see an example of a predicate (a function returning true/false, in effect solving a decision problem). Boolean values work very well for predicates: we only want the first order value - it’s either true or false, but we don’t care why in either case. Let’s now have a look at a case where we might care about extra information in addition to the first-order value: Let’s assume we’re searching for a value in a vector and want to know its index in it: fn search(needle: &amp;amp;String, haystack: &amp;amp;Vec&amp;lt;String&amp;gt;) -&amp;gt; Option&amp;lt;usize&amp;gt; { // Return `Some(index)` if value is present `None` otherwise haystack.iter().position(|x| x == needle) } fn main() { let fruit = vec![ &quot;banana&quot;.to_string(), &quot;mango&quot;.to_string(), &quot;apple&quot;.to_string() ]; let res = search(&amp;amp;&quot;apple&quot;.to_string(), &amp;amp;fruit); assert_eq!(res, Some(2)); } In this case, our search function will search for the string needle inside the collection haystack. If it succeeds (the true case), it’s going to return us a value that signals that it succeeded, along with the extra information we asked for (the index in our case). This is the Some(T) constructor that we saw above in the type definitions. If it fails, it will instead return None (the false equivalent). This is a great example of the typical use-case for Option: we use it in contexts where we want to attach auxiliary data in the successful case, but where if we fail, we don’t care enough to know more about the failure case - only that it happened. That gap is being filled by Result - it’s like Option semantically, but it allows us to also carry around extra data in the case false case. This is useful in that it allows us to carry around diagnostic information in the failure case, to allow with error reporting and recovery. An example of this need being satisfied would be the following function: fn read_to_string(filename: &amp;amp;str) -&amp;gt; Result&amp;lt;String, io::Error&amp;gt; { let mut file = match File::open(&amp;amp;filename) { Ok(f) =&amp;gt; f, Err(e) =&amp;gt; return Err(e), }; let mut text = String::new(); match file.read_to_string(&amp;amp;mut text) { Ok(_) =&amp;gt; Ok(text), Err(e) =&amp;gt; Err(e), } } Here our read_to_string function is doing two things: Open a file, and Read its contents into a string buffer. Any of these two operations can fail. If we only had a bool value as the return value, we could signal that a failure happened by returning false, but we would be at a loss as to what has actually failed. In this case, our Result type allows us to do the following: If everything worked fine, return the Ok() constructor with an appropriate value attached (the string buffer in our case, after completion). If there was an error, either at file opening or reading, returning an Err() constructor, with an appropriate error message attached. Conclusion To wrap everything up, here’s my usage heuristic for the above types: Use bool for simple predicates. Use Option&amp;lt;T&amp;gt; when extra data needs to be carried in the success case (for instance when searching for values in a collection) Use Result&amp;lt;T,E&amp;gt; when extra data needs to be carried around in the success and failure case (say, if you’re reading something from the network, and you want to return the data in the success case or an appropriate error message in the failure case).">
+  
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://nlightnfotis.github.io/2023/12/16/how-to-use-option-result/">
+  
+  
+  <link rel="alternate" type="application/rss+xml" title="Lambda reflections" href="https://nlightnfotis.github.io/feed.xml">
+
+  
+
+  
+  <meta property="og:title" content="How to Think About And Use the Option And Result Types">
+  <meta property="og:site_name" content="Lambda reflections">
+  <meta property="og:url" content="https://nlightnfotis.github.io/2023/12/16/how-to-use-option-result/">
+  <meta property="og:description" content="This post is written with an aim to provide some clarity as to the purpose and usage of the (evermore present) types Option and Result in various programming languages. The Beginning: the bool type We’re all used to using the bool type: its value set has arity 2, basically admitting two values: true, and false. This means that we can use it as a return type for a function to discriminate between two outcomes from the function’s execution. Thus, it ties well with predicates (functions answering a decision problem, e.g. isDiscountValid or any?) and, more broadly, functions that want to indicate a successful outcome or a failure outcome after their execution has finished. The return of a bool-typed value allows these functions to have great synergy with conditional statements/expressions, directly plugging into the antecedent (condition) part of a conditional statement. Undoubtedly, you’ve come across something like this (in C pseudo-syntax): bool do_something() { // --snip-- if (something_went_wrong) { // signal failure return false; } // all went right in the main path return true; } int main() { // --snip--- if (do_something()) { printf(&quot;Operation was successful!\n&quot;); } else { // perform some logging, or error recover here... } } This… works. But it’s a fairly rudimentary mechanism, with a significant limitation: what happens if we want to pass along some information in either case? This is a thought that has crossed many a programmer’s mind, and different languages have provided different solutions to this problem, depending on whether the language allows for one or more return values. Solutions fall within the following general criteria: Return a value if successful and null/nil/None otherwise. Nest the bool and the value in a struct/class and return that. Return a single bool value and extra values in out-parameters. Allow the return of tuples containing the values. Option/Result/Either. Let’s have a quick look at some examples. For each of the below examples, imagine that our use case is the following: We have a function which searches a rich document (think like a Word document) for a particular search text. This is also called a “needle-in-haystack search”. Return a value if successful and null otherwise This was pretty much the default way people handled this situation in Algol-family languages (C, C++, Java, etc.), especially in the past. It would look something like the following (in Java-like pseudocode): public class Document { // --snip-- class SearchResult { int column; int line; } public SearchResult searchText(String needle) { // --snip -- if (found) { return SearchResult(column, found); } else { return null; } } } The approach was fairly similar in C and C++, where instead of null someone might see return NULL; or the more modern return nullptr; in the case of C++. This approach came with a major, major flaw, one that has even been given its own nickname across the industry, by its own creator (Sir Tony Hoare) nonetheless: the billion-dollar mistake. The problem is that the return value is usually then perused in a way that gets dereferenced (either directly, through a pointer, like in C and C++ or indirectly through objects in Java/C#, etc), causing the program to crash with either a friendly error message or an occult incantation out of Saruman&#39;s grimoire a less descriptive error message, depending on how well-behaved the language runtime you’re using is: // In Java Exception in thread &quot;main&quot; java.lang.NullPointerException at Printer.printString(Printer.java:13) at Printer.print(Printer.java:9) at Printer.main(Printer.java:19) // In C/C++ [1] 93157 segmentation fault ./a.out The computer really doesn’t like it when you force it to go to address 0x00, you see. But… Nest the value and the bool in a class and return that Seeing as we’re very sensitive to the computer’s plight (and our own inconvenience and embarrassment), we might as well try to find a different way: one that, at least, doesn’t result in a crash. One way to solve the above problem, especially in the past, would be to wrap both the bool and the return value (in the successful case) in a single compound type (a class), and return values of that type. It would look something like the following. Assume that our string-search function has been programmed to return a SearchResult type of the following form: struct SearchResult { bool success; int column; // present only if text was found int line; // ditto }; Objects of that type would use the success sub-component as a discriminating value, indicating on whether the search yielded a successful match or not. The rest of the sub-components (column and line) would have well-defined values if the success is true, and undefined otherwise. Thus, our function might look something like this: SearchResult search_text(const std::string&amp;amp; subtext, const Document&amp;amp; doc) { // --snip-- if(found) { return {true, column_no, line_no}; } else { return {false, random(), random()}; // random to simulate undefined value } }; Now, if we wanted to use our search_text function, being the responsible programmers we are, we would first check the success field: void perform_action() { // --snip-- const auto result = search_text(&quot;the jabberwocky&quot;, alice_in_wonderland); if (result.success) { printf(&quot;Found at line %d and column %d\n&quot;, result.line, result.column); } else { // !result.success printf(&quot;Unable to find given text within the document.&quot;); } } This is definitely a solution, and one that was adopted in various codebases I’ve seen in the past, but it also suffers from a flaw, albeit a less severe one this time: the pollution of the codebase with many similar but oh-so-slightly-different types which served only as “rich-return-typed objects”. This has the side-effect of an increase to the cognitive load of the programmer, which makes the experience of programming in that codebase a bit worse than it needs to be: the editors and other tools might help, but you still need to mentally keep track of which function returns what, and have some special handling around any of those. Out-parameters This one is a variation of the two themes above, falling somewhat in the middle: it still signals success and makes it harder (kinda…) to crash the application. This time around, our code would look similar to this: // Our SearchResult object struct SearchResult { int column; int line; }; // And the search function bool search_text(const std::string&amp;amp; needle, const Document&amp;amp; haystack, SearchResult&amp;amp; result) { // --snip-- if(found) { result = SearchResult{column_no, line_no}; return true; } else { return false; } }; // With our usage looking like this: void perform_action() { // --snip-- auto result = SearchResult{}; const auto found = search_text(&quot;the jabberwocky&quot;, alice_in_wonderland, &amp;amp;result); if (found) { printf(&quot;Found at line %d and column %d\n&quot;, result.line, result.column); } else { // !found printf(&quot;Unable to find given text within the document.&quot;); } } This, again, also works. It’s a fine solution for many people (given how widespread out-parameters are) and enjoys a good performance profile because of the pointers/references, but I personally heavily dislike it from an aesthetics/philosophical standpoint: A function should only ever return its return value and nothing else. What can I say? I’m a functional-programming kind of guy. Allow the return of a tuple containing the values If we use the above quote as an axiom for our programming system, we kind of find ourselves in a bind: we both want to return a bool, and a secondary value based on the value of the bool itself. Or are we? For programming languages that only allow one return value, we can look into packing our bool and the auxiliary value into a pair or an n-tuple (it’s arity-based generalisation). This used to be harder, but nowadays most programming languages offer more mathematical primitives in their standard libraries. For example, adapting our example above to something like Kotlin: fun searchText(needle: String, haystack: Document): Pair&amp;lt;Boolean, SearchResult&amp;gt; { // --snip-- if (found) { return Pair(true, SearchResult(column, line)) } else { return Pair(false, SearchResult()) } } And for our usage, this time around: val result = searchText(&quot;The Queen of Hearts&quot;, aliceInWonderland); if (result.first) { println(&quot;Found The Queen of Hearts at ${result.second}&quot;) } There are also some languages that allow you to return multiple values in their base syntax (internally, they might do packing/unpacking automatically to achieve an effect very similar to the above). Of these, perhaps Go is the most famous one, using this as an idiom for error handling: import &quot;errors&quot; func example_function(arg int) (int, error) { if arg == 42 { return -1, errors.New(&quot;can&#39;t work with 42&quot;) } return arg + 3, nil } func main() { result, err := example_function(42); if err != nil { // Log or do some error handling here } } Option/Result/Either Wow. What a trip. Let’s have a quick recap so that we see where we are: We started with a function doing something, and returning true or false to show whether it succeeded or not. Our requirements evolved to now also need some extra information in addition to the above true/false values. We explored a number of different ways to satisfy that new requirement. But all of them were a bit lacking, in various different ways: They… allowed us to crash, either by accidental mistake or misuse of their interface. They didn’t provide enough context to the compiler to assist us with development (and to provide guardrails against misuse), using pattern matching for instance. They depended on the creation of other context-sensitive types, with non-uniform forms. They fallback to using types (e.g. Pair or Triple) that lack specificity to guide our expectations and intuition to a specific context. All of the above are solved by the Option and Result type (and its more general dual in Haskell, Either). All of them are what’s known in Programming Language Theory as Sum Types (sometimes called Discriminated Unions), due to the fact that the value set of the Compound type is the sum of the cardinality of the sets of the atomic types (called constructors) that comprise them. The type definitions look like these (in an ML-inspired pseudosyntax): type Option&amp;lt;T&amp;gt; = | Some&amp;lt;T&amp;gt; | None type Result&amp;lt;T, E&amp;gt; = | Ok&amp;lt;T&amp;gt; | Err&amp;lt;E&amp;gt; type Either&amp;lt;L, R&amp;gt; = | Left&amp;lt;L&amp;gt; | Right&amp;lt;R&amp;gt; All of the above are generic types, admitting generic parameters (the T, Es, etc.). (At this point, it’s worth observing that Either is isomorphic to Result, so from now on onwards, what we mention for Result will apply to Either as well, without the need to explicitly say so). An interesting pattern appears if we also provide a type definition for a Boolean type in the same pseudo syntax: type Boolean = | True | False If we also remove the generic parameters from the above type definitions (just for illustration purposes) and lay them all next to each other, we’re going to observe that their value sets their definitions are identical (with only different names for the various constructors): type Boolean = | True | False type Option = | Some | None type Result = | Ok | Err Wow! This near-identical (isomorphic) form is also a hint that their semantics are also very similar. Let’s try to put the generic parameters (but as comment for a clarity) and see how we do: type Boolean = | True | False type Option = | Some -- with extra information | None type Result = | Ok -- with extra information | Err -- with extra information A clear pattern now emerges! All of these signal the same sort of binary outcome, with the capability of also carrying extra information. Nice! The keen eyed amongst you will have noticed that this insight has now solved our original problem in a very clean way, and has at the same time provided a very clear usage guideline: Use Boolean whenever you only need to discriminate between two outcomes. Use Option whenever you want to do the above, but also want to carry extra information around in the True case. Use Result whenever you want to discriminate between two outcomes but also want to carry extra information around in both of these cases. Let’s have a look at some examples in Rust to see how we would choose which one to use in practice. Let’s have a look at 3 different cases: struct Person { age: u8, } impl Person { // A Person can either drink (is of legal age) or not. // True or false. No other information needed. fn can_drink() -&amp;gt; bool { age &amp;gt;= 18 } } In the above case we see an example of a predicate (a function returning true/false, in effect solving a decision problem). Boolean values work very well for predicates: we only want the first order value - it’s either true or false, but we don’t care why in either case. Let’s now have a look at a case where we might care about extra information in addition to the first-order value: Let’s assume we’re searching for a value in a vector and want to know its index in it: fn search(needle: &amp;amp;String, haystack: &amp;amp;Vec&amp;lt;String&amp;gt;) -&amp;gt; Option&amp;lt;usize&amp;gt; { // Return `Some(index)` if value is present `None` otherwise haystack.iter().position(|x| x == needle) } fn main() { let fruit = vec![ &quot;banana&quot;.to_string(), &quot;mango&quot;.to_string(), &quot;apple&quot;.to_string() ]; let res = search(&amp;amp;&quot;apple&quot;.to_string(), &amp;amp;fruit); assert_eq!(res, Some(2)); } In this case, our search function will search for the string needle inside the collection haystack. If it succeeds (the true case), it’s going to return us a value that signals that it succeeded, along with the extra information we asked for (the index in our case). This is the Some(T) constructor that we saw above in the type definitions. If it fails, it will instead return None (the false equivalent). This is a great example of the typical use-case for Option: we use it in contexts where we want to attach auxiliary data in the successful case, but where if we fail, we don’t care enough to know more about the failure case - only that it happened. That gap is being filled by Result - it’s like Option semantically, but it allows us to also carry around extra data in the case false case. This is useful in that it allows us to carry around diagnostic information in the failure case, to allow with error reporting and recovery. An example of this need being satisfied would be the following function: fn read_to_string(filename: &amp;amp;str) -&amp;gt; Result&amp;lt;String, io::Error&amp;gt; { let mut file = match File::open(&amp;amp;filename) { Ok(f) =&amp;gt; f, Err(e) =&amp;gt; return Err(e), }; let mut text = String::new(); match file.read_to_string(&amp;amp;mut text) { Ok(_) =&amp;gt; Ok(text), Err(e) =&amp;gt; Err(e), } } Here our read_to_string function is doing two things: Open a file, and Read its contents into a string buffer. Any of these two operations can fail. If we only had a bool value as the return value, we could signal that a failure happened by returning false, but we would be at a loss as to what has actually failed. In this case, our Result type allows us to do the following: If everything worked fine, return the Ok() constructor with an appropriate value attached (the string buffer in our case, after completion). If there was an error, either at file opening or reading, returning an Err() constructor, with an appropriate error message attached. Conclusion To wrap everything up, here’s my usage heuristic for the above types: Use bool for simple predicates. Use Option&amp;lt;T&amp;gt; when extra data needs to be carried in the success case (for instance when searching for values in a collection) Use Result&amp;lt;T,E&amp;gt; when extra data needs to be carried around in the success and failure case (say, if you’re reading something from the network, and you want to return the data in the success case or an appropriate error message in the failure case).">
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="NlightNFotis">
+  <meta name="twitter:title" content="How to Think About And Use the Option And Result Types">
+  <meta name="twitter:description" content="This post is written with an aim to provide some clarity as to the purpose and usage of the (evermore present) types Option and Result in various programming languages. The Beginning: the bool type...">
+  
+    <meta name="twitter:creator" content="NlightNFotis">
+  
+  
+
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet">
+
+  
+
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">Lambda reflections</a>
+
+    <nav class="site-nav">
+      
+        
+        <a class="page-link" href="/about/">About</a>
+      
+        
+        <a class="page-link" href="/archives/">Archives</a>
+      
+        
+        <a class="page-link" href="https://github.com/NlightNFotis">GitHub</a>
+      
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    
+      <h1 class="post-title" itemprop="name headline">How to Think About And Use the Option And Result Types</h1>
+    
+    <p class="post-meta"><time datetime="2023-12-16T00:00:00+00:00" itemprop="datePublished">Dez 16, 2023</time>
+
+ •
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/types/">types</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/rust/">rust</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/go/">go</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/c/">c++</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/haskell/">haskell</a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+</p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>This post is written with an aim to provide some clarity as to the purpose and
+usage of the (evermore present) types <code class="language-plaintext highlighter-rouge">Option</code> and <code class="language-plaintext highlighter-rouge">Result</code> in various programming
+languages.</p>
+
+<hr />
+
+<h2>The Beginning: the <code class="language-plaintext highlighter-rouge">bool</code> type</h2>
+
+<p>We’re all used to using the <code class="language-plaintext highlighter-rouge">bool</code> type: its value set has arity <code class="language-plaintext highlighter-rouge">2</code>, basically
+admitting two values:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">true</code>, and</li>
+  <li><code class="language-plaintext highlighter-rouge">false</code>.</li>
+</ul>
+
+<p>This means that we can use it as a return type for a function to discriminate
+between two outcomes from the function’s execution. Thus, it ties well with
+predicates (functions answering a decision problem, e.g. <code class="language-plaintext highlighter-rouge">isDiscountValid</code>
+or <code class="language-plaintext highlighter-rouge">any?</code>) and, more broadly, functions that want to indicate a <em>successful</em> outcome
+or a <em>failure</em> outcome after their execution has finished.</p>
+
+<p>The return of a <code class="language-plaintext highlighter-rouge">bool</code>-typed value allows these functions to have great synergy
+with conditional statements/expressions, directly plugging into the <em>antecedent</em>
+(condition) part of a conditional statement. Undoubtedly, you’ve come across
+something like this (in C pseudo-syntax):</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">bool</span> <span class="nf">do_something</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// --snip--</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">something_went_wrong</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// signal failure</span>
+        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="c1">// all went right in the main path</span>
+    <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// --snip---</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">do_something</span><span class="p">())</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"Operation was successful!</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="c1">// perform some logging, or error recover here...</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This… works. But it’s a fairly rudimentary mechanism, with a significant limitation:
+<em>what happens if we want to pass along some information in either case</em>?</p>
+
+<p>This is a thought that has crossed many a programmer’s mind, and different languages
+have provided different solutions to this problem, depending on whether the language
+allows for <strong>one</strong> or <strong>more</strong> return values. Solutions fall within the following
+general criteria:</p>
+
+<ul>
+  <li>Return a value if successful and <code class="language-plaintext highlighter-rouge">null</code>/<code class="language-plaintext highlighter-rouge">nil</code>/<code class="language-plaintext highlighter-rouge">None</code> otherwise.</li>
+  <li>Nest the <code class="language-plaintext highlighter-rouge">bool</code> and the <code class="language-plaintext highlighter-rouge">value</code> in a <code class="language-plaintext highlighter-rouge">struct</code>/<code class="language-plaintext highlighter-rouge">class</code> and return that.</li>
+  <li>Return a single <code class="language-plaintext highlighter-rouge">bool</code> value and extra values in <em>out-parameters</em>.</li>
+  <li>Allow the return of <code class="language-plaintext highlighter-rouge">tuple</code>s containing the values.</li>
+  <li><code class="language-plaintext highlighter-rouge">Option</code>/<code class="language-plaintext highlighter-rouge">Result</code>/<code class="language-plaintext highlighter-rouge">Either</code>.</li>
+</ul>
+
+<p>Let’s have a quick look at some examples. For each of the below examples, imagine
+that our use case is the following:</p>
+
+<blockquote>
+  <p>We have a function which searches a rich document (think like a Word document)
+for a particular search text.</p>
+</blockquote>
+
+<p>This is also called a “needle-in-haystack search”.</p>
+
+<h3>Return a value if successful and <code class="language-plaintext highlighter-rouge">null</code> otherwise</h3>
+
+<p>This was pretty much the default way people handled this situation in Algol-family
+languages (C, C++, Java, etc.), especially in the past. It would look something
+like the following (in Java-like pseudocode):</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Document</span> <span class="o">{</span>
+    <span class="c1">// --snip--</span>
+
+    <span class="kd">class</span> <span class="nc">SearchResult</span> <span class="o">{</span>
+        <span class="kt">int</span> <span class="n">column</span><span class="o">;</span>
+        <span class="kt">int</span> <span class="n">line</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">SearchResult</span> <span class="nf">searchText</span><span class="o">(</span><span class="nc">String</span> <span class="n">needle</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// --snip --</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">found</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="nf">SearchResult</span><span class="o">(</span><span class="n">column</span><span class="o">,</span> <span class="n">found</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>The approach was fairly similar in C and C++, where instead of <code class="language-plaintext highlighter-rouge">null</code> someone
+might see <code class="language-plaintext highlighter-rouge">return NULL;</code> or the more modern <code class="language-plaintext highlighter-rouge">return nullptr;</code> in the case of C++.</p>
+
+<p>This approach came with a major, <strong><em>major</em></strong> flaw, one that has even been given
+its own nickname across the industry, by its own creator (Sir Tony Hoare) nonetheless:
+<a href="https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare/">the billion-dollar mistake</a>.</p>
+
+<p>The problem is that the return value is usually then perused in a way that gets
+dereferenced (either directly, through a pointer, like in C and C++ or indirectly
+through objects in Java/C#, etc), causing the program to crash with either a friendly
+error message or <s> an occult incantation out of Saruman's grimoire</s> a less descriptive
+error message, depending on how well-behaved the language runtime you’re using is:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// In Java
+
+Exception in thread "main" java.lang.NullPointerException
+    at Printer.printString(Printer.java:13)
+    at Printer.print(Printer.java:9)
+    at Printer.main(Printer.java:19)
+
+// In C/C++
+
+[1]    93157 segmentation fault  ./a.out
+</code></pre></div></div>
+
+<p>The computer <strong>really</strong> doesn’t like it when you force it to go to address <code class="language-plaintext highlighter-rouge">0x00</code>,
+you see. But…</p>
+
+<h3>Nest the value and the <code class="language-plaintext highlighter-rouge">bool</code> in a <code class="language-plaintext highlighter-rouge">class</code> and return that</h3>
+
+<p>Seeing as we’re very sensitive to the computer’s plight (and our own inconvenience
+and embarrassment), we might as well try to find a different way: one that, at least,
+doesn’t result in a crash.</p>
+
+<p>One way to solve the above problem, especially in the past, would be to wrap both
+the <code class="language-plaintext highlighter-rouge">bool</code> and the return value (in the successful case) in a single compound type
+(a <code class="language-plaintext highlighter-rouge">class</code>), and return values of that type. It would look something like the following.</p>
+
+<p>Assume that our string-search function has been programmed to return a <code class="language-plaintext highlighter-rouge">SearchResult</code>
+type of the following form:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="nc">SearchResult</span> <span class="p">{</span>
+    <span class="kt">bool</span> <span class="n">success</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">column</span><span class="p">;</span>     <span class="c1">// present only if text was found</span>
+    <span class="kt">int</span> <span class="n">line</span><span class="p">;</span>       <span class="c1">// ditto</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>Objects of that type would use the <code class="language-plaintext highlighter-rouge">success</code> sub-component as a discriminating
+value, indicating on whether the search yielded a successful match or not. The
+rest of the sub-components (<code class="language-plaintext highlighter-rouge">column</code> and <code class="language-plaintext highlighter-rouge">line</code>) would have well-defined values
+if the <code class="language-plaintext highlighter-rouge">success</code> is <code class="language-plaintext highlighter-rouge">true</code>, and undefined otherwise.</p>
+
+<p>Thus, our function might look something like this:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">SearchResult</span> <span class="nf">search_text</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">subtext</span><span class="p">,</span> <span class="k">const</span> <span class="n">Document</span><span class="o">&amp;</span> <span class="n">doc</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// --snip--</span>
+    
+    <span class="k">if</span><span class="p">(</span><span class="n">found</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">{</span><span class="nb">true</span><span class="p">,</span> <span class="n">column_no</span><span class="p">,</span> <span class="n">line_no</span><span class="p">};</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">{</span><span class="nb">false</span><span class="p">,</span> <span class="n">random</span><span class="p">(),</span> <span class="n">random</span><span class="p">()};</span> <span class="c1">// random to simulate undefined value</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>Now, if we wanted to use our <code class="language-plaintext highlighter-rouge">search_text</code> function, being the responsible programmers
+we are, we would first check the <code class="language-plaintext highlighter-rouge">success</code> field:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">perform_action</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// --snip--</span>
+
+    <span class="k">const</span> <span class="k">auto</span> <span class="n">result</span> <span class="o">=</span> <span class="n">search_text</span><span class="p">(</span><span class="s">"the jabberwocky"</span><span class="p">,</span> <span class="n">alice_in_wonderland</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="n">success</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"Found at line %d and column %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">result</span><span class="p">.</span><span class="n">line</span><span class="p">,</span> <span class="n">result</span><span class="p">.</span><span class="n">column</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="c1">// !result.success </span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"Unable to find given text within the document."</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This is definitely a solution, and one that was adopted in various codebases I’ve
+seen in the past, but it also suffers from a flaw, albeit a less severe one this
+time: the pollution of the codebase with many similar but <em>oh-so-slightly-different</em>
+types which served only as “rich-return-typed objects”.</p>
+
+<p>This has the side-effect of an increase to the cognitive load of the programmer,
+which makes the experience of programming in that codebase a bit worse than it
+needs to be: the editors and other tools might help, but you still need to mentally
+keep track of which function returns what, and have some special handling around
+any of those.</p>
+
+<h3>Out-parameters</h3>
+
+<p>This one is a variation of the two themes above, falling somewhat in the middle:
+it still signals success and makes it harder (kinda…) to crash the application.
+This time around, our code would look similar to this:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Our SearchResult object</span>
+<span class="k">struct</span> <span class="nc">SearchResult</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">column</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">line</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c1">// And the search function</span>
+<span class="kt">bool</span> <span class="nf">search_text</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">needle</span><span class="p">,</span> <span class="k">const</span> <span class="n">Document</span><span class="o">&amp;</span> <span class="n">haystack</span><span class="p">,</span> <span class="n">SearchResult</span><span class="o">&amp;</span> <span class="n">result</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// --snip--</span>
+    
+    <span class="k">if</span><span class="p">(</span><span class="n">found</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">SearchResult</span><span class="p">{</span><span class="n">column_no</span><span class="p">,</span> <span class="n">line_no</span><span class="p">};</span> 
+        <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="c1">// With our usage looking like this:</span>
+
+<span class="kt">void</span> <span class="nf">perform_action</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// --snip--</span>
+
+    <span class="k">auto</span> <span class="n">result</span> <span class="o">=</span> <span class="n">SearchResult</span><span class="p">{};</span> 
+
+    <span class="k">const</span> <span class="k">auto</span> <span class="n">found</span> <span class="o">=</span> <span class="n">search_text</span><span class="p">(</span><span class="s">"the jabberwocky"</span><span class="p">,</span> <span class="n">alice_in_wonderland</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">result</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">found</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"Found at line %d and column %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">result</span><span class="p">.</span><span class="n">line</span><span class="p">,</span> <span class="n">result</span><span class="p">.</span><span class="n">column</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="c1">// !found </span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"Unable to find given text within the document."</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This, again, also works. It’s a fine solution for many people (given how widespread
+out-parameters are) and enjoys a good performance profile because of the pointers/references,
+but I personally heavily dislike it from an aesthetics/philosophical standpoint:</p>
+
+<blockquote>
+  <p>A function should only ever return its return value and nothing else.</p>
+</blockquote>
+
+<p>What can I say? I’m a functional-programming kind of guy.</p>
+
+<h3>Allow the return of a tuple containing the values</h3>
+
+<p>If we use the above quote as an axiom for our programming system, we kind of
+find ourselves in a bind: we both want to return a <code class="language-plaintext highlighter-rouge">bool</code>, and a secondary value
+based on the value of the <code class="language-plaintext highlighter-rouge">bool</code> itself.</p>
+
+<p>Or are we?</p>
+
+<p>For programming languages that only allow one return value, we can look into
+packing our <code class="language-plaintext highlighter-rouge">bool</code> and the auxiliary value into a <code class="language-plaintext highlighter-rouge">pair</code> or an <code class="language-plaintext highlighter-rouge">n-tuple</code> (it’s
+arity-based generalisation).</p>
+
+<p>This used to be harder, but nowadays most programming languages offer more mathematical
+primitives in their standard libraries.</p>
+
+<p>For example, adapting our example above to something like Kotlin:</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">fun</span> <span class="nf">searchText</span><span class="p">(</span><span class="n">needle</span><span class="p">:</span> <span class="nc">String</span><span class="p">,</span> <span class="n">haystack</span><span class="p">:</span> <span class="nc">Document</span><span class="p">):</span> <span class="nc">Pair</span><span class="p">&lt;</span><span class="nc">Boolean</span><span class="p">,</span> <span class="nc">SearchResult</span><span class="p">&gt;</span> <span class="p">{</span>
+    <span class="c1">// --snip--</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">found</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nc">Pair</span><span class="p">(</span><span class="k">true</span><span class="p">,</span> <span class="nc">SearchResult</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="n">line</span><span class="p">))</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nc">Pair</span><span class="p">(</span><span class="k">false</span><span class="p">,</span> <span class="nc">SearchResult</span><span class="p">())</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>And for our usage, this time around:</p>
+
+<div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">val</span> <span class="py">result</span> <span class="p">=</span> <span class="nf">searchText</span><span class="p">(</span><span class="s">"The Queen of Hearts"</span><span class="p">,</span> <span class="n">aliceInWonderland</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="n">first</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nf">println</span><span class="p">(</span><span class="s">"Found The Queen of Hearts at ${result.second}"</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>There are also some languages that allow you to return multiple values in their
+base syntax (internally, they might do packing/unpacking automatically to achieve
+an effect very similar to the above). Of these, perhaps Go is the most famous one,
+using this as an idiom for error handling:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="s">"errors"</span>
+
+<span class="k">func</span> <span class="n">example_function</span><span class="p">(</span><span class="n">arg</span> <span class="kt">int</span><span class="p">)</span> <span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="n">arg</span> <span class="o">==</span> <span class="m">42</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="o">-</span><span class="m">1</span><span class="p">,</span> <span class="n">errors</span><span class="o">.</span><span class="n">New</span><span class="p">(</span><span class="s">"can't work with 42"</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">arg</span> <span class="o">+</span> <span class="m">3</span><span class="p">,</span> <span class="no">nil</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">result</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">example_function</span><span class="p">(</span><span class="m">42</span><span class="p">);</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="c">// Log or do some error handling here</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2><code class="language-plaintext highlighter-rouge">Option</code>/<code class="language-plaintext highlighter-rouge">Result</code>/<code class="language-plaintext highlighter-rouge">Either</code></h2>
+
+<p>Wow. What a trip. Let’s have a quick recap so that we see where we are:</p>
+
+<ul>
+  <li>We started with a function doing something, and returning <code class="language-plaintext highlighter-rouge">true</code> or <code class="language-plaintext highlighter-rouge">false</code> to
+show whether it succeeded or not.</li>
+  <li>Our requirements evolved to now also need some extra information <em>in addition</em>
+to the above <code class="language-plaintext highlighter-rouge">true</code>/<code class="language-plaintext highlighter-rouge">false</code> values.</li>
+  <li>We explored a number of different ways to satisfy that new requirement.</li>
+</ul>
+
+<p>But all of them were a bit lacking, in various different ways:</p>
+
+<ul>
+  <li>They… allowed us to crash, either by accidental mistake or misuse of their
+interface.</li>
+  <li>They didn’t provide enough context to the compiler to assist us with development
+(and to provide guardrails <em>against</em> misuse), using pattern matching for instance.</li>
+  <li>They depended on the creation of other context-sensitive types, with non-uniform
+forms.</li>
+  <li>They fallback to using types (e.g. <code class="language-plaintext highlighter-rouge">Pair</code> or <code class="language-plaintext highlighter-rouge">Triple</code>) that lack specificity
+to guide our expectations and intuition to a specific context.</li>
+</ul>
+
+<p>All of the above are solved by the <code class="language-plaintext highlighter-rouge">Option</code> and <code class="language-plaintext highlighter-rouge">Result</code> type (and its more general
+dual in Haskell, <code class="language-plaintext highlighter-rouge">Either</code>).</p>
+
+<p>All of them are what’s known in Programming Language Theory as <em>Sum Types</em> (sometimes
+called <em>Discriminated Unions</em>), due to the fact that the value set of the Compound
+type is the <em>sum</em> of the <em>cardinality</em> of the <em>sets</em> of the <em>atomic types</em> (called
+constructors) that comprise them.</p>
+
+<p>The type definitions look like these (in an ML-inspired pseudosyntax):</p>
+
+<div class="language-fsharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="nc">Option</span><span class="p">&lt;</span><span class="nc">T</span><span class="p">&gt;</span> <span class="p">=</span>
+  <span class="p">|</span> <span class="nc">Some</span><span class="p">&lt;</span><span class="nc">T</span><span class="p">&gt;</span>
+  <span class="p">|</span> <span class="nc">None</span>
+
+<span class="k">type</span> <span class="nc">Result</span><span class="p">&lt;</span><span class="nc">T</span><span class="p">,</span> <span class="nc">E</span><span class="p">&gt;</span> <span class="p">=</span>
+  <span class="p">|</span> <span class="nc">Ok</span><span class="p">&lt;</span><span class="nc">T</span><span class="p">&gt;</span>
+  <span class="p">|</span> <span class="nc">Err</span><span class="p">&lt;</span><span class="nc">E</span><span class="p">&gt;</span>
+
+<span class="k">type</span> <span class="nc">Either</span><span class="p">&lt;</span><span class="nc">L</span><span class="p">,</span> <span class="nc">R</span><span class="p">&gt;</span> <span class="p">=</span>
+  <span class="p">|</span> <span class="nc">Left</span><span class="p">&lt;</span><span class="nc">L</span><span class="p">&gt;</span>
+  <span class="p">|</span> <span class="nc">Right</span><span class="p">&lt;</span><span class="nc">R</span><span class="p">&gt;</span>
+</code></pre></div></div>
+
+<p>All of the above are generic types, admitting generic parameters (the <code class="language-plaintext highlighter-rouge">T</code>, <code class="language-plaintext highlighter-rouge">E</code>s,
+etc.).</p>
+
+<p>(At this point, it’s worth observing that <code class="language-plaintext highlighter-rouge">Either</code> is isomorphic to <code class="language-plaintext highlighter-rouge">Result</code>, so
+from now on onwards, what we mention for <code class="language-plaintext highlighter-rouge">Result</code> will apply to <code class="language-plaintext highlighter-rouge">Either</code> as well,
+without the need to explicitly say so).</p>
+
+<hr />
+
+<p>An interesting pattern appears if we also provide a type definition for a <code class="language-plaintext highlighter-rouge">Boolean</code>
+type in the same pseudo syntax:</p>
+
+<div class="language-fsharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="nc">Boolean</span> <span class="p">=</span>
+  <span class="p">|</span> <span class="nc">True</span>
+  <span class="p">|</span> <span class="nc">False</span>
+</code></pre></div></div>
+
+<p>If we also remove the generic parameters from the above type definitions (just
+for illustration purposes) and lay them all next to each other, we’re going to
+observe that their value sets their definitions are identical (with only different
+<em>names</em> for the various constructors):</p>
+
+<div class="language-fsharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="nc">Boolean</span> <span class="p">=</span>
+  <span class="p">|</span> <span class="nc">True</span>
+  <span class="p">|</span> <span class="nc">False</span>
+
+<span class="k">type</span> <span class="nc">Option</span> <span class="p">=</span>
+  <span class="p">|</span> <span class="nc">Some</span>
+  <span class="p">|</span> <span class="nc">None</span>
+
+<span class="k">type</span> <span class="nc">Result</span> <span class="p">=</span>
+  <span class="p">|</span> <span class="nc">Ok</span>
+  <span class="p">|</span> <span class="nc">Err</span>
+</code></pre></div></div>
+
+<p>Wow! This near-identical (isomorphic) form is also a hint that their <em>semantics</em>
+are also very similar. Let’s try to put the generic parameters (but as comment
+for a clarity) and see how we do:</p>
+
+<div class="language-fsharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="nc">Boolean</span> <span class="p">=</span>
+  <span class="p">|</span> <span class="nc">True</span>
+  <span class="p">|</span> <span class="nc">False</span>
+
+<span class="k">type</span> <span class="nc">Option</span> <span class="p">=</span>
+  <span class="p">|</span> <span class="nc">Some</span> <span class="o">--</span> <span class="k">with</span> <span class="n">extra</span> <span class="n">information</span>
+  <span class="p">|</span> <span class="nc">None</span>
+
+<span class="k">type</span> <span class="nc">Result</span> <span class="p">=</span>
+  <span class="p">|</span> <span class="nc">Ok</span>  <span class="o">--</span> <span class="k">with</span> <span class="n">extra</span> <span class="n">information</span>
+  <span class="p">|</span> <span class="nc">Err</span> <span class="o">--</span> <span class="k">with</span> <span class="n">extra</span> <span class="n">information</span>
+</code></pre></div></div>
+
+<p>A clear pattern now emerges! All of these signal the same sort of binary outcome,
+with the capability of also carrying extra information.</p>
+
+<p>Nice! The keen eyed amongst you will have noticed that this insight has now solved
+our original problem in a very clean way, and has at the same time provided a very
+clear usage guideline:</p>
+
+<ul>
+  <li>Use <code class="language-plaintext highlighter-rouge">Boolean</code> whenever you only need to discriminate between two outcomes.</li>
+  <li>Use <code class="language-plaintext highlighter-rouge">Option</code> whenever you want to do the above, but also want to carry extra
+information around in the <code class="language-plaintext highlighter-rouge">True</code> case.</li>
+  <li>Use <code class="language-plaintext highlighter-rouge">Result</code> whenever you want to discriminate between two outcomes but also
+want to carry extra information around in both of these cases.</li>
+</ul>
+
+<p>Let’s have a look at some examples in Rust to see how we would choose which one
+to use in practice. Let’s have a look at 3 different cases:</p>
+
+<div class="language-rust highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">Person</span> <span class="p">{</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">u8</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="k">impl</span> <span class="n">Person</span> <span class="p">{</span>
+    <span class="c1">// A Person can either drink (is of legal age) or not.</span>
+    <span class="c1">// True or false. No other information needed.</span>
+    <span class="k">fn</span> <span class="nf">can_drink</span><span class="p">()</span> <span class="k">-&gt;</span> <span class="nb">bool</span> <span class="p">{</span>
+        <span class="n">age</span> <span class="o">&gt;=</span> <span class="mi">18</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In the above case we see an example of a <em>predicate</em> (a function returning <code class="language-plaintext highlighter-rouge">true</code>/<code class="language-plaintext highlighter-rouge">false</code>,
+in effect solving a decision problem). Boolean values work very well for predicates:
+we only want the first order value - it’s either <code class="language-plaintext highlighter-rouge">true</code> or <code class="language-plaintext highlighter-rouge">false</code>, but we don’t
+care why in either case.</p>
+
+<p>Let’s now have a look at a case where we might care about extra information in
+addition to the first-order value: Let’s assume we’re searching for a value in a
+vector and want to know its index in it:</p>
+
+<div class="language-rust highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">fn</span> <span class="nf">search</span><span class="p">(</span><span class="n">needle</span><span class="p">:</span> <span class="o">&amp;</span><span class="nb">String</span><span class="p">,</span> <span class="n">haystack</span><span class="p">:</span> <span class="o">&amp;</span><span class="nb">Vec</span><span class="o">&lt;</span><span class="nb">String</span><span class="o">&gt;</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="nb">Option</span><span class="o">&lt;</span><span class="nb">usize</span><span class="o">&gt;</span> <span class="p">{</span>
+    <span class="c1">// Return `Some(index)` if value is present `None` otherwise</span>
+    <span class="n">haystack</span><span class="nf">.iter</span><span class="p">()</span><span class="nf">.position</span><span class="p">(|</span><span class="n">x</span><span class="p">|</span> <span class="n">x</span> <span class="o">==</span> <span class="n">needle</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="k">fn</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="n">fruit</span> <span class="o">=</span> <span class="nd">vec!</span><span class="p">[</span>
+        <span class="s">"banana"</span><span class="nf">.to_string</span><span class="p">(),</span>
+        <span class="s">"mango"</span><span class="nf">.to_string</span><span class="p">(),</span>
+        <span class="s">"apple"</span><span class="nf">.to_string</span><span class="p">()</span>
+    <span class="p">];</span>
+    <span class="k">let</span> <span class="n">res</span> <span class="o">=</span> <span class="nf">search</span><span class="p">(</span><span class="o">&amp;</span><span class="s">"apple"</span><span class="nf">.to_string</span><span class="p">(),</span> <span class="o">&amp;</span><span class="n">fruit</span><span class="p">);</span>
+    <span class="nd">assert_eq!</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="nf">Some</span><span class="p">(</span><span class="mi">2</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In this case, our search function will search for the string <code class="language-plaintext highlighter-rouge">needle</code> inside
+the collection <code class="language-plaintext highlighter-rouge">haystack</code>. If it succeeds (the <code class="language-plaintext highlighter-rouge">true</code> case), it’s going to return
+us a value that signals that it succeeded, along with the extra information we
+asked for (the index in our case). This is the <code class="language-plaintext highlighter-rouge">Some(T)</code> constructor that we saw
+above in the type definitions. If it fails, it will instead return <code class="language-plaintext highlighter-rouge">None</code> (the
+<code class="language-plaintext highlighter-rouge">false</code> equivalent).</p>
+
+<p>This is a great example of the typical use-case for <code class="language-plaintext highlighter-rouge">Option</code>: we use it in contexts
+where we want to attach auxiliary data in the successful case, but where if we fail,
+we don’t care enough to know more about the failure case - only that it happened.</p>
+
+<p>That gap is being filled by <code class="language-plaintext highlighter-rouge">Result</code> - it’s like <code class="language-plaintext highlighter-rouge">Option</code> semantically, but it allows
+us to also carry around extra data in the case <code class="language-plaintext highlighter-rouge">false</code> case. This is useful in that
+it allows us to carry around diagnostic information in the failure case, to allow
+with error reporting and recovery.</p>
+
+<p>An example of this need being satisfied would be the following function:</p>
+
+<div class="language-rust highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">fn</span> <span class="nf">read_to_string</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="o">&amp;</span><span class="nb">str</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="nb">Result</span><span class="o">&lt;</span><span class="nb">String</span><span class="p">,</span> <span class="nn">io</span><span class="p">::</span><span class="n">Error</span><span class="o">&gt;</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="k">mut</span> <span class="n">file</span> <span class="o">=</span> <span class="k">match</span> <span class="nn">File</span><span class="p">::</span><span class="nf">open</span><span class="p">(</span><span class="o">&amp;</span><span class="n">filename</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">Ok</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">=&gt;</span> <span class="n">f</span><span class="p">,</span>
+        <span class="nf">Err</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">=&gt;</span> <span class="k">return</span> <span class="nf">Err</span><span class="p">(</span><span class="n">e</span><span class="p">),</span>
+    <span class="p">};</span>
+
+    <span class="k">let</span> <span class="k">mut</span> <span class="n">text</span> <span class="o">=</span> <span class="nn">String</span><span class="p">::</span><span class="nf">new</span><span class="p">();</span>
+    <span class="k">match</span> <span class="n">file</span><span class="nf">.read_to_string</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span> <span class="n">text</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">Ok</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> <span class="k">=&gt;</span> <span class="nf">Ok</span><span class="p">(</span><span class="n">text</span><span class="p">),</span>
+        <span class="nf">Err</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">=&gt;</span> <span class="nf">Err</span><span class="p">(</span><span class="n">e</span><span class="p">),</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Here our <code class="language-plaintext highlighter-rouge">read_to_string</code> function is doing two things:</p>
+
+<ol>
+  <li>Open a file, and</li>
+  <li>Read its contents into a string buffer.</li>
+</ol>
+
+<p>Any of these two operations can fail. If we only had a <code class="language-plaintext highlighter-rouge">bool</code> value as the return
+value, we could signal that a failure happened by returning <code class="language-plaintext highlighter-rouge">false</code>, but we would
+be at a loss as to <em>what</em> has actually failed.</p>
+
+<p>In this case, our <code class="language-plaintext highlighter-rouge">Result</code> type allows us to do the following:</p>
+
+<ul>
+  <li>If everything worked fine, return the <code class="language-plaintext highlighter-rouge">Ok()</code> constructor with an appropriate
+value attached (the string buffer in our case, after completion).</li>
+  <li>If there was an error, either at file opening or reading, returning an <code class="language-plaintext highlighter-rouge">Err()</code>
+constructor, with an appropriate error message attached.</li>
+</ul>
+
+<h2>Conclusion</h2>
+
+<p>To wrap everything up, here’s my usage heuristic for the above types:</p>
+
+<ul>
+  <li>Use <code class="language-plaintext highlighter-rouge">bool</code> for simple predicates.</li>
+  <li>Use <code class="language-plaintext highlighter-rouge">Option&lt;T&gt;</code> when extra data needs to be carried in the success case (for instance
+when searching for values in a collection)</li>
+  <li>Use <code class="language-plaintext highlighter-rouge">Result&lt;T,E&gt;</code> when extra data needs to be carried around in the success and failure
+case (say, if you’re reading something from the network, and you want to return
+the data in the success case or an appropriate error message in the failure case).</li>
+</ul>
+
+  </div>
+
+  
+
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <p>
+      
+
+&copy; Fotis Koutoulakis - Powered by <a href="https://jekyllrb.com">Jekyll</a> &amp; <a href="https://github.com/yous/whiteglass">whiteglass</a> - Subscribe via <a href="https://nlightnfotis.github.io/feed.xml">RSS</a>
+
+    </p>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

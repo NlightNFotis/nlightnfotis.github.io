@@ -89,6 +89,403 @@
         <header class="post-header">
           <h1 class="post-title">
             
+              <a class="post-link" href="/2014/04/25/how-the-compiler/">How the compiler, the Library and the Kernel work - Part 2 </a>
+            
+          </h1>
+
+          <p class="post-meta">
+            Apr 25, 2014
+            
+              
+
+ •
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/compiler/">compiler</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/kernel/">kernel</a>,
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a href="/tags/libc/">libc</a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+
+            
+            
+          </p>
+        </header>
+
+        <div class="post-content">
+          <p>In the previous part of this little series, we talked about the compiler, and what it does 
+with the header files, in our attempt to demistify their usage. In this part, I want to show you
+what’s the compiler’s output, and how we create our file.</p>
+
+<h1>The compiler’s composition</h1>
+
+<p>Generally speaking, a <em>compiler</em> belongs to a family of software called <strong>translators</strong>. 
+A translator’s job is to read some source code in a source language, and generate (translate it to) 
+some source code in a target language.</p>
+
+<p>Now, you might think that most compilers you know don’t do that. You input a (source code) file, 
+and you get a binary file, ready to run when you want it to. Yes that’s what it does, but it’s not
+the compiler that does all this. If you remember from the last installment of this series,
+when you call the compiler like <code class="language-plaintext highlighter-rouge">gcc some_file.c</code> or <code class="language-plaintext highlighter-rouge">clang some_file.c</code>, in essence you are
+calling the compilation driver, with the file as a parameter. The compilation driver then calls
+1) the preprocessor, 2) the (actual) compiler, 3) the assembler and last but not least the linker.
+At least when it comes to gcc, these pieces of software are called <code class="language-plaintext highlighter-rouge">cpp</code>, <code class="language-plaintext highlighter-rouge">cc1</code>, 
+<code class="language-plaintext highlighter-rouge">gas</code> (executable name is <code class="language-plaintext highlighter-rouge">as</code>)  and <code class="language-plaintext highlighter-rouge">collect2</code> (executable name is <code class="language-plaintext highlighter-rouge">ld</code>) respectively.</p>
+
+<p>From that little software collection up top, that we call the compiler, we can easily take notice
+of at least 3 (yeah, that’s right) translators, that act as we mentioned earlier, 
+that is take some input in a source language, and produce some output to a target language.</p>
+
+<p>The first is the preprocessor. The preprocessor accepts source code in C as a source language,
+and produces source code again in C (as a target language), but with the output having various
+elements of the source code resolved, such as header file inclusion, macro expansion, etc.</p>
+
+<p>The second is the compiler. The compiler accepts (in our case) C source code, as a source language,
+and translates it to some architecture’s assembly language. In my case, when I talk about the 
+compiler, I’m gonna assume that it produces x86 assembly.</p>
+
+<p>The last one, is the assembler, which accepts as input some machine’s architecture assembly
+language, and produces what’s called binary, or object representation of it, that is it translates
+the assembly mnemonics directly to the bytes they correspond to, in the target architecture.</p>
+
+<p>At this point, one could also argue that the linker is also a translator, accepting binary, and 
+translating it to an executable file, that is, resolving references, and fitting the binary code
+on the segments of the file that is to be produced. For example, on a typical GNU/Linux system,
+this phase produces the executable ELF file.</p>
+
+<h1>The (actual) compiler’s output: x86 assembly.</h1>
+
+<p>Before we go any further, I would like to show you what the compiler really creates:</p>
+
+<p>For the typical hello world program we demonstrated in our first installment, the compiler
+will output the following assembly code:</p>
+
+<figure class="highlight"><pre><code class="language-gas" data-lang="gas">	.file	"hello.c"
+	.section	.rodata
+.LC0:
+	.string	"Hello world!"
+	.text
+	.globl	main
+	.type	main, @function
+main:
+	pushq	%rbp
+	movq	%rsp, %rbp
+	subq	$16, %rsp
+	movl	%edi, -4(%rbp)
+	movq	%rsi, -16(%rbp)
+	movl	$.LC0, %edi
+	call	puts
+	movl	$0, %eax
+	leave
+	ret
+	.size	main, .-main
+	.ident	"GCC: (GNU) 4.8.2 20131212 (Red Hat 4.8.2-7)"
+	.section	.note.GNU-stack,"",@progbits</code></pre></figure>
+
+<p>To produce the above file, we had to use the following gcc invocation command:
+<code class="language-plaintext highlighter-rouge">gcc -S -fno-asynchronous-unwind-tables -o hello.S hello.c</code>. 
+We used <code class="language-plaintext highlighter-rouge">-fno-asynchronous-unwind-tables</code> to remove <code class="language-plaintext highlighter-rouge">.cfi</code> directives, which tell <code class="language-plaintext highlighter-rouge">gas</code> 
+(the gnu assembler) to emit Dwarf Call Frame Information tags, which are used to reconstruct
+a stack backtrace when a frame pointer is missing.</p>
+
+<p>For more usefull compilation flags, to control the intermediary compilation flow, try these:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">-E</code>: stop after preprocessing, and produce a *.i file</li>
+  <li><code class="language-plaintext highlighter-rouge">-S</code>: we used this, stop after the compiler, and produce a *.s file</li>
+  <li><code class="language-plaintext highlighter-rouge">-c</code>: stop after the assembler, and produce a *.o file.</li>
+</ul>
+
+<p>The default behaviour is to use none, and stop after the linker has run. If you want to run a 
+full compilation and keep all the intermediate files, use the <code class="language-plaintext highlighter-rouge">-save-temps</code> flag.</p>
+
+<h1>From source to binary: the assembler.</h1>
+
+<p>The next part of the compilation process, is the assembler. We have already discussed what
+the assembler does, so here we are going to see it in practice. If you have followed so far,
+you should have two files, a <code class="language-plaintext highlighter-rouge">hello.c</code>, which is the hello world’s C source code file,
+and a <code class="language-plaintext highlighter-rouge">hello.S</code> which is what we created earlier, the compiler’s (x86) assembly output.</p>
+
+<p>The assembler operates on that last file as you can imagine, and to see it running, and emit
+binary, we need to invoke it like this: <code class="language-plaintext highlighter-rouge">as -o hello.bin hello.S</code>, and produces this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ELF\00\00\00\00\00\00\00\00\00\00&gt;\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\F0\00\00\00\00\00\00\00\00\00\00\00@\00\00\00\00\00@\00\00\00UH\89\E5H\83\EC\89}\FCH\89u\F0\BF\00\00\00\00\E8\00\00\00\00\B8\00\00\00\00\C9\C3Hello world!\00\00GCC: (GNU) 4.8.2 20131212 (Red Hat 4.8.2-7)\00\00.symtab\00.strtab\00.shstrtab\00.rela.text\00.data\00.bss\00.rodata\00.comment\00.note.GNU-stack\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00 \00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00@\00\00\00\00\00\00\00 \00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\B8\00\00\00\00\00\000\00\00\00\00\00\00\00	\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00&amp;\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00`\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00,\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00`\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\001\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00`\00\00\00\00\00\00\00
+\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\009\00\00\00\00\00\000\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00m\00\00\00\00\00\00\00-\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00B\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\9A\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\9A\00\00\00\00\00\00\00R\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\B0\00\00\00\00\00\00\F0\00\00\00\00\00\00\00
+\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00	\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\A0\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\F1\FF\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00	\00\00\00\00\00\00\00\00\00\00\00\00\00 \00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00hello.c\00main\00puts\00\00\00\00\00\00\00\00\00\00\00\00\00
+\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00	\00\00\00\FC\FF\FF\FF\FF\FF\FF\FF
+</code></pre></div></div>
+
+<h1>Last but not least: the linker</h1>
+
+<p>We saw what the assembler emits, which is to say, binary code. However, that binary code
+still needs further processing. To explain that, we need to go back a little.</p>
+
+<p>In our first installment of the series, we said that when you call a function like <code class="language-plaintext highlighter-rouge">printf()</code>,
+the compiler only needs its prototype to do type checking and ensure that you use it legally.
+For that you include the header file <code class="language-plaintext highlighter-rouge">stdio.h</code>. But since that contains the function prototype only,
+where is the source code for that function? Surely, it must be somewhere, since it executes 
+successfully to begin with, but we haven’t met the source code for printf so far, so where is it?</p>
+
+<p>The function’s source code is located in the <code class="language-plaintext highlighter-rouge">.so</code> (shared object) of the standard C library,
+which in my system (Fedora 19, x64) is <code class="language-plaintext highlighter-rouge">libc-2.17.so</code>. I don’t want to expand on that further,
+as I plan to do so on the next series installment, however, what we have said so far is enough
+for you to understand the linker’s usage:</p>
+
+<p>The linker resolves the undefined (thus far) reference to printf, by finding the reference to
+the printf symbol and (in layman’s talk) 
+making a pointer to point to it so that execution can jump to printf’s code
+when we have to do that during our program’s execution.</p>
+
+<p>To invoke the linker on our file, <a href="https://sourceware.org/binutils/docs-2.20/ld/Options.html#Options">at least according to it’s documentation</a>, 
+we should do the following: <code class="language-plaintext highlighter-rouge">ld -o hello.out /lib/crt0.o hello.bin -lc</code>. Then we should
+be able to run the file like this: <code class="language-plaintext highlighter-rouge">./hello.out</code>.</p>
+
+<h1>Epilogue</h1>
+
+<p>That’s this end of this part 2 of my series that explains how your code turns into binary, and how
+your computer (at least when it comes to the software side) runs it. In part 3, I am going to discuss
+in greater length, the C library, and the kernel.</p>
+
+<h2>References</h2>
+
+<ul>
+  <li><a href="http://stackoverflow.com/questions/3564752/what-is-cfi-and-lfe-in-assembly-code-produced-by-gcc-from-c-program">StackOverflow: What is .cfi and .LFE in assembly code produced by GCC from c++ program?</a></li>
+  <li><a href="http://blog.lxgcc.net/?p=181">GCC front-end (1): driver vs. compiler</a></li>
+  <li><a href="http://wiki.osdev.org/GAS">GAS</a></li>
+  <li><a href="https://sourceware.org/binutils/docs-2.20/ld/"> ld: Binutils documentation</a></li>
+</ul>
+
+        </div>
+        
+      </li>
+    
+      
+      
+
+      <li>
+        <header class="post-header">
+          <h1 class="post-title">
+            
               <a class="post-link" href="/2014/02/23/my-linux-from-scratch-experience/">My Linux from Scratch Experience</a>
             
           </h1>
@@ -116,6 +513,14 @@
     
       
         <a href="/tags/linux/">linux</a>,
+      
+    
+      
+    
+      
+    
+      
+    
       
     
       
@@ -233,6 +638,14 @@
     
       
     
+      
+    
+      
+    
+      
+    
+      
+    
   
     
     
@@ -254,6 +667,14 @@
     
       
         <a href="/tags/distribution/">distribution</a>
+      
+    
+      
+    
+      
+    
+      
+    
       
     
       
@@ -554,6 +975,14 @@ Do you want the bragging rights? Are you crazy enough to want to maintain it?</s
     
       
     
+      
+    
+      
+    
+      
+    
+      
+    
   
     
     
@@ -567,6 +996,14 @@ Do you want the bragging rights? Are you crazy enough to want to maintain it?</s
     
       
         <a href="/tags/kernel/">kernel</a>,
+      
+    
+      
+    
+      
+    
+      
+    
       
     
       
@@ -636,6 +1073,14 @@ Do you want the bragging rights? Are you crazy enough to want to maintain it?</s
     
       
         <a href="/tags/libc/">libc</a>
+      
+    
+      
+    
+      
+    
+      
+    
       
     
       
@@ -916,6 +1361,14 @@ part the loader and the kernel.</p>
     
       
     
+      
+    
+      
+    
+      
+    
+      
+    
   
     
     
@@ -983,11 +1436,27 @@ part the loader and the kernel.</p>
     
       
     
+      
+    
+      
+    
+      
+    
+      
+    
   
     
     
       
         <a href="/tags/gsoc/">gsoc</a>
+      
+    
+      
+    
+      
+    
+      
+    
       
     
       
@@ -1375,6 +1844,14 @@ that might be vital to finding the problem.</p>
     
       
     
+      
+    
+      
+    
+      
+    
+      
+    
   
     
     
@@ -1382,6 +1859,14 @@ that might be vital to finding the problem.</p>
     
       
         <a href="/tags/gcc/">gcc</a>,
+      
+    
+      
+    
+      
+    
+      
+    
       
     
       
@@ -1451,6 +1936,14 @@ that might be vital to finding the problem.</p>
     
       
         <a href="/tags/golang/">golang</a>
+      
+    
+      
+    
+      
+    
+      
+    
       
     
       
@@ -1631,384 +2124,6 @@ during a hello world like program, and during a goroutine powered program, to ge
 to find something interesting in libpthread (like how many threads does libpthread report against how
 many the goruntime reports)</p>
 
-
-        </div>
-        
-      </li>
-    
-      
-      
-
-      <li>
-        <header class="post-header">
-          <h1 class="post-title">
-            
-              <a class="post-link" href="/2013/08/19/gsoc-week-9-partial-report/">GSOC Week 9 (Partial) report</a>
-            
-          </h1>
-
-          <p class="post-meta">
-            Aug 19, 2013
-            
-              
-
- •
-  
-    
-    
-      
-    
-      
-        <a href="/tags/gcc/">gcc</a>,
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-  
-    
-    
-      
-    
-      
-    
-      
-        <a href="/tags/golang/">golang</a>,
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-  
-    
-    
-      
-        <a href="/tags/gsoc/">gsoc</a>
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-  
-
-
-            
-            
-          </p>
-        </header>
-
-        <div class="post-content">
-          <p>This week was revolving around the print debugging in the gccgo runtime in search
-for clues regarding the creation of new threads under the goruntime, so as to see
-if there is something wrong with the runtime itself, or the way the runtime 
-interacts with the libpthread.</p>
-
-<h2>(partial presentation of) findings</h2>
-
-<p>During print debugging the gccgo runtime, I didn’t notice anything abnormal or 
-unusual so far. For example, the code that does trigger the assertion failure
-seems to work at least once, since <code class="language-plaintext highlighter-rouge">pthread_create()</code> returns <code class="language-plaintext highlighter-rouge">0</code> at least once.</p>
-
-<p>This is expected behavior, since we already have stated that there is at least
-one <code class="language-plaintext highlighter-rouge">M</code> (kernel thread) created at the initialisation of the program’s runtime.</p>
-
-<p>If however, we try to use a <em>go statement</em> in our program, to make usage of a 
-goroutine, the runtime still fails at the usual assertion fail, however the 
-output of the program is this:</p>
-
-<div lang="shell" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@debian:~/Software/Experiments/go# ./a.out
-[DEBUG] pthread_create returned 0
-a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&gt;kernel_thread == ktid;
-__mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })' failed.
-Aborted
-</code></pre></div></div>
-
-<p>The above output can give us some pieces of information:</p>
-
-<ul>
-  <li><code class="language-plaintext highlighter-rouge">pthread_create()</code> is called at least once.</li>
-  <li>it executes successfuly and without errors - libpthread code suggests that 0 is returned upon successful execution and creation of a thread</li>
-  <li>However the assertion is still triggered, which we know it’s getting triggered during thread creation.</li>
-</ul>
-
-<p>The second bullet point is also being supported by the fact that even if you exe
-cute something as simple as hello world in go, a new M is created, so you get
-something along the lines of this as an output:</p>
-
-<figure class="highlight"><pre><code class="language-sh" data-lang="sh">root@debian:~/Software/Experiments/go# ./a.out
-<span class="o">[</span>DEBUG] pthread_create returned 0
-Hello World!
-root@debian:~/Software/Experiments/go#</code></pre></figure>
-
-<p>There is however something that the above piece of code doesn’t tell us, 
-but it would be useful to know: <em>How many times did we create a new thread?</em>
-So we modify our gcc’s source code to see how many times the runtimes 
-attempts to create a new kernel thread (M). This is what we get out of it:</p>
-
-<div lang="shell" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@debian:~/Software/Experiments/go# ./a.out
-[DEBUG] Preparing to create a new thread.
-[DEBUG] pthread_create returned 0
-a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&gt;kernel_thread == ktid;
-__mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })' failed.
-[DEBUG] Preparing to create a new thread.
-aborted.
-</code></pre></div></div>
-
-<p>The code at this point in the runtime is this:</p>
-
-<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="c1">// Create a new m.  It will start off with a call to runtime_mstart.</span>
-<span class="n">M</span><span class="o">*</span>
-<span class="nf">runtime_newm</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
-<span class="p">{</span>
-	<span class="n">M</span> <span class="o">*</span><span class="n">mp</span><span class="p">;</span>
-	<span class="n">pthread_attr_t</span> <span class="n">attr</span><span class="p">;</span>
-	<span class="n">pthread_t</span> <span class="n">tid</span><span class="p">;</span>
-	<span class="kt">size_t</span> <span class="n">stacksize</span><span class="p">;</span>
-	<span class="n">sigset_t</span> <span class="n">clear</span><span class="p">;</span>
-	<span class="n">sigset_t</span> <span class="n">old</span><span class="p">;</span>
-	<span class="kt">int</span> <span class="n">ret</span><span class="p">;</span>
-
-<span class="c">#if 0
-	static const Type *mtype;  // The Go type M
-	if(mtype == nil) {
-		Eface e;
-		runtime_gc_m_ptr(&amp;e);
-		mtype = ((const PtrType*)e.__type_descriptor)-&gt;__element_type;
-	}
-#endif
-</span>
-	<span class="c1">// XXX: Added by fotis for print debugging.</span>
-	<span class="n">printf</span><span class="p">(</span><span class="s">"[DEBUG] Preparing to create a new thread.</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
-
-	<span class="n">mp</span> <span class="o">=</span> <span class="n">runtime_mal</span><span class="p">(</span><span class="k">sizeof</span> <span class="o">*</span><span class="n">mp</span><span class="p">);</span>
-	<span class="n">mcommoninit</span><span class="p">(</span><span class="n">mp</span><span class="p">);</span>
-	<span class="n">mp</span><span class="o">-&gt;</span><span class="n">g0</span> <span class="o">=</span> <span class="n">runtime_malg</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">nil</span><span class="p">,</span> <span class="n">nil</span><span class="p">);</span>
-
-	<span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
-		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_attr_init"</span><span class="p">);</span>
-	<span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_setdetachstate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">PTHREAD_CREATE_DETACHED</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
-		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_attr_setdetachstate"</span><span class="p">);</span>
-
-	<span class="c1">// &lt;http://www.gnu.org/software/hurd/open_issues/libpthread_set_stack_size.html&gt;</span>
-<span class="cp">#ifdef __GNU__
-</span>	<span class="n">stacksize</span> <span class="o">=</span> <span class="n">StackMin</span><span class="p">;</span>
-<span class="cp">#else
-</span>	<span class="n">stacksize</span> <span class="o">=</span> <span class="n">PTHREAD_STACK_MIN</span><span class="p">;</span>
-
-	<span class="c1">// With glibc before version 2.16 the static TLS size is taken</span>
-	<span class="c1">// out of the stack size, and we get an error or a crash if</span>
-	<span class="c1">// there is not enough stack space left.  Add it back in if we</span>
-	<span class="c1">// can, in case the program uses a lot of TLS space.  FIXME:</span>
-	<span class="c1">// This can be disabled in glibc 2.16 and later, if the bug is</span>
-	<span class="c1">// indeed fixed then.</span>
-	<span class="n">stacksize</span> <span class="o">+=</span> <span class="n">tlssize</span><span class="p">;</span>
-<span class="cp">#endif
-</span>
-	<span class="k">if</span><span class="p">(</span><span class="n">pthread_attr_setstacksize</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">stacksize</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
-		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_attr_setstacksize"</span><span class="p">);</span>
-
-	<span class="c1">// Block signals during pthread_create so that the new thread</span>
-	<span class="c1">// starts with signals disabled.  It will enable them in minit.</span>
-	<span class="n">sigfillset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">clear</span><span class="p">);</span>
-
-<span class="cp">#ifdef SIGTRAP
-</span>	<span class="c1">// Blocking SIGTRAP reportedly breaks gdb on Alpha GNU/Linux.</span>
-	<span class="n">sigdelset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">clear</span><span class="p">,</span> <span class="n">SIGTRAP</span><span class="p">);</span>
-<span class="cp">#endif
-</span>
-	<span class="n">sigemptyset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">old</span><span class="p">);</span>
-	<span class="n">sigprocmask</span><span class="p">(</span><span class="n">SIG_BLOCK</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">clear</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">old</span><span class="p">);</span>
-	<span class="n">ret</span> <span class="o">=</span> <span class="n">pthread_create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tid</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">runtime_mstart</span><span class="p">,</span> <span class="n">mp</span><span class="p">);</span>
-
-	<span class="cm">/* XXX: added for debug printing */</span>
-	<span class="n">printf</span><span class="p">(</span><span class="s">"[DEBUG] pthread_create() returned %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">ret</span><span class="p">);</span>
-
-	<span class="n">sigprocmask</span><span class="p">(</span><span class="n">SIG_SETMASK</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">old</span><span class="p">,</span> <span class="n">nil</span><span class="p">);</span>
-
-	<span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
-		<span class="n">runtime_throw</span><span class="p">(</span><span class="s">"pthread_create"</span><span class="p">);</span>
-
-	<span class="k">return</span> <span class="n">mp</span><span class="p">;</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>We can deduce two things about our situation right now:</p>
-
-<ul>
-  <li>There is <strong>at least one</strong> thread successfully created, and there is an attempt
-to create another one.</li>
-  <li>The second time, there is a failure before pthread_create is called.</li>
-</ul>
-
-<h2>Continuation of work.</h2>
-
-<p>I have been following this course of path the last week. I presented
-some of my findings, and hope to soon be able to write an exhaustive
-report on what exactly it is that causes the bug.</p>
 
         </div>
         
