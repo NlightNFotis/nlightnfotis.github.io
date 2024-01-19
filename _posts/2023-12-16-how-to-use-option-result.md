@@ -13,7 +13,7 @@ languages.
 
 ## The Beginning: the `bool` type
 
-We're all used to using the `bool` type: its value set has arity `2`, basically
+We're all used to using the `bool` type: its value set has cardinality `2`, basically
 admitting two values:
 
 * `true`, and
@@ -28,7 +28,7 @@ or a *failure* outcome after their execution has finished.
 The return of a `bool`-typed value allows these functions to have great synergy
 with conditional statements/expressions, directly plugging into the *antecedent*
 (condition) part of a conditional statement. Undoubtedly, you've come across
-something like this (in C pseudo-syntax):
+something like this (in C-like pseudocode):
 
 ```c++
 bool do_something() {
@@ -190,7 +190,7 @@ seen in the past, but it also suffers from a flaw, albeit a less severe one this
 time: the pollution of the codebase with many similar but *oh-so-slightly-different*
 types which served only as "rich-return-typed objects".
 
-This has the side-effect of an increase to the cognitive load of the programmer,
+This has the side-effect of an increase in the cognitive load of the programmer,
 which makes the experience of programming in that codebase a bit worse than it
 needs to be: the editors and other tools might help, but you still need to mentally
 keep track of which function returns what, and have some special handling around
@@ -200,7 +200,7 @@ any of those.
 
 This one is a variation of the two themes above, falling somewhat in the middle:
 it still signals success and makes it harder (kinda...) to crash the application.
-This time around, our code would look similar to this:
+This time around, our code would look similar to this (in Cpp-like pseudocode):
 
 ```c++
 // Our SearchResult object
@@ -254,11 +254,11 @@ based on the value of the `bool` itself.
 Or are we?
 
 For programming languages that only allow one return value, we can look into
-packing our `bool` and the auxiliary value into a `pair` or an `n-tuple` (it's
+packing our `bool` and the auxiliary value into a `pair` or an `n-tuple` (its
 arity-based generalisation).
 
-This used to be harder, but nowadays most programming languages offer more mathematical
-primitives in their standard libraries.
+This used to be harder, but nowadays most programming languages offer more
+mathematical primitives in their standard libraries.
 
 For example, adapting our example above to something like Kotlin:
 
@@ -309,7 +309,8 @@ func main() {
 
 ## `Option`/`Result`/`Either`
 
-Wow. What a trip. Let's have a quick recap so that we see where we are:
+Wow. What a trip. Let's have a quick recap so we can review where we've been so
+far:
 
 * We started with a function doing something, and returning `true` or `false` to
   show whether it succeeded or not.
@@ -319,12 +320,10 @@ Wow. What a trip. Let's have a quick recap so that we see where we are:
 
 But all of them were a bit lacking, in various different ways:
 
-* They... allowed us to crash, either by accidental mistake or misuse of their
-  interface.
+* They... allowed us to crash, either by accident or by misuse of their interface.
 * They didn't provide enough context to the compiler to assist us with development
-  (and to provide guardrails *against* misuse), using pattern matching for instance.
-* They depended on the creation of other context-sensitive types, with non-uniform
-  forms.
+  (and to provide guard rails *against* misuse), using pattern matching for instance.
+* They depended on the creation of other context-sensitive, non-uniform types.
 * They fallback to using types (e.g. `Pair` or `Triple`) that lack specificity
   to guide our expectations and intuition to a specific context.
 
@@ -332,11 +331,11 @@ All of the above are solved by the `Option` and `Result` type (and its more gene
 dual in Haskell, `Either`).
 
 All of them are what's known in Programming Language Theory as *Sum Types* (sometimes
-called *Discriminated Unions*), due to the fact that the value set of the Compound
+called *Discriminated Unions*), due to the fact that the value set of the compound
 type is the *sum* of the *cardinality* of the *sets* of the *atomic types* (called
 constructors) that comprise them.
 
-The type definitions look like these (in an ML-inspired pseudosyntax):
+The type definitions look like these (in an ML-like pseudocode):
 
 ```fsharp
 type Option<T> =
@@ -361,7 +360,7 @@ without the need to explicitly say so).
 
 ---
 
-An interesting pattern appears if we also provide a type definition for a `Boolean`
+An interesting pattern arises if we also provide a type definition for a `Boolean`
 type in the same pseudo syntax:
 
 ```fsharp
@@ -410,7 +409,7 @@ type Result =
 A clear pattern now emerges! All of these signal the same sort of binary outcome,
 with the capability of also carrying extra information.
 
-Nice! The keen eyed amongst you will have noticed that this insight has now solved
+Nice! The keen-eyed amongst you will have noticed that this insight has now solved
 our original problem in a very clean way, and has at the same time provided a very
 clear usage guideline:
 
@@ -503,7 +502,7 @@ Here our `read_to_string` function is doing two things:
 
 Any of these two operations can fail. If we only had a `bool` value as the return
 value, we could signal that a failure happened by returning `false`, but we would
-be at a loss as to *what* has actually failed. 
+be at a loss as to *what* has actually failed.
 
 In this case, our `Result` type allows us to do the following:
 
@@ -514,11 +513,12 @@ In this case, our `Result` type allows us to do the following:
 
 ## Conclusion
 
-To wrap everything up, here's my usage heuristic for the above types:
+To wrap everything up in a TL;DR form, here's my usage heuristic for the above types:
 
 * Use `bool` for simple predicates.
 * Use `Option<T>` when extra data needs to be carried in the success case (for instance
-  when searching for values in a collection)
+  when searching for values in a collection) and the failure case is signaling a simple
+  absence of value for any reason.
 * Use `Result<T,E>` when extra data needs to be carried around in the success and failure
   case (say, if you're reading something from the network, and you want to return
   the data in the success case or an appropriate error message in the failure case).
