@@ -11,3 +11,7 @@ publish message="""Publish a new post""": build
     git add docs/
     git commit -m """{{message}}"""
     git push
+
+# Bootstrap local development environment
+bootstrap:
+    bundle install
