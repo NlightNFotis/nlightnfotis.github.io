@@ -7,9 +7,10 @@ permalink: /about/
 I am Fotis Koutoulakis (Φώτης Κουτουλάκης, in Greek), a Computer Scientist,
 Engineer and Mathematician residing in Oxford, England.
 
-*I am currently open to employment opportunities*.
+I am currently working as a Software Engineer at GitHub, working on [CodeQL](https://codeql.github.com)
+and related infrastructure.
 
-Most recently I was a Senior Software Engineer at [Diffblue](https://www.diffblue.com)'s
+Before that I was a Senior Software Engineer at [Diffblue](https://www.diffblue.com)'s
 open source team, where I was working on maintaining [CBMC](https://github.com/diffblue/cbmc).
 My day to day work was in C++ and Rust.
 
@@ -20,7 +21,7 @@ My programming experience lies across many different programming languages and p
 but I mostly prefer *functional programming*. I am at my happiest though when I'm working
 with Rust, Ruby or F#/OCaml.
 
-Outside of computers, my interests are multidisciplinary and they lie across Mathematics,
+Outside of CS and Maths, my interests are multidisciplinary and they lie across
 Biology, Economics, Cognitive Science and Philosophy.
 
 I also spend time playing various assortments of musical instruments (Piano, Guitar
@@ -31,6 +32,7 @@ You can connect with me by:
 
 * [Email](mailto:fotis.koutoulakis@gmail.com)
 * [Goodreads](https://www.goodreads.com/nlightnfotis)
+* [LinkedIn](https://www.linkedin.com/in/fotiskoutoulakis)
 
 ## The Blog
 
