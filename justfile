@@ -15,3 +15,7 @@ publish message="""sync: syncing a new version of the site""": build
 # Bootstrap local development environment
 bootstrap:
     bundle install
+
+# List changes
+log:
+    git log --pretty=oneline --grep="sync:*" --invert-grep --graph --left-right
