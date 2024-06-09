@@ -520,7 +520,7 @@ something like this (in C-like pseudocode):</p>
     <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
 <span class="p">}</span>
 
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
     <span class="c1">// --snip---</span>
 
     <span class="k">if</span> <span class="p">(</span><span class="n">do_something</span><span class="p">())</span> <span class="p">{</span>
@@ -687,7 +687,7 @@ This time around, our code would look similar to this (in Cpp-like pseudocode):<
 <span class="p">};</span>
 
 <span class="c1">// And the search function</span>
-<span class="kt">bool</span> <span class="nf">search_text</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">needle</span><span class="p">,</span> <span class="k">const</span> <span class="n">Document</span><span class="o">&amp;</span> <span class="n">haystack</span><span class="p">,</span> <span class="n">SearchResult</span><span class="o">&amp;</span> <span class="n">result</span><span class="p">)</span> <span class="p">{</span>
+<span class="kt">bool</span> <span class="n">search_text</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">needle</span><span class="p">,</span> <span class="k">const</span> <span class="n">Document</span><span class="o">&amp;</span> <span class="n">haystack</span><span class="p">,</span> <span class="n">SearchResult</span><span class="o">&amp;</span> <span class="n">result</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// --snip--</span>
     
     <span class="k">if</span><span class="p">(</span><span class="n">found</span><span class="p">)</span> <span class="p">{</span>
@@ -700,7 +700,7 @@ This time around, our code would look similar to this (in Cpp-like pseudocode):<
 
 <span class="c1">// With our usage looking like this:</span>
 
-<span class="kt">void</span> <span class="nf">perform_action</span><span class="p">()</span> <span class="p">{</span>
+<span class="kt">void</span> <span class="n">perform_action</span><span class="p">()</span> <span class="p">{</span>
     <span class="c1">// --snip--</span>
 
     <span class="k">auto</span> <span class="n">result</span> <span class="o">=</span> <span class="n">SearchResult</span><span class="p">{};</span> 
