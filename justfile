@@ -7,7 +7,7 @@ build:
     bundle exec jekyll build --destination docs/
 
 # Publish new page on Github blog
-publish message="""sync - syncing a new version of the site""": build
+publish message="""sync: syncing a new version of the site""": build
     git add docs/
     git commit -m """{{message}}"""
     git push

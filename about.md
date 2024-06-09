@@ -4,31 +4,71 @@ title: "About"
 permalink: /about/
 ---
 
-I am Fotis Koutoulakis (Φώτης Κουτουλάκης, in Greek), a Computer Scientist,
-Engineer and Mathematician residing in Oxford, England.
+I am Fotis Koutoulakis (Φώτης Κουτουλάκης, in Greek), a *Polymath* living and working
+at Oxford, England.
+
+### Work 👨🏻‍💻💸
 
 I am currently working as a Software Engineer at GitHub, working on [CodeQL](https://codeql.github.com)
 and related infrastructure.
 
 Before that I was a Senior Software Engineer at [Diffblue](https://www.diffblue.com)'s
 open source team, where I was working on maintaining [CBMC](https://github.com/diffblue/cbmc).
-My day to day work was in C++ and Rust.
 
-My primary background in Computer Science is PLT (Programming Language Theory). I have
-also expanded into adjacent fields (Software Verification, Formal Methods, etc).
+---
 
-My programming experience lies across many different programming languages and paradigms,
-but I mostly prefer *functional programming*. I am at my happiest though when I'm working
-with Rust, Ruby or F#/OCaml.
+With regards to programming languages and tools, most of my experience has been
+in software reliability and security, working with C++ and Rust. However, as a
+software engineer I'm pretty agnostic as to what language I use, having significant
+experience in languages spanning from Racket and Haskell, to C#, Python and TypeScript.
 
-Outside of CS and Maths, my interests are multidisciplinary and they lie across
-Biology, Economics, Cognitive Science and Philosophy.
+These days I mostly find myself enjoying F# and Ruby in my personal projects,
+with Java and TypeScript being the ones I use most at work.
 
-I also spend time playing various assortments of musical instruments (Piano, Guitar
-and Vocals) at various levels of expertise, and I'm also keen on quantified-self and
-personal-development (across all facets of my life).
+### Background and Interests 📖
 
-You can connect with me by:
+I find it hard to put a single label on myself. Instead, here's a list of domains,
+and what most piques my interest in each one:
+
+* **Computer Science** 🖥️
+  * Programming Language Theory (PLT)
+  * Compilers
+  * Software Verification
+  * Formal Methods
+  * Distributed Systems
+  * Functional Programming
+
+* **Biology** 🧬
+  * Immunology
+  * Synthetic Biology
+  * Genomics
+
+* **Maths** 🧮 ✖️ 🎲
+  * Calculus & Real Analysis
+  * Infinity
+  * Probability
+  * Logic & Paradoxes
+
+* **Complex Systems** 🦋 🌪
+  * Self-organised Criticality
+  * Strong Emergence
+  * Chaotic Dynamics
+
+* **Economics** 💱 🏦
+  * Financial Economics
+  * Microeconomics
+
+* **Philosophy** 💭 🤔 🏛
+  * Philosophy of Science
+  * Philosophy of Mind
+  * Epistemology
+
+* **Music**
+  * Piano 🎤
+  * Guitar 🎸
+  * Vocals 🎹
+
+### Contact 🤝
 
 * [Email](mailto:fotis.koutoulakis@gmail.com)
 * [Goodreads](https://www.goodreads.com/nlightnfotis)
