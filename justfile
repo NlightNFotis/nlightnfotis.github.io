@@ -19,3 +19,7 @@ bootstrap:
 # List changes
 log:
     git log --pretty=oneline --grep="sync:*" --invert-grep --graph --left-right
+
+# Update installed gems
+gem-update:
+    bundle update
