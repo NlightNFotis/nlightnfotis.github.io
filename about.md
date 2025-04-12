@@ -4,13 +4,19 @@ title: "About"
 permalink: /about/
 ---
 
-I am Fotis Koutoulakis (Φώτης Κουτουλάκης, in Greek), a *Polymath* living and working
-at Oxford, England.
+Hi there 👋🏻
+
+I am Fotis Koutoulakis (Φώτης Κουτουλάκης, in Greek), pleased to meet you!
 
 ### Work 👨🏻‍💻💸
 
-I am currently working as a Software Engineer at GitHub, working on [CodeQL](https://codeql.github.com)
-and related infrastructure.
+I am currently working as a Software Engineer at [GitHub](https://github.com/github),
+working on Copilot Autofix and Copilot Autofind (the engine behind Copilot Code
+Review).
+
+Before that I was working on maintaining [CodeQL](https://codeql.github.com), being
+responsible for its primary interfaces and deployment, for example through the
+[CodeQL GitHub Action](https://github.com/github/codeql-action).
 
 Before that I was a Senior Software Engineer at [Diffblue](https://www.diffblue.com)'s
 open source team, where I was working on maintaining [CBMC](https://github.com/diffblue/cbmc).
@@ -23,12 +29,12 @@ software engineer I'm pretty agnostic as to what language I use, having signific
 experience in languages spanning from Racket and Haskell, to C#, Python and TypeScript.
 
 These days I mostly find myself enjoying F# and Ruby in my personal projects,
-with Java and TypeScript being the ones I use most at work.
+with Java, Go and TypeScript being the ones I use most at work.
 
 ### Background and Interests 📖
 
 I find it hard to put a single label on myself. Instead, here's a list of domains,
-and what most piques my interest in each one:
+and some topics that pique my interest in each one:
 
 * **Computer Science** 🖥️
   * Programming Language Theory (PLT)
