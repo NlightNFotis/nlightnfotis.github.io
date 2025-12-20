@@ -1,319 +1,51 @@
 <!DOCTYPE html>
 <html lang="en-GB">
-
-  <head>
+<head>
   <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  
-  
-  
   <title>GSOC Week 11 report</title>
-  <meta name="description" content="Introduction This week was spent investigating the runtime and debugging executables with gdb. It was interesting in the sense that it provided me with some interesting pieces of information. Without any further ado, let’s present our findings: My findings Before starting out playing with libpthread, and glibc, I wanted to make sure that the goruntime behaved the way I believed it behaved, and make some further assurances about the goruntime. These assurances had to do with the total number of goroutines and the total number of machine threads at various checkpoints in the language runtime. The first thread in the program is initialised during runtime_schedinit. The number of m’s (kernel threads) is dependent on the number of goroutines. The runtime basically attempts to create an equal amount of m’s to run the goroutines. We can observe everytime a new goroutine is created, there is a number of calls to initiate a new kernel thread. There are at least two kernel threads. One that supports the runtime (mainly the garbage collector) and one that executes the code of the go program. There is only one small piece of code in the goruntime that creates some sort of confusion for me, and that is the code for a new m initialisation. Let me first present the code that confuses me: M* runtime_newm(void) { ... mp = runtime_mal(sizeof *mp); ... mcommoninit(mp); mp-&amp;gt;g0 = runtime_malg(-1, nil, nil); ... if(pthread_attr_init(&amp;amp;attr) != 0) runtime_throw(&quot;pthread_attr_init&quot;); if(pthread_attr_setdetachstate(&amp;amp;attr, PTHREAD_CREATE_DETACHED) != 0) runtime_throw(&quot;pthread_attr_setdetachstate&quot;); ... } I purposely compacted the function for brevity, as it only serves as a demonstration for a point. Now, my confusion lies in the line mp-&amp;gt;g0 = runtime_malg(-1, nil, nil). It is a piece of code that allocates memory for a new goroutine. Now I am ok with that, but what I do not understand is that new kernel threads (m’s) are supposed to be pick and run a goroutine from the global goroutine pool - that is run an existing one, and not create a new one. Now, the runtime_malg is given parameters that don’t initialise a new goroutine properly, but still, new memory is allocated for a new goroutine, and is returned to mp-&amp;gt;g0 from runtime_malg. Assuming I have not misunderstood something, and I am not mistaken (which is kind of likely), this is behavior that could lead to a number of questions and/or problems. For instance, what happens to the goroutine created by runtime_malg? Is it killed after the m is assigned a new goroutine to execute? Is it parked on the goroutine global list? Is it just ignored? Does it affect the runtime scheduler’s goroutine count? This is the last thing I feel I wanna clear out regarding gccgo’s runtime. gdb For this week, I also run the executables created by gccgo through gdb. It was a fertile attempt that, most of the time, confirmed my findings in the goruntime. It also provided us with some other nice pieces of information regarding the crashing of goroutines, but also left me with a question. The code in question that I run through gdb is this: package main import &quot;fmt&quot; func say(s string) { for i := 0; i &amp;lt; 5; i++ { fmt.Println(s) } } func main() { fmt.Println(&quot;[!!] right before a go statement&quot;) go say(&quot;world&quot;) say (&quot;hello&quot;) } Your very typical hello world like goroutine program. Now, setting a break point in main (not the program’s main, that’s main.main. main as far as the runtime is concerned is the runtime entry point, in go-main.c) and running it through gdb yields the following results: Breakpoint 1, main () at ../../../gcc_source/libgo/runtime/go-main.c:52 52 runtime_check (); 2: __pthread_total = 1 1: runtime_sched.mcount = 0 (gdb) next 53 runtime_args (argc, (byte **) argv); 2: __pthread_total = 1 1: runtime_sched.mcount = 0 54 runtime_osinit (); 2: __pthread_total = 1 1: runtime_sched.mcount = 0 63: runtime_schedinit (); 2: __pthread_total = 1 1: runtime_sched.mcount = 1 Up until now, nothing unexpected. The kernel thread is registered with the runtime scheduler during its initialisation process in runtime_schedinit and that’ why the runtime_sched.mcount is reported to be zero many times before schedinit is run. 68 __go_go (mainstart, NULL); 2: __pthread_total = 1 1: runtime_sched.mcount = 1 (gdb) display runtime_sched.gcount 3: runtime_sched.gcount = 0 That too is ok, because a new goroutine is registered with the scheduler during the call to __go_go. Now I am gonna fast forward a bit, to a more interesting point. ... [DEBUG] (in runtime_gogo) new goroutine&#39;s status is 2 [DEBUG] (in runtime_gogo) number of goroutines now is 2 [New Thread 629.30] Program received SIGTRAP, Trace/breakpoint trap. 0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3 3: runtime_sched.gcount = 2 2: __pthread_total = 2 1: runtime_sched.mcount = 2 (gdb) info threads Id Target Id Frame 6 Thread 629.30 0x08048eb7 in main.main () at goroutine.go:12 5 Thread 629.29 0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3 *4 Thread 629.28 0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3 ``` This is getting weird. I mean, libpthread is reporting that 2 threads are active, but gdb reports that 3 are active. Anyway, let&#39;s continue: ``` [DEBUG] (in runtime_stoptheworld) stopped the garbage collector [DEBUG] (in runtime_starttheworld) starting the garbage collector [DEBUG] (in runtime_starttheworld) number of m&#39;s now is: 2 [DEBUG] (in runtime_starttheworld) [note] there is already one gc thread [!!] right before a go statement Program received signal SIGTRAP, Trace/breakpoint trap. 0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3 3: runtime_sched.gcount = 2 2: __pthread_total = 2 1: runtime_sched.mcount = 2 (gdb) continue ... (output omitted by me for brevity) [DEBUG] (in runtime_newm) Right before the call to pthread_create. a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })&#39; failed. [New Thread 629.31] Program received signal SIGABRT, Aborted. 0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3 3: runtime_sched.gcount = 3 2: __pthread_total = 2 1: runtime_sched.mcount = 3 Oh my goodness. From a first glance, this seems to be a very serious inconsistency between libpthread and the goruntime. At this point, the go scheduler reports 3 threads (3 registered threads, that means that flow of execution has passed mcommoninit, the kernel thread initialisation function which also registers the kernel thread with the runtime_scheduler) whereas libpthread reports 2 threads. But WAIT! Where are you going? Things are about to get even more interesting! (gdb) info threads Id Target Id Frame 7 Thread 629.31 0x01f4da00 in entry_point () from /lib/i386-gnu/libpthread.so.0.3 6 Thread 629.30 0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3 5 Thread 629.29 0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3 *4 Thread 629.28 0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3 GDB reports 4 threads. Yes, 4 threads ladies and gentlemen. Now take a look closely. 3 threads are in the same frame, with the one with id 4 being the one currently executed. And there is also a pattern. 0x01da48ec is the value of the eip register for all 3 of them. That’s one thing that is for certain. Now I already have an idea. Why not change the current thread to the one with id 7? I’m sold to the idea, let’s do this: (gdb) thread 7 [Switching to thread 7 (Thread 629.31)] #0 0x01f4da00 in entry_point () from /lib/i386-gnu/libpthread.so.0.3 (gdb) continue Continuing. Program received signal SIGABRT, Aborted. [Switching to Thread 629.28] 0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3 3: runtime_sched.gcount = 3 2: __pthread_total = 2 1: runtime_sched.mcount = 3 (gdb) info threads Id Target Id Frame 7 Thread 629.31 0x01dc08b0 in ?? () from /lib/i386-gnu/libc.so.0.3 6 Thread 629.30 0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3 5 Thread 629.29 0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3 *4 Thread 629.28 0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3 Damn. But I am curious. What’s the next value to be executed? (gdb) x/i $eip =&amp;gt; 0x1da48ec: ret And what is the next value to be executed for the thread with id 7? (gdb) x/i $eip =&amp;gt; 0x1dc08b0: call *%edx Conclusion Apparently, there is still much debugging left to checkout what is really happening. But we have got some leads in the right direction, that hopefully will lead us to finally finding out where the problem lies, and correct it. Most importantly, in my immediate plans, before iI start playing around with libpthread is to attempt the same debugging run on the same code, under linux (x86). Seeing as go is clean on linux, it would provide some clues as to what the expected results should be, and where the execution differentiates substantially, a clue that might be vital to finding the problem.">
+  <meta name="description" content="">
   
-
   <link rel="stylesheet" href="/assets/main.css">
-  <link rel="canonical" href="https://nlightnfotis.github.io/2013/09/02/gsoc-week-11-report/">
-  
-  
-  <link rel="alternate" type="application/rss+xml" title="Lambda reflections" href="https://nlightnfotis.github.io/feed.xml">
-
-  
-
-  
-  <meta property="og:title" content="GSOC Week 11 report">
-  <meta property="og:site_name" content="Lambda reflections">
-  <meta property="og:url" content="https://nlightnfotis.github.io/2013/09/02/gsoc-week-11-report/">
-  <meta property="og:description" content="Introduction This week was spent investigating the runtime and debugging executables with gdb. It was interesting in the sense that it provided me with some interesting pieces of information. Without any further ado, let’s present our findings: My findings Before starting out playing with libpthread, and glibc, I wanted to make sure that the goruntime behaved the way I believed it behaved, and make some further assurances about the goruntime. These assurances had to do with the total number of goroutines and the total number of machine threads at various checkpoints in the language runtime. The first thread in the program is initialised during runtime_schedinit. The number of m’s (kernel threads) is dependent on the number of goroutines. The runtime basically attempts to create an equal amount of m’s to run the goroutines. We can observe everytime a new goroutine is created, there is a number of calls to initiate a new kernel thread. There are at least two kernel threads. One that supports the runtime (mainly the garbage collector) and one that executes the code of the go program. There is only one small piece of code in the goruntime that creates some sort of confusion for me, and that is the code for a new m initialisation. Let me first present the code that confuses me: M* runtime_newm(void) { ... mp = runtime_mal(sizeof *mp); ... mcommoninit(mp); mp-&amp;gt;g0 = runtime_malg(-1, nil, nil); ... if(pthread_attr_init(&amp;amp;attr) != 0) runtime_throw(&quot;pthread_attr_init&quot;); if(pthread_attr_setdetachstate(&amp;amp;attr, PTHREAD_CREATE_DETACHED) != 0) runtime_throw(&quot;pthread_attr_setdetachstate&quot;); ... } I purposely compacted the function for brevity, as it only serves as a demonstration for a point. Now, my confusion lies in the line mp-&amp;gt;g0 = runtime_malg(-1, nil, nil). It is a piece of code that allocates memory for a new goroutine. Now I am ok with that, but what I do not understand is that new kernel threads (m’s) are supposed to be pick and run a goroutine from the global goroutine pool - that is run an existing one, and not create a new one. Now, the runtime_malg is given parameters that don’t initialise a new goroutine properly, but still, new memory is allocated for a new goroutine, and is returned to mp-&amp;gt;g0 from runtime_malg. Assuming I have not misunderstood something, and I am not mistaken (which is kind of likely), this is behavior that could lead to a number of questions and/or problems. For instance, what happens to the goroutine created by runtime_malg? Is it killed after the m is assigned a new goroutine to execute? Is it parked on the goroutine global list? Is it just ignored? Does it affect the runtime scheduler’s goroutine count? This is the last thing I feel I wanna clear out regarding gccgo’s runtime. gdb For this week, I also run the executables created by gccgo through gdb. It was a fertile attempt that, most of the time, confirmed my findings in the goruntime. It also provided us with some other nice pieces of information regarding the crashing of goroutines, but also left me with a question. The code in question that I run through gdb is this: package main import &quot;fmt&quot; func say(s string) { for i := 0; i &amp;lt; 5; i++ { fmt.Println(s) } } func main() { fmt.Println(&quot;[!!] right before a go statement&quot;) go say(&quot;world&quot;) say (&quot;hello&quot;) } Your very typical hello world like goroutine program. Now, setting a break point in main (not the program’s main, that’s main.main. main as far as the runtime is concerned is the runtime entry point, in go-main.c) and running it through gdb yields the following results: Breakpoint 1, main () at ../../../gcc_source/libgo/runtime/go-main.c:52 52 runtime_check (); 2: __pthread_total = 1 1: runtime_sched.mcount = 0 (gdb) next 53 runtime_args (argc, (byte **) argv); 2: __pthread_total = 1 1: runtime_sched.mcount = 0 54 runtime_osinit (); 2: __pthread_total = 1 1: runtime_sched.mcount = 0 63: runtime_schedinit (); 2: __pthread_total = 1 1: runtime_sched.mcount = 1 Up until now, nothing unexpected. The kernel thread is registered with the runtime scheduler during its initialisation process in runtime_schedinit and that’ why the runtime_sched.mcount is reported to be zero many times before schedinit is run. 68 __go_go (mainstart, NULL); 2: __pthread_total = 1 1: runtime_sched.mcount = 1 (gdb) display runtime_sched.gcount 3: runtime_sched.gcount = 0 That too is ok, because a new goroutine is registered with the scheduler during the call to __go_go. Now I am gonna fast forward a bit, to a more interesting point. ... [DEBUG] (in runtime_gogo) new goroutine&#39;s status is 2 [DEBUG] (in runtime_gogo) number of goroutines now is 2 [New Thread 629.30] Program received SIGTRAP, Trace/breakpoint trap. 0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3 3: runtime_sched.gcount = 2 2: __pthread_total = 2 1: runtime_sched.mcount = 2 (gdb) info threads Id Target Id Frame 6 Thread 629.30 0x08048eb7 in main.main () at goroutine.go:12 5 Thread 629.29 0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3 *4 Thread 629.28 0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3 ``` This is getting weird. I mean, libpthread is reporting that 2 threads are active, but gdb reports that 3 are active. Anyway, let&#39;s continue: ``` [DEBUG] (in runtime_stoptheworld) stopped the garbage collector [DEBUG] (in runtime_starttheworld) starting the garbage collector [DEBUG] (in runtime_starttheworld) number of m&#39;s now is: 2 [DEBUG] (in runtime_starttheworld) [note] there is already one gc thread [!!] right before a go statement Program received signal SIGTRAP, Trace/breakpoint trap. 0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3 3: runtime_sched.gcount = 2 2: __pthread_total = 2 1: runtime_sched.mcount = 2 (gdb) continue ... (output omitted by me for brevity) [DEBUG] (in runtime_newm) Right before the call to pthread_create. a.out: ./pthread/pt-create.c:167: __pthread_create_internal: Assertion `({ mach_port_t ktid = __mach_thread_self (); int ok = thread-&amp;gt;kernel_thread == ktid; __mach_port_deallocate ((__mach_task_self + 0), ktid); ok; })&#39; failed. [New Thread 629.31] Program received signal SIGABRT, Aborted. 0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3 3: runtime_sched.gcount = 3 2: __pthread_total = 2 1: runtime_sched.mcount = 3 Oh my goodness. From a first glance, this seems to be a very serious inconsistency between libpthread and the goruntime. At this point, the go scheduler reports 3 threads (3 registered threads, that means that flow of execution has passed mcommoninit, the kernel thread initialisation function which also registers the kernel thread with the runtime_scheduler) whereas libpthread reports 2 threads. But WAIT! Where are you going? Things are about to get even more interesting! (gdb) info threads Id Target Id Frame 7 Thread 629.31 0x01f4da00 in entry_point () from /lib/i386-gnu/libpthread.so.0.3 6 Thread 629.30 0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3 5 Thread 629.29 0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3 *4 Thread 629.28 0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3 GDB reports 4 threads. Yes, 4 threads ladies and gentlemen. Now take a look closely. 3 threads are in the same frame, with the one with id 4 being the one currently executed. And there is also a pattern. 0x01da48ec is the value of the eip register for all 3 of them. That’s one thing that is for certain. Now I already have an idea. Why not change the current thread to the one with id 7? I’m sold to the idea, let’s do this: (gdb) thread 7 [Switching to thread 7 (Thread 629.31)] #0 0x01f4da00 in entry_point () from /lib/i386-gnu/libpthread.so.0.3 (gdb) continue Continuing. Program received signal SIGABRT, Aborted. [Switching to Thread 629.28] 0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3 3: runtime_sched.gcount = 3 2: __pthread_total = 2 1: runtime_sched.mcount = 3 (gdb) info threads Id Target Id Frame 7 Thread 629.31 0x01dc08b0 in ?? () from /lib/i386-gnu/libc.so.0.3 6 Thread 629.30 0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3 5 Thread 629.29 0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3 *4 Thread 629.28 0x01da48ec in ?? () from /lib/i386-gnu/libc.so.0.3 Damn. But I am curious. What’s the next value to be executed? (gdb) x/i $eip =&amp;gt; 0x1da48ec: ret And what is the next value to be executed for the thread with id 7? (gdb) x/i $eip =&amp;gt; 0x1dc08b0: call *%edx Conclusion Apparently, there is still much debugging left to checkout what is really happening. But we have got some leads in the right direction, that hopefully will lead us to finally finding out where the problem lies, and correct it. Most importantly, in my immediate plans, before iI start playing around with libpthread is to attempt the same debugging run on the same code, under linux (x86). Seeing as go is clean on linux, it would provide some clues as to what the expected results should be, and where the execution differentiates substantially, a clue that might be vital to finding the problem.">
-  
-  
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:site" content="NlightNFotis">
-  <meta name="twitter:title" content="GSOC Week 11 report">
-  <meta name="twitter:description" content="Introduction This week was spent investigating the runtime and debugging executables with gdb. It was interesting in the sense that it provided me with some interesting pieces of information. Witho...">
-  
-    <meta name="twitter:creator" content="NlightNFotis">
-  
-  
-
-  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet">
-
-  
-
 </head>
 
-
-  <body>
-
+<body>
+  <div class="site-wrapper">
+    
     <header class="site-header">
-
-  <div class="wrapper">
-
-    <a class="site-title" href="/">Lambda reflections</a>
-
-    <nav class="site-nav">
-      
-        
-        <a class="page-link" href="/about/">About</a>
-      
-        
-        <a class="page-link" href="/archives/">Archives</a>
-      
-        
-        <a class="page-link" href="https://github.com/NlightNFotis">GitHub</a>
-      
-    </nav>
-
-  </div>
-
-</header>
-
+      <div class="header-inner">
+        <a class="site-title" href="/">LAMBDA REFLECTIONS</a>
+      </div>
+      <nav class="site-nav">
+        <a href="/archives/">ARCHIVES</a>
+      </nav>
+    </header>
 
     <main class="page-content" aria-label="Content">
-      <div class="wrapper">
-        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
-
+      <article class="post">
+  
   <header class="post-header">
-    
-      <h1 class="post-title" itemprop="name headline">GSOC Week 11 report</h1>
-    
-    <p class="post-meta"><time datetime="2013-09-02T09:25:00+00:00" itemprop="datePublished">Sep 2, 2013</time>
-
- •
-  
-    
-    
-      
-    
-      
-        <a href="/tags/gcc/">gcc</a>,
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-  
-    
-    
-      
-    
-      
-    
-      
-        <a href="/tags/golang/">golang</a>,
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-  
-    
-    
-      
-        <a href="/tags/gsoc/">gsoc</a>
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-  
-
-</p>
+    <h1 class="post-title-big">GSOC Week 11 report</h1>
+    
+    <div class="post-meta-header">
+      <time datetime="2013-09-02T09:25:00+00:00">
+        September 2, 2013
+      </time>
+      
+        <span class="header-tags">
+           
+            · <a href="/tags/gcc/" style="color: inherit; text-decoration: none;">#gcc</a>
+           
+            · <a href="/tags/golang/" style="color: inherit; text-decoration: none;">#golang</a>
+           
+            · <a href="/tags/gsoc/" style="color: inherit; text-decoration: none;">#gsoc</a>
+          
+        </span>
+      
+    </div>
   </header>
 
-  <div class="post-content" itemprop="articleBody">
+  <div class="post-content">
     <h1>Introduction</h1>
 
 <p>This week was spent investigating the runtime and debugging executables with gdb.
@@ -544,29 +276,47 @@ that might be vital to finding the problem.</p>
 
   </div>
 
-  
+  <div class="post-footer">
+    <a href="/" class="back-link">← Back to Home</a>
+  </div>
 
 </article>
 
-      </div>
     </main>
 
     <footer class="site-footer">
-
-  <div class="wrapper">
-
-    <p>
-      
-
-&copy; Fotis Koutoulakis - Powered by <a href="https://jekyllrb.com">Jekyll</a> &amp; <a href="https://github.com/yous/whiteglass">whiteglass</a> - Subscribe via <a href="https://nlightnfotis.github.io/feed.xml">RSS</a>
-
-    </p>
+      <div class="footer-content">
+        <div class="footer-links">
+          
+          <a href="https://github.com/NlightNFotis" target="_blank">
+            <svg class="footer-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            github
+          </a>
+    
+          <span class="separator">•</span>
+    
+          <a href="https://linkedin.com/in/fotiskoutoulakis" target="_blank">
+            <svg class="footer-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+            </svg>
+            linkedin
+          </a>
+    
+          <span class="separator">•</span>
+    
+          <a href="/feed.xml">
+            <svg class="footer-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M6.18 15.64c0 1.325-1.083 2.4-2.42 2.4-1.332 0-2.41-1.075-2.41-2.4 0-1.328 1.078-2.403 2.41-2.403 1.337 0 2.42 1.075 2.42 2.403zm6.65 2.4h-3.32c-.08-4.66-3.86-8.44-8.52-8.52v-3.32c6.48.09 11.74 5.36 11.84 11.84zm7.17 0h-3.33c-.09-8.61-7.09-15.61-15.7-15.7v-3.33c10.45.1 18.92 8.57 19.03 19.03z"/>
+            </svg>
+            rss
+          </a>
+        </div>
+        <p>&copy; 2025 Fotis Koutoulakis</p>
+      </div>
+    </footer>
 
   </div>
-
-</footer>
-
-
-  </body>
-
+</body>
 </html>
