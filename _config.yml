@@ -5,6 +5,7 @@ author_bio: >- # this means to ignore newlines until "author_email:"
   My name is Fotis Koutoulakis. I'm a software engineer currently working at
   the intersection of AI Engineering and Backend Development. I love functional
   programming, type theory, formal verification and distributed systems.
+
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://nlightnfotis.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 lang: en-GB
