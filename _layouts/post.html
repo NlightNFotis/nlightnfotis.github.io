@@ -13,7 +13,9 @@ layout: default
       </time>
       {% if page.tags.size > 0 %}
         <span class="header-tags">
-          {% for tag in page.tags %} · #{{ tag }}{% endfor %}
+          {% for tag in page.tags %} 
+            · <a href="/tags/{{ tag | slugify }}/" style="color: inherit; text-decoration: none;">#{{ tag }}</a>
+          {% endfor %}
         </span>
       {% endif %}
     </div>

@@ -1,0 +1,20 @@
+---
+layout: default
+---
+
+<section class="home-section">
+  <h2 class="section-title title-posts">TAG: {{ page.title | upcase }}</h2>
+  
+  <div class="post-list-compact">
+    {% for post in page.posts %}
+      <div class="post-row">
+        <span class="post-date">{{ post.date | date: "%B %-d, %Y" }}</span>
+        <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title }}</a>
+      </div>
+    {% endfor %}
+  </div>
+  
+  <div style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px;">
+    <a href="/">← Back to All Posts</a>
+  </div>
+</section>

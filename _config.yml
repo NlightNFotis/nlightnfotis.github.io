@@ -19,7 +19,7 @@ exclude:
   - justfile
 
 plugins:
-  # - jekyll-archives
+  - jekyll-archives
   - jekyll-paginate
   - jekyll-sitemap
 
@@ -27,14 +27,12 @@ permalink: /:year/:month/:day/:title/
 paginate_path: /posts/:num/
 paginate: 5
 
-# jekyll-archives:
-#   enabled:
-#     - categories
-#     - tags
-#   layout: category_archives
-#   permalinks:
-#     category: /categories/:name/
-#     tag: /tags/:name/
+jekyll-archives:
+  enabled:
+    - tags
+  layout: archive
+  permalinks:
+    tag: /tags/:name/
 
 # Conversion (these form part of the default configuration, but it helps me
 # to have them listed here explicitly)
@@ -49,7 +47,3 @@ kramdown:
   smart_quotes: lsquo,rsquo,ldquo,rdquo
   toc_levels: 1..6
 excerpt_separator: "<!-- more -->"
-
-# Social media (for Whiteglass)
-twitter_username: NlightNFotis
-comments: false
