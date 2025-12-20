@@ -5,22 +5,33 @@ title: Home
 
 <section class="home-section">
   <h2 class="section-title title-about">ABOUT</h2>
-  
   <div class="bio-text">
     <p>{{ site.author_bio }}</p>
-    
     <p style="margin-top: 15px;">
-      Previously I worked at Diffblue as a Software Engineer focusing on formal verification
-      and am now at GitHub working on various aspects of GitHub Copilot.
+      I'm now at GitHub, where I work on several aspects of Copilot. Previously
+      I worked as as a Software Engineer at Diffblue, where I was maintaining the
+      software verification tool CBMC under contract with AWS.
     </p>
-  </div>
+    <p style="margin-top: 15px;">
+      In my free time, I enjoy learning more about our natural world.
+      Mathematics, physics and biology are some of my favorite subjects.
+    </p>
+    <p style="margin-top: 15px;">
+      I have a Bachelor's degree in Computer Engineering from the Technological
+      Educational Institute of Crete, and am currently studying on the side for
+      <a href="https://www.open.ac.uk/courses/maths/degrees/bsc-mathematics-q31/">
+        a Bachelor's degree in Mathematics with The Open University
+      </a> and
+      <a href="https://www.eap.gr/en/undergraduate/studies-in-natural-sciences/">
+        a Bachelor's degree in Natural Sciences with the Hellenic Open University.
+      </a>
 </section>
 
 <section class="home-section">
   <h2 class="section-title title-posts">POSTS</h2>
   
   <div class="post-list-compact">
-    {% for post in site.posts %}
+    {% for post in paginator.posts %}
       <div class="post-row-wrapper">
         <div class="post-row">
           <span class="post-date">{{ post.date | date: "%B %-d, %Y" }}</span>
@@ -37,4 +48,30 @@ title: Home
       </div>
     {% endfor %}
   </div>
+
+  {% if paginator.total_pages > 1 %}
+  <div class="pagination-wrapper">
+    
+    <div class="pagination-left">
+      {% if paginator.previous_page %}
+        <a href="{{ paginator.previous_page_path }}" class="page-nav">← Newer</a>
+      {% else %}
+        <span class="page-nav disabled">← Newer</span>
+      {% endif %}
+    </div>
+
+    <div class="pagination-center">
+      Page {{ paginator.page }} of {{ paginator.total_pages }}
+    </div>
+
+    <div class="pagination-right">
+      {% if paginator.next_page %}
+        <a href="{{ paginator.next_page_path }}" class="page-nav">Older →</a>
+      {% else %}
+        <span class="page-nav disabled">Older →</span>
+      {% endif %}
+    </div>
+
+  </div>
+  {% endif %}
 </section>

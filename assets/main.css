@@ -320,3 +320,40 @@ p > code, li > code {
   position: relative;
   top: 1px;
 }
+
+/* --- PAGINATION --- */
+.pagination-wrapper {
+  margin-top: 60px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--meta-color);
+}
+
+.pagination-left, .pagination-right {
+  flex: 1; /* Ensures equal spacing */
+}
+
+.pagination-right { text-align: right; }
+.pagination-center { text-align: center; font-weight: 600; color: var(--text-color); }
+
+.page-nav {
+  text-decoration: none;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.page-nav:hover {
+  text-decoration: underline;
+  color: var(--link-color);
+}
+
+.page-nav.disabled {
+  color: #ccc;
+  cursor: default;
+  text-decoration: none;
+}
