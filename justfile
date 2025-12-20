@@ -5,6 +5,7 @@ preview:
 # Perform a publish-level build (preparing the text for publication)
 build:
     bundle exec jekyll build --destination docs/
+    touch docs/.nojekyll
 
 # Publish new page on Github blog
 publish message="""sync: syncing a new version of the site""": build
