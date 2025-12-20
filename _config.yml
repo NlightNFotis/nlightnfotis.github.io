@@ -1,6 +1,10 @@
 # Site settings (modified to fit Whiteglass expectations for site.vars)
 title: Lambda reflections
 author: Fotis Koutoulakis
+author_bio: >- # this means to ignore newlines until "author_email:"
+  My name is Fotis Koutoulakis. I'm an engineer currently working at the intersection
+  of AI Engineering and Backend Development. I love functional programming,
+  type theory, formal verification and distributed systems. 
 description: >- # this means to ignore newlines until "baseurl:"
   Functional Programming, Proofs, Bioinformatics and more.
 baseurl: "" # the subpath of your site, e.g. /blog
@@ -14,10 +18,8 @@ exclude:
   - .gitignore
   - justfile
 
-# Whiteglass theme configuration
-theme: jekyll-whiteglass
 plugins:
-  - jekyll-archives
+  # - jekyll-archives
   - jekyll-paginate
   - jekyll-sitemap
 
@@ -25,17 +27,17 @@ permalink: /:year/:month/:day/:title/
 paginate_path: /posts/:num/
 paginate: 5
 
-jekyll-archives:
-  enabled:
-    - categories
-    - tags
-  layout: category_archives
-  permalinks:
-    category: /categories/:name/
-    tag: /tags/:name/
+# jekyll-archives:
+#   enabled:
+#     - categories
+#     - tags
+#   layout: category_archives
+#   permalinks:
+#     category: /categories/:name/
+#     tag: /tags/:name/
 
 # Conversion (these form part of the default configuration, but it helps me
-# to have them listed here explicitly)
+# to have them listed here explicitly)
 markdown: kramdown
 highlighter: rouge
 kramdown:
