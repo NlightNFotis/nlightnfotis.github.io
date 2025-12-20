@@ -281,11 +281,42 @@ p > code, li > code {
 .highlight .vi { color: #0550ae }
 .highlight .il { color: #0550ae }
 
-/* --- 8. FOOTER --- */
-.site-footer {
-  margin-top: 100px;
-  border-top: 1px solid var(--border-color);
-  padding-top: 30px;
-  font-size: 12px;
-  color: #999;
+/* --- FOOTER ICONS & LINKS --- */
+.footer-links {
+  display: flex;
+  gap: 20px; /* Space between the groups */
+  font-family: var(--font-mono);
+  font-weight: 600;
+  align-items: center; /* Vertically align icons and text */
+}
+
+.footer-links a {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Space between icon and text */
+  color: var(--text-color);
+  text-decoration: none;
+  text-transform: lowercase; /* Matches the "github" look in your screenshot */
+}
+
+.footer-links a:hover {
+  color: var(--link-color);
+}
+
+.footer-icon {
+  width: 18px;
+  height: 18px;
+  fill: var(--meta-color); /* Icons start gray */
+  transition: fill 0.2s ease;
+}
+
+.footer-links a:hover .footer-icon {
+  fill: var(--link-color); /* Icons turn blue on hover */
+}
+
+.separator { 
+  color: var(--border-color); 
+  font-size: 10px;
+  position: relative;
+  top: 1px;
 }
