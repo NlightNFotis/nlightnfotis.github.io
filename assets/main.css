@@ -1,0 +1,172 @@
+/* --- 1. VARIABLES & TYPOGRAPHY --- */
+:root {
+  /* The "Developer" Font Stack */
+  --font-mono: "SF Mono", "Menlo", "Monaco", "Consolas", "Ubuntu Mono", monospace;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  
+  /* Colors based on your screenshots */
+  --bg-color: #fcfcfc;       /* Very light grey/white */
+  --text-color: #1a1a1a;     /* Sharp dark grey */
+  --link-color: #2568ba;     /* Standard link blue */
+  --meta-color: #666;        /* Date gray */
+  --border-color: #eee;
+  
+  /* The Accents */
+  --accent-green: #00cc99; 
+  --accent-yellow: #ffb000;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: var(--font-mono); /* Default to code font */
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* --- 2. LAYOUT WRAPPER --- */
+.site-wrapper {
+  max-width: 840px;
+  margin: 0 auto;
+  padding: 60px 20px;
+}
+
+/* --- 3. HEADER --- */
+.site-header {
+  margin-bottom: 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.site-title {
+  font-family: var(--font-sans);
+  font-weight: 900;
+  font-size: 24px;
+  color: #000;
+  text-decoration: none;
+  letter-spacing: -1px;
+}
+
+.site-nav a {
+  margin-left: 25px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #999;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.site-nav a:hover { color: #000; }
+
+/* --- 4. HOMEPAGE SECTIONS --- */
+.home-section { margin-bottom: 80px; }
+
+/* The Section Headers (About / Posts) */
+.section-title {
+  font-family: var(--font-sans);
+  font-weight: 900;
+  font-size: 36px;
+  text-transform: uppercase;
+  margin-bottom: 30px;
+  display: inline-block;
+  line-height: 1.0;
+  border-bottom: 5px solid; 
+  padding-bottom: 5px;
+  color: #000;
+}
+
+.title-about { border-color: var(--accent-green); }
+.title-posts { border-color: var(--accent-yellow); }
+
+.bio-text {
+  font-size: 16px;
+  max-width: 650px;
+  color: #333;
+}
+.bio-text p { margin-bottom: 20px; }
+.bio-text a { color: var(--accent-green); text-decoration: underline; }
+
+/* --- 5. POST LIST --- */
+.post-list-compact {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.post-row {
+  display: flex;
+  align-items: baseline;
+}
+
+.post-date {
+  font-size: 13px;
+  color: var(--meta-color);
+  width: 150px;
+  flex-shrink: 0;
+}
+
+.post-link {
+  font-weight: 500;
+  color: var(--text-color);
+  text-decoration: none;
+}
+.post-link:hover { 
+  text-decoration: underline; 
+  color: #000;
+}
+
+/* --- 6. ARTICLE CONTENT (Prose) --- */
+/* Headlines inside posts */
+h1, h2, h3, h4 {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  color: #000;
+  margin-top: 2em;
+  margin-bottom: 0.5em;
+}
+h1 { font-size: 2.2em; line-height: 1.1; }
+h2 { font-size: 1.8em; }
+
+p { margin-bottom: 1.5em; }
+
+a { color: var(--link-color); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* --- 7. CODE BLOCKS --- */
+/* Standardizing the code look */
+pre, code {
+  font-family: var(--font-mono);
+  font-size: 14px;
+}
+
+/* Inline code (`like this`) */
+p > code, li > code {
+  background-color: #f1f3f5;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #d63384; /* A nice reddish pink */
+}
+
+/* Block code */
+pre {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  padding: 20px;
+  overflow-x: auto;
+  margin: 30px 0;
+}
+
+/* --- 8. FOOTER --- */
+.site-footer {
+  margin-top: 100px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 30px;
+  font-size: 13px;
+  color: #999;
+}

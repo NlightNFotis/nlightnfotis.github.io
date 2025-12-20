@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: "en-GB" }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ page.title | default: site.title }}</title>
+  <meta name="description" content="{{ page.description | default: site.description }}">
+  
+  <link rel="stylesheet" href="{{ "/assets/main.css" | relative_url }}">
+</head>
+
+<body>
+  <div class="site-wrapper">
+    
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="site-title" href="/">{{ site.title | upcase }}</a>
+      </div>
+      <nav class="site-nav">
+        <a href="/about/">ABOUT</a>
+        <a href="/archives/">ARCHIVES</a>
+        <a href="https://github.com/{{ site.github_username | default: 'NlightNFotis' }}">GITHUB</a>
+      </nav>
+    </header>
+
+    <main class="page-content" aria-label="Content">
+      {{ content }}
+    </main>
+
+    <footer class="site-footer">
+      <p>&copy; {{ site.time | date: '%Y' }} {{ site.author }}</p>
+    </footer>
+
+  </div>
+</body>
+</html>

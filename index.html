@@ -1,6 +1,30 @@
 ---
-# You don't need to edit this file, it's empty on purpose.
-# Edit whiteglass' home layout instead if you want to make some changes.
-# See: https://jekyllrb.com/docs/themes/#overriding-theme-defaults
-layout: home
+layout: default
+title: Home
 ---
+
+<section class="home-section">
+  <h2 class="section-title title-about">ABOUT</h2>
+  
+  <div class="bio-text">
+    <p>{{ site.author_bio }}</p>
+    
+    <p style="margin-top: 15px;">
+      Previously I worked at Diffblue as a Software Engineer focusing on formal verification
+      and am now at GitHub working on various aspects of GitHub Copilot.
+    </p>
+  </div>
+</section>
+
+<section class="home-section">
+  <h2 class="section-title title-posts">POSTS</h2>
+  
+  <div class="post-list-compact">
+    {% for post in site.posts %}
+      <div class="post-row">
+        <span class="post-date">{{ post.date | date: "%B %-d, %Y" }}</span>
+        <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title }}</a>
+      </div>
+    {% endfor %}
+  </div>
+</section>
