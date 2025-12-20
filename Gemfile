@@ -36,5 +36,5 @@ gem "webrick", "~> 1.7"
 
 gem "rouge", "~> 3.28"
 
-# Add whiteglass theme
-gem "jekyll-whiteglass", "~> 1.11.1"
+# Dependabot advisory
+gem "rexml", ">= 3.4.2"
