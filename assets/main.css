@@ -170,3 +170,51 @@ pre {
   font-size: 13px;
   color: #999;
 }
+
+/* --- POST LIST TAGS --- */
+
+/* Wrapper to hold title + tags together */
+.post-row-wrapper {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 25px; /* Spacing between distinct posts */
+}
+
+/* Fix the row to align date and title */
+.post-row {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 5px; /* Small space between title and tags */
+}
+
+.post-tags {
+  margin-left: 150px; /* Aligns tags with the Title (skipping the date width) */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: lowercase;
+  color: #666; 
+  background-color: #f1f1f1;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+/* Hover effect for fun */
+.tag:hover {
+  color: #fff;
+  background-color: var(--accent-green); /* Turns green on hover */
+  text-decoration: none;
+}
+
+/* Mobile tweak: stack tags nicely */
+@media (max-width: 600px) {
+  .post-tags { margin-left: 0; }
+  .post-row { flex-direction: column; }
+  .post-date { margin-bottom: 5px; }
+}
